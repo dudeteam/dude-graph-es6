@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>dude-graph</title>
+</head>
+<body>
+<script src="lib/dude-graph-web.js"></script>
+<script>
+    var graph = new dudeGraph.Graph();
+    var block = new dudeGraph.Block({});
+
+    graph.addBlock(block);
+
+    var point = new dudeGraph.Point(true, {});
+
+    block.addPoint(point);
+</script>
+</body>
+</html>
