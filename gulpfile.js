@@ -13,19 +13,25 @@ const nodeResolve = require("rollup-plugin-node-resolve");
 
 const DUDE_GRAPH_SOURCES = ["src/*.js", "src/**/*.js"];
 const rollupNode = {
-    "sourceMap": true
+    "sourceMap": true,
+    "plugins": [
+        nodeResolve()
+    ]
 };
 const rollupWeb = {
     "format": "iife",
     "sourceMap": true,
     "moduleName": "dudeGraph",
     "plugins": [
-        babel({"presets": ["es2015-rollup"]}),
+        babel({
+            "presets": ["es2015-rollup"],
+            "babelrc": false
+        }),
         nodeResolve()
     ]
 };
 
-gulp.task("default", ["build:web", "build:node"]);
+gulp.task("default", ["build:es5", "build:es6"]);
 
 gulp.task("watch", ["default"], () => {
     gulp.watch(DUDE_GRAPH_SOURCES, ["default"]);
@@ -42,18 +48,18 @@ gulp.task("lint", () => {
         }));
 });
 
-gulp.task("build:node", ["lint"], () => {
-    return gulp.src("src/dude-graph.js")
-        .pipe(rollup(rollupNode))
-        .pipe(rename("dude-graph.js"))
-        .pipe(sourcemaps.write("."))
-        .pipe(gulp.dest("lib/"));
-});
-
-gulp.task("build:web", ["lint"], () => {
+gulp.task("build:es5", ["lint"], () => {
     return gulp.src("src/dude-graph.js")
         .pipe(rollup(rollupWeb))
-        .pipe(rename("dude-graph-web.js"))
+        .pipe(rename("dude-graph.js"))
         .pipe(sourcemaps.write("."))
-        .pipe(gulp.dest("lib/"));
+        .pipe(gulp.dest("."));
+});
+
+gulp.task("build:es6", ["lint"], () => {
+    return gulp.src("src/dude-graph.js")
+        .pipe(rollup(rollupNode))
+        .pipe(rename("dude-graph-es6.js"))
+        .pipe(sourcemaps.write("."))
+        .pipe(gulp.dest("."));
 });

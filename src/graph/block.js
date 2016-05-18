@@ -1,15 +1,95 @@
-import EventClass from "event-class";
+import map from "lodash-es/map";
+import pull from "lodash-es/pull";
+import find from "lodash-es/find";
+import forEach from "lodash-es/forEach";
+import includes from "lodash-es/includes";
+import EventClass from "event-class-es6";
+import forEachRight from "lodash-es/forEachRight";
+
+import defaultValue from "./utils/default";
+
+let _blockId = Symbol("blockId");
+let _blockName = Symbol("blockName");
+let _blockInputs = Symbol("blockInputs");
+let _blockOutputs = Symbol("blockOutputs");
+let _blockTemplates = Symbol("blockTemplate");
+let _blockGraph = Symbol("blockGraph");
 
 export default class Block extends EventClass {
 
-    constructor() {
-        super()
+    /**
+     * @param {Block.blockDataTypedef} blockData - the block configuration data
+     */
+    constructor(blockData) {
+        super();
+
+        this[_blockId] = null;
+        this[_blockName] = null;
+        this[_blockOutputs] = [];
+        this[_blockInputs] = [];
+        this[_blockTemplates] = null;
+        this[_blockGraph] = null;
+        this.create(blockData || {});
     }
 
-    get id() {}
-    get name() {}
-    get inputs() {}
-    get outputs() {}
+    /**
+     * Creates the block from the given block data
+     * @param {Block.blockDataTypedef} blockData - the block configuration data
+     */
+    create(blockData) {
+        this[_blockId] = defaultValue(blockData.blockId, null);
+        this[_blockName] = defaultValue(blockData.blockName, this.blockType);
+        this[_blockTemplates] = defaultValue(blockData.blockTemplates, {});
+    }
+
+    /**
+     * Returns this block fancy name
+     * @returns {string}
+     */
+    get fancyName() { return this[_blockName]; }
+    /**
+     * Returns this block type
+     * @returns {string}
+     */
+    get blockType() { return this.constructor.name; }
+    /**
+     * Returns this unique block id
+     * @returns {string|null}
+     */
+    get blockId() { return this[_blockId]; }
+    /**
+     * @param {string|null} blockId - the block id to set
+     */
+    set blockId(blockId) { this[_blockId] = blockId; }
+    /**
+     * Returns this block name
+     * @returns {string}
+     */
+    get blockName() { return this[_blockName]; }
+    /**
+     * Returns this block points in output
+     * @returns {Array<Point>}
+     */
+    get blockOutputs() { return this[_blockOutputs]; }
+    /**
+     * Returns this block points in input
+     * @returns {Array<Point>}
+     */
+    get blockInputs() { return this[_blockInputs]; }
+    /**
+     * Returns this block templates
+     * @returns {Object<string, Block.templateTypedef>}
+     */
+    get blockTemplates() { return this[_blockTemplates]; }
+    /**
+     * Returns this block's graph
+     * @returns {Graph|null}
+     */
+    get blockGraph() { return this[_blockGraph]; }
+    /**
+     * @param {Graph|null} blockGraph - the graph to set
+     */
+    set blockGraph(blockGraph) { this[_blockGraph] = blockGraph; }
 
     added() {}
     pointAdded() {}
@@ -19,22 +99,213 @@ export default class Block extends EventClass {
     pointRemoved() {}
     removed() {}
 
-    changeTemplate() {}
-    templateById() {}
+    /**
+     * Called when the static points are created
+     */
+    validatePoints() {}
 
-    addPoint() {}
-    removePoint() {}
-    removePoints() {}
-    inputByName() {}
-    outputByName() {}
+    /**
+     * Changes the given template corresponding to the given templateId
+     * @param {string} templateName - TODO document
+     * @param {string} valueType - TODO document
+     * @param {boolean} [ignoreEmit=false] - TODO document
+     */
+    changeTemplate(templateName, valueType, ignoreEmit) {
+        if (this[_blockGraph] === null) {
+            throw new Error("`" + this.fancyName + "` cannot manipulate templates when not bound to a graph");
+        }
+        if (this[_blockGraph].valueTypeByName(valueType) === null) {
+            throw new Error("`" + this.fancyName + "` has no value type `" + valueType + "`");
+        }
+        var template = this.templateByName(templateName);
+        if (template === null) {
+            throw new Error("`" + this.fancyName + "` has no template `" + templateName + "`");
+        }
+        if (!includes(template.templates, valueType)) {
+            throw new Error("`" + this.fancyName + "` has no value type `" + valueType +
+                "` is its templates: ` " + template.templates.join(", ") + "`");
+        }
+        if (template.valueType === valueType) {
+            return; // Already the same type
+        }
+        var oldValueType = template.valueType;
+        var outputValueSaves = map(this[_blockOutputs], (point) => {
+            if (point.pointTemplate === templateName) {
+                return point.pointValue;
+            }
+            return undefined;
+        });
+        var inputValueSaves = map(this[_blockInputs], (point) => {
+            if (point.pointTemplate === templateName) {
+                return point.pointValue;
+            }
+            return undefined;
+        });
+        try {
+            forEach(this[_blockOutputs], (point) => {
+                if (point.pointTemplate === templateName) {
+                    point.changeValueType(valueType, ignoreEmit);
+                }
+            });
+            forEach(this[_blockInputs], (point) => {
+                if (point.pointTemplate === templateName) {
+                    point.changeValueType(valueType, ignoreEmit);
+                }
+            });
+        } catch (exception) {
+            forEach(this[_blockOutputs], (point, i) => {
+                if (point.pointTemplate === templateName) {
+                    point.changeVariableValue(null);
+                    point.changeValueType(oldValueType, true);
+                    point.changeVariableValue(outputValueSaves[i]);
+                }
+            });
+            forEach(this[_blockInputs], (point, i) => {
+                if (point.pointTemplate === templateName) {
+                    point.changeVariableValue(null);
+                    point.changeValueType(oldValueType, true);
+                    point.changeVariableValue(inputValueSaves[i]);
+                }
+            });
+            throw exception;
+        }
+        template.valueType = valueType;
+        if (!ignoreEmit) {
+            this[_blockGraph].emit("block-template-update", this, templateName, template.valueType, oldValueType);
+            this.emit("template-update", templateName, template.valueType, oldValueType);
+        }
+    }
+    /**
+     * Returns the template corresponding to the templateId
+     * @param {string} templateId - TODO document
+     * @returns {Graph.templateTypedef|null}
+     */
+    templateByName(templateId) {
+        if (this[_blockGraph] === null) {
+            throw new Error("`" + this.fancyName + "` cannot manipulate templates when not bound to a graph");
+        }
+        return this[_blockTemplates][templateId] || null;
+    }
 
-    static create() {}
+    /**
+     * Adds the given point to the block
+     * @param {Point} point - the point to be added
+     * @param {number} position - the position of the point
+     */
+    addPoint(point, position) {
+        if (this[_blockGraph] === null) {
+            throw new Error("`" + this.fancyName + "` cannot add point when not bound to a graph");
+        }
+        if (point.pointOutput && this.outputByName(point.pointName) !== null) {
+            throw new Error("`" + this.fancyName + "` cannot redefine `" + point.pointName + "`");
+        }
+        if (!point.pointOutput && this.inputByName(point.pointName) !== null) {
+            throw new Error("`" + this.fancyName + "` cannot redefine `" + point.pointName + "`");
+        }
+        point.pointBlock = this;
+        try {
+            if (point.pointTemplate === null) {
+                point.changeValueType(point.pointValueType, true);
+            } else {
+                var template = this.templateByName(point.pointTemplate);
+                if (template === null) {
+                    //noinspection ExceptionCaughtLocallyJS
+                    throw new Error("`" + this.fancyName + "` has no template `" + point.pointTemplate + "`");
+                }
+                point.changeValueType(template.valueType, true);
+            }
+            point.changeValue(point.pointValue, true);
+        } catch (ex) {
+            point.pointBlock = null;
+            throw ex;
+        }
+        point.added();
+        if (typeof position === "undefined") {
+            position = point.pointOutput ? this[_blockOutputs].length : this[_blockInputs].length;
+        }
+        if (point.pointOutput) {
+            this[_blockOutputs].splice(position, 0, point);
+        } else {
+            this[_blockInputs].splice(position, 0, point);
+        }
+        this.emit("point-add", point);
+        this[_blockGraph].emit("block-point-add", this, point);
+    }
+    /**
+     * Removes the given point from this block
+     * @param {Point} point - the point to be removed
+     */
+    removePoint(point) {
+        if (point.pointOutput && this.outputByName(point.pointName) === null) {
+            throw new Error("`" + this.fancyName + "` has not output `" + point.pointName + "`");
+        }
+        if (!point.pointOutput && this.inputByName(point.pointName) === null) {
+            throw new Error("`" + this.fancyName + "` has no input `" + point.pointName + "`");
+        }
+        point.disconnectAll();
+        point.removed();
+        point.pointBlock = null;
+        if (point.pointOutput) {
+            pull(this[_blockOutputs], point);
+        } else {
+            pull(this[_blockInputs], point);
+        }
+        this.emit("point-remove", point);
+        this[_blockGraph].emit("block-point-remove", this, point);
+    }
+    /**
+     * Removes all block points
+     */
+    removePoints() {
+        let block = this;
+        forEachRight(this[_blockOutputs], (point) => {
+            block.removePoint(point);
+        });
+        forEachRight(this[_blockInputs], (point) => {
+            block.removePoint(point);
+        });
+    }
+    /**
+     * Returns an output point for the given pointName
+     * @param {string} pointName - the pointName to search
+     * @returns {Point}
+     */
+    outputByName(pointName) {
+        return find(this[_blockOutputs], (point) => { return point.pointName === pointName; }) || null;
+    }
+    /**
+     * Returns an input point for the given pointName
+     * @param {string} pointName - the pointName to search
+     * @returns {Point}
+     */
+    inputByName(pointName) {
+        return find(this[_blockInputs], (point) => { return point.pointName === pointName; }) || null;
+    }
+
+    /**
+     * Returns whether this block allow the connection from its blockPoint to the given other point
+     * @param {Point} blockPoint - TODO document
+     * @param {Point} otherPoint - TODO document
+     * @returns {boolean}
+     */
+    acceptConnect(blockPoint, otherPoint) {
+        if (blockPoint.pointBlock !== this) {
+            throw new Error("`" + this.fancyName + "` has no `" + blockPoint.pointName + "`");
+        }
+        return otherPoint === otherPoint;
+    }
 
 }
 
 /**
- * @typedef {Object} dudeGraph.Block.blockDataTypedef
- * @property {String|null} [id=null]
- * @property {String} name
- * @property {Object<String, Graph.templateTypedef>} [blockTemplates={}]
+ * @typedef {Object} Block.templateTypedef
+ * @property {String} valueType
+ * @property {Array<String>} templates
+ */
+
+/**
+ * @typedef {Object} Block.blockDataTypedef
+ * @property {string|null} [blockId=null]
+ * @property {string} blockName
+ * @property {Object<string, Graph.templateTypedef>} [blockTemplates={}]
  */

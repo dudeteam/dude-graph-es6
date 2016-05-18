@@ -8,7 +8,8 @@
   "env": {
     "es6": true,
     "node": true,
-    "browser": true
+    "browser": true,
+    "mocha": true
   },
   "rules": {
     "yoda": 2,
@@ -16,6 +17,7 @@
     "eol-last": 2,
     "no-empty": 2,
     "camelcase": 2,
+    "no-console": 1,
     "quote-props": 2,
     "keyword-spacing": 2,
     "space-infix-ops": 2,
@@ -34,7 +36,7 @@
     "complexity": [
       "error",
       {
-        "max": 10
+        "max": 18
       }
     ],
     "valid-jsdoc": [
