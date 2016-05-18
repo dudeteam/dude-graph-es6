@@ -4553,7 +4553,7 @@
             /**
              * Adds the given point to the block
              * @param {Point} point - the point to be added
-             * @param {number} position - the position of the point
+             * @param {number} [position] - the position of the point
              */
 
         }, {

@@ -20,7 +20,7 @@ describe("dude-graph api", () => {
      *  `Number` =/=> `Number` - Impossible assignation
      */
     it("create graph", () => {
-        var graph = new Graph();
+        let graph = new Graph();
         expect(graph.graphBlocks).to.have.length(0);
         expect(graph.graphConnections).to.have.length(0);
         expect(graph.valueTypeByName("Number")).to.be.not.null;
@@ -30,7 +30,7 @@ describe("dude-graph api", () => {
         expect(graph.valueTypeByName("Array")).to.be.not.null;
     });
     it("create block", () => {
-        var block = new Block({
+        let block = new Block({
             "blockId": "testId",
             "blockName": "Test",
             "blockTemplates": {
@@ -58,19 +58,19 @@ describe("dude-graph api", () => {
         });
     });
     it("graph blocksByName and blocksByType", () => {
-        var graph = new Graph();
+        let graph = new Graph();
         expect(graph.blocksByName("AssignationBlock")).to.have.length(0);
         expect(graph.blocksByType(AssignationBlock)).to.have.length(0);
-        var block = new AssignationBlock();
+        let block = new AssignationBlock();
         graph.addBlock(block);
         expect(graph.blocksByName("AssignationBlock")).to.have.length(1);
         expect(graph.blocksByType(AssignationBlock)).to.have.length(1);
     });
     it("create block unique ids", () => {
-        var graph = new Graph();
-        var ids = {};
-        for (var i = 0; i < 5000; i++) {
-            var id = graph.nextBlockId();
+        let graph = new Graph();
+        let ids = {};
+        for (let i = 0; i < 5000; i++) {
+            let id = graph.nextBlockId();
             if (typeof ids[id] !== "undefined") {
                 console.log(ids);
                 throw new Error();
@@ -79,8 +79,8 @@ describe("dude-graph api", () => {
         }
     });
     it("create graph block", () => {
-        var graph = new Graph();
-        var block = new Block();
+        let graph = new Graph();
+        let block = new Block();
         expect(block.blockId).to.be.null;
         graph.addBlock(block);
         expect(block.blockId).to.be.not.null;
@@ -91,7 +91,7 @@ describe("dude-graph api", () => {
         }).to.throw();
     });
     it("create point", () => {
-        var outputPoint = new Point(true, {
+        let outputPoint = new Point(true, {
             "pointName": "output",
             "pointValueType": "Whatever" // pointValueType is enforced only when adding to a block
         });
@@ -104,7 +104,7 @@ describe("dude-graph api", () => {
         expect(outputPoint.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.true;
         expect(outputPoint.hasPolicy(PointPolicy.MULTIPLE_CONNECTIONS)).to.be.false;
         expect(outputPoint.hasPolicy(PointPolicy.CONVERSION)).to.be.true;
-        var inputPoint = new Point(false, {
+        let inputPoint = new Point(false, {
             "pointName": "input",
             "pointValueType": "WhateverAgain", // pointValueType is enforced only when adding to a block
             "pointValue": {"whatever": true}, // pointValue is enforced to valueType only when adding to a block,
@@ -162,8 +162,8 @@ describe("dude-graph api", () => {
             });
         }).to.throw();
         expect(() => {
-            var graph = new Graph();
-            var block = new Block();
+            let graph = new Graph();
+            let block = new Block();
             graph.addBlock(block);
             block.addPoint(new Point(false, {
                 "pointName": "input2",
@@ -171,8 +171,8 @@ describe("dude-graph api", () => {
             }));
         }).to.throw();
         expect(() => {
-            var graph = new Graph();
-            var block = new Block();
+            let graph = new Graph();
+            let block = new Block();
             graph.addBlock(block);
             block.addPoint(new Point(false, {
                 "pointName": "input2",
@@ -181,8 +181,8 @@ describe("dude-graph api", () => {
             }));
         }).to.throw();
         expect(() => {
-            var graph = new Graph();
-            var block = new Block({});
+            let graph = new Graph();
+            let block = new Block({});
             graph.addBlock(block);
             block.addPoint(new Point(false, {
                 "pointName": "input2",
@@ -191,9 +191,9 @@ describe("dude-graph api", () => {
         }).to.throw();
     });
     it("create block point", () => {
-        var graph = new Graph();
-        var block = new Block();
-        var outputPoint = new Point(true, {
+        let graph = new Graph();
+        let block = new Block();
+        let outputPoint = new Point(true, {
             "pointName": "output",
             "pointValueType": "String"
         });
@@ -230,26 +230,26 @@ describe("dude-graph api", () => {
         }).to.throw();
     });
     it("create block point at positions", () => {
-        var graph = new Graph();
-        var block = new Block();
+        let graph = new Graph();
+        let block = new Block();
         graph.addBlock(block);
-        var outputPoint1 = new Point(true, {
+        let outputPoint1 = new Point(true, {
             "pointName": "out1",
             "pointValueType": "Number"
         });
-        var outputPoint2 = new Point(true, {
+        let outputPoint2 = new Point(true, {
             "pointName": "out2",
             "pointValueType": "Number"
         });
-        var outputPoint3 = new Point(true, {
+        let outputPoint3 = new Point(true, {
             "pointName": "out3",
             "pointValueType": "Number"
         });
-        var outputPoint4 = new Point(true, {
+        let outputPoint4 = new Point(true, {
             "pointName": "out4",
             "pointValueType": "Number"
         });
-        var outputPoint5 = new Point(true, {
+        let outputPoint5 = new Point(true, {
             "pointName": "out5",
             "pointValueType": "Number"
         });
@@ -265,9 +265,9 @@ describe("dude-graph api", () => {
         expect(block.blockOutputs[4]).to.be.equal(outputPoint5);
     });
     it("point value", () => {
-        var graph = new Graph();
-        var block = new Block();
-        var inputPoint = new Point(true, {
+        let graph = new Graph();
+        let block = new Block();
+        let inputPoint = new Point(true, {
             "pointName": "in",
             "pointValueType": "Number"
         });
@@ -295,7 +295,7 @@ describe("dude-graph api", () => {
         expect(() => {
             inputPoint.pointValue = [3, true, {}];
         }).to.throw();
-        var inputPoint2 = new Point(true, {
+        let inputPoint2 = new Point(true, {
             "pointName": "in2",
             "pointValueType": "String",
             "pointValue": 42 // 42 =~=> `String`
@@ -315,9 +315,9 @@ describe("dude-graph api", () => {
         }).to.throw();
     });
     it("point value type", () => {
-        var graph = new Graph();
-        var block = new Block();
-        var inputPoint = new Point(true, {
+        let graph = new Graph();
+        let block = new Block();
+        let inputPoint = new Point(true, {
             "pointName": "in",
             "pointValueType": "Number"
         });
@@ -353,7 +353,7 @@ describe("dude-graph api", () => {
         expect(() => {
             graph.addValueType({
                 "typeName": "NewType", // Cannot add twice the same type name
-                "typeConvert": _.noop
+                "typeConvert": () => {}
             });
         }).to.throw();
         inputPoint.pointValue = null;
@@ -375,16 +375,16 @@ describe("dude-graph api", () => {
         expect(inputPoint.pointValue).to.be.equal("ThisIsACorrectNewValue");
     });
     it("connect points of same type", () => {
-        var graph = new Graph();
-        var block1 = new Block();
-        var block2 = new Block();
+        let graph = new Graph();
+        let block1 = new Block();
+        let block2 = new Block();
         graph.addBlock(block1);
         graph.addBlock(block2);
-        var outputPoint1 = new Point(true, {
+        let outputPoint1 = new Point(true, {
             "pointName": "out",
             "pointValueType": "Number"
         });
-        var inputPoint2 = new Point(false, {
+        let inputPoint2 = new Point(false, {
             "pointName": "in",
             "pointValueType": "Number"
         });
@@ -396,7 +396,7 @@ describe("dude-graph api", () => {
             outputPoint1.connect(inputPoint2); // inputPoint2 is not bound to a block
         }).to.throw();
         block2.addPoint(inputPoint2);
-        var connection = outputPoint1.connect(inputPoint2);
+        let connection = outputPoint1.connect(inputPoint2);
         expect(graph.graphConnections).to.have.length(1);
         expect(outputPoint1.pointConnections).to.have.length(1);
         expect(inputPoint2.pointConnections).to.have.length(1);
@@ -407,16 +407,16 @@ describe("dude-graph api", () => {
         expect(connection.connectionInputPoint).to.be.equal(inputPoint2);
     });
     it("disconnect points of same type", () => {
-        var graph = new Graph();
-        var block1 = new Block();
-        var block2 = new Block();
+        let graph = new Graph();
+        let block1 = new Block();
+        let block2 = new Block();
         graph.addBlock(block1);
         graph.addBlock(block2);
-        var outputPoint1 = new Point(true, {
+        let outputPoint1 = new Point(true, {
             "pointName": "out",
             "pointValueType": "Number"
         });
-        var inputPoint2 = new Point(false, {
+        let inputPoint2 = new Point(false, {
             "pointName": "in",
             "pointValueType": "Number"
         });
@@ -442,16 +442,16 @@ describe("dude-graph api", () => {
         expect(inputPoint2.pointConnections).to.have.length(0);
     });
     it("connect/disconnect commutativity", () => {
-        var graph = new Graph();
-        var block1 = new Block();
-        var block2 = new Block();
+        let graph = new Graph();
+        let block1 = new Block();
+        let block2 = new Block();
         graph.addBlock(block1);
         graph.addBlock(block2);
-        var outputPoint1 = new Point(true, {
+        let outputPoint1 = new Point(true, {
             "pointName": "out",
             "pointValueType": "Number"
         });
-        var inputPoint2 = new Point(false, {
+        let inputPoint2 = new Point(false, {
             "pointName": "in",
             "pointValueType": "Number"
         });
@@ -491,74 +491,74 @@ describe("dude-graph api", () => {
         expect(inputPoint2.pointConnections).to.have.length(0);
     });
     it("connect compatible types", () => {
-        var graph = new Graph();
-        var block1 = new Block();
-        var block2 = new Block();
+        let graph = new Graph();
+        let block1 = new Block();
+        let block2 = new Block();
         graph.addBlock(block1);
         graph.addBlock(block2);
-        var outputPoint1_Number = new Point(true, {
+        let outputPoint1Number = new Point(true, {
             "pointName": "out",
             "pointValueType": "Number"
         });
-        var outputPoint1_Boolean = new Point(true, {
+        let outputPoint1Boolean = new Point(true, {
             "pointName": "out3",
             "pointValueType": "Boolean"
         });
-        var outputPoint1_String = new Point(true, {
+        let outputPoint1String = new Point(true, {
             "pointName": "out4",
             "pointValueType": "String"
         });
-        var inputPoint2_Number = new Point(false, {
+        let inputPoint2Number = new Point(false, {
             "pointName": "in",
             "pointValueType": "Number"
         });
-        var inputPoint2_Boolean = new Point(false, {
+        let inputPoint2Boolean = new Point(false, {
             "pointName": "in2",
             "pointValueType": "Boolean"
         });
-        var inputPoint2_String = new Point(false, {
+        let inputPoint2String = new Point(false, {
             "pointName": "in3",
             "pointValueType": "String"
         });
-        block1.addPoint(outputPoint1_Number);
-        block1.addPoint(outputPoint1_Boolean);
-        block1.addPoint(outputPoint1_String);
-        block2.addPoint(inputPoint2_Number);
-        block2.addPoint(inputPoint2_Boolean);
-        block2.addPoint(inputPoint2_String);
+        block1.addPoint(outputPoint1Number);
+        block1.addPoint(outputPoint1Boolean);
+        block1.addPoint(outputPoint1String);
+        block2.addPoint(inputPoint2Number);
+        block2.addPoint(inputPoint2Boolean);
+        block2.addPoint(inputPoint2String);
         // Direct connection
-        outputPoint1_Number.connect(inputPoint2_Number); // `Number` ===> `Number`
-        outputPoint1_Number.disconnect(inputPoint2_Number);
-        outputPoint1_Boolean.connect(inputPoint2_Boolean); // `Boolean` ===> `Boolean`
-        outputPoint1_Boolean.disconnect(inputPoint2_Boolean);
-        outputPoint1_String.connect(inputPoint2_String); // `String` ===> `String`
-        outputPoint1_String.disconnect(inputPoint2_String);
+        outputPoint1Number.connect(inputPoint2Number); // `Number` ===> `Number`
+        outputPoint1Number.disconnect(inputPoint2Number);
+        outputPoint1Boolean.connect(inputPoint2Boolean); // `Boolean` ===> `Boolean`
+        outputPoint1Boolean.disconnect(inputPoint2Boolean);
+        outputPoint1String.connect(inputPoint2String); // `String` ===> `String`
+        outputPoint1String.disconnect(inputPoint2String);
         // Convert connection
-        outputPoint1_Number.connect(inputPoint2_String); // `Number` =~=> `String`
-        outputPoint1_Number.disconnect(inputPoint2_String);
-        outputPoint1_Boolean.connect(inputPoint2_Number); // `Boolean` =~=> `Number`
-        outputPoint1_Boolean.disconnect(inputPoint2_Number);
-        outputPoint1_Number.connect(inputPoint2_Boolean); // `Number` =~=> `Boolean`
-        outputPoint1_Number.disconnect(inputPoint2_Boolean);
+        outputPoint1Number.connect(inputPoint2String); // `Number` =~=> `String`
+        outputPoint1Number.disconnect(inputPoint2String);
+        outputPoint1Boolean.connect(inputPoint2Number); // `Boolean` =~=> `Number`
+        outputPoint1Boolean.disconnect(inputPoint2Number);
+        outputPoint1Number.connect(inputPoint2Boolean); // `Number` =~=> `Boolean`
+        outputPoint1Number.disconnect(inputPoint2Boolean);
         // Impossible connection
         expect(() => {
-            outputPoint1_String.connect(inputPoint2_Number); // `String` =/=> `Number`
+            outputPoint1String.connect(inputPoint2Number); // `String` =/=> `Number`
         }).to.throw();
         expect(() => {
-            outputPoint1_String.connect(inputPoint2_Boolean); // `String` =/=> `Boolean`
+            outputPoint1String.connect(inputPoint2Boolean); // `String` =/=> `Boolean`
         }).to.throw();
     });
     it("cannot mix connect and point value", () => {
-        var graph = new Graph();
-        var block1 = new Block();
-        var block2 = new Block();
+        let graph = new Graph();
+        let block1 = new Block();
+        let block2 = new Block();
         graph.addBlock(block1);
         graph.addBlock(block2);
-        var outputPoint = new Point(true, {
+        let outputPoint = new Point(true, {
             "pointName": "out",
             "pointValueType": "Number"
         });
-        var inputPoint = new Point(false, {
+        let inputPoint = new Point(false, {
             "pointName": "in",
             "pointValueType": "Number"
         });
@@ -584,40 +584,40 @@ describe("dude-graph api", () => {
         inputPoint.disconnect(outputPoint);
     });
     it("connect and value type", () => {
-        var graph = new Graph();
-        var block1 = new Block();
-        var block2 = new Block();
+        let graph = new Graph();
+        let block1 = new Block();
+        let block2 = new Block();
         graph.addBlock(block1);
         graph.addBlock(block2);
-        var outputPoint1_1 = new Point(true, {
+        let outputPoint11 = new Point(true, {
             "pointName": "out",
             "pointValueType": "Number",
             "pointSingleConnection": false
         });
-        var inputPoint2_1 = new Point(false, {
+        let inputPoint21 = new Point(false, {
             "pointName": "in",
             "pointValueType": "Number"
         });
-        var inputPoint2_2 = new Point(false, {
+        let inputPoint22 = new Point(false, {
             "pointName": "in2",
             "pointValueType": "Boolean"
         });
-        block1.addPoint(outputPoint1_1);
-        block2.addPoint(inputPoint2_1);
-        block2.addPoint(inputPoint2_2);
-        outputPoint1_1.connect(inputPoint2_1); // `Number` => `Boolean`
+        block1.addPoint(outputPoint11);
+        block2.addPoint(inputPoint21);
+        block2.addPoint(inputPoint22);
+        outputPoint11.connect(inputPoint21); // `Number` => `Boolean`
     });
     it("connect multiple points and disconnectAll", () => {
-        var graph = new Graph();
-        var block1 = new Block();
-        var outputPoint1 = new Point(true, {
+        let graph = new Graph();
+        let block1 = new Block();
+        let outputPoint1 = new Point(true, {
             "pointName": "out",
             "pointValueType": "Number",
             "pointSingleConnection": false,
             "pointPolicy": ["VALUE", "MULTIPLE_CONNECTIONS", "CONVERSION"]
         });
         expect(outputPoint1.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.false;
-        var outputPoint2 = new Point(true, {
+        let outputPoint2 = new Point(true, {
             "pointName": "out2",
             "pointValueType": "Number",
             "pointPolicy": ["VALUE", "SINGLE_CONNECTION", "CONVERSION"]
@@ -625,13 +625,13 @@ describe("dude-graph api", () => {
         expect(outputPoint2.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.true;
         graph.addBlock(block1);
         block1.addPoint(outputPoint1);
-        var block2 = new Block();
-        var inputPoint1 = new Point(false, {
+        let block2 = new Block();
+        let inputPoint1 = new Point(false, {
             "pointName": "in",
             "pointValueType": "Number"
         });
         expect(inputPoint1.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.true;
-        var inputPoint2 = new Point(false, {
+        let inputPoint2 = new Point(false, {
             "pointName": "in2",
             "pointValueType": "Number"
         });
@@ -658,16 +658,16 @@ describe("dude-graph api", () => {
         expect(outputPoint1.pointConnections).to.have.length(1);
     });
     it("remove block points", () => {
-        var graph = new Graph();
-        var block1 = new Block();
-        var block2 = new Block();
+        let graph = new Graph();
+        let block1 = new Block();
+        let block2 = new Block();
         graph.addBlock(block1);
         graph.addBlock(block2);
-        var outputPoint1 = new Point(true, {
+        let outputPoint1 = new Point(true, {
             "pointName": "out",
             "pointValueType": "Number"
         });
-        var inputPoint2 = new Point(false, {
+        let inputPoint2 = new Point(false, {
             "pointName": "in",
             "pointValueType": "Number"
         });
@@ -683,7 +683,7 @@ describe("dude-graph api", () => {
         block2.removePoint(inputPoint2);
         block1.addPoint(outputPoint1);
         block2.addPoint(inputPoint2);
-        var connection = outputPoint1.connect(inputPoint2);
+        let connection = outputPoint1.connect(inputPoint2);
         expect(graph.graphConnections).to.have.length(1);
         expect(outputPoint1.pointConnections).to.have.length(1);
         expect(inputPoint2.pointConnections).to.have.length(1);
@@ -697,8 +697,8 @@ describe("dude-graph api", () => {
         expect(inputPoint2.pointConnections).to.have.length(0);
     });
     it("remove all block points", () => {
-        var graph = new Graph();
-        var block = new Block();
+        let graph = new Graph();
+        let block = new Block();
         graph.addBlock(block);
         block.addPoint(new Point(true, {
             "pointName": "out",
@@ -739,9 +739,9 @@ describe("dude-graph api", () => {
         expect(block.blockInputs).to.have.length(0);
     });
     it("block templates", () => {
-        var graph = new Graph();
+        let graph = new Graph();
         expect(() => {
-            var badBlock = new Block({
+            let badBlock = new Block({
                 "blockTemplates": {
                     "TemplateName": {} // `valueType` is required, `templates` is required
                 }
@@ -749,7 +749,7 @@ describe("dude-graph api", () => {
             graph.addBlock(badBlock);
         }).to.throw();
         expect(() => {
-            var badBlock = new Block({
+            let badBlock = new Block({
                 "blockTemplates": {
                     "TemplateName": {
                         "valueType": "Number"
@@ -760,7 +760,7 @@ describe("dude-graph api", () => {
             graph.addBlock(badBlock);
         }).to.throw();
         expect(() => {
-            var badBlock = new Block({
+            let badBlock = new Block({
                 "blockTemplates": {
                     "TemplateName": {
                         // `valueType` is required
@@ -771,7 +771,7 @@ describe("dude-graph api", () => {
             graph.addBlock(badBlock);
         }).to.throw();
         expect(() => {
-            var badBlock = new Block({
+            let badBlock = new Block({
                 "blockTemplates": {
                     "TemplateName": {
                         "valueType": "String",
@@ -782,7 +782,7 @@ describe("dude-graph api", () => {
             graph.addBlock(badBlock);
         }).to.throw();
         expect(() => {
-            var badBlock = new Block({
+            let badBlock = new Block({
                 "blockTemplates": {
                     "TemplateName": {
                         "valueType": "UnknownType", // `valueType` must be a graph known type
@@ -792,7 +792,7 @@ describe("dude-graph api", () => {
             });
             graph.addBlock(badBlock);
         }).to.throw();
-        var block = new Block({
+        let block = new Block({
             "blockTemplates": {
                 "TemplateTest": {
                     "valueType": "Number",
@@ -821,8 +821,8 @@ describe("dude-graph api", () => {
         }).to.throw();
     });
     it("point templates", () => {
-        var graph = new Graph();
-        var block = new Block({
+        let graph = new Graph();
+        let block = new Block({
             "blockTemplates": {
                 "TemplateTest": {
                     "valueType": "Number",
@@ -831,36 +831,36 @@ describe("dude-graph api", () => {
             }
         });
         graph.addBlock(block);
-        var inputPoint1_1 = new Point(false, {
+        let inputPoint11 = new Point(false, {
             "pointName": "in",
             "pointTemplate": "TemplateTest",
             "pointValueType": null
         });
-        var inputPoint1_2 = new Point(false, {
+        let inputPoint12 = new Point(false, {
             "pointName": "in2",
             "pointTemplate": "TemplateTest",
             "pointValueType": null
         });
-        block.addPoint(inputPoint1_1);
-        block.addPoint(inputPoint1_2);
-        expect(inputPoint1_1.pointValueType).to.be.equals("Number");
-        expect(inputPoint1_2.pointValueType).to.be.equals("Number");
+        block.addPoint(inputPoint11);
+        block.addPoint(inputPoint12);
+        expect(inputPoint11.pointValueType).to.be.equals("Number");
+        expect(inputPoint12.pointValueType).to.be.equals("Number");
         block.changeTemplate("TemplateTest", "String");
-        expect(inputPoint1_1.pointValueType).to.be.equals("String");
-        expect(inputPoint1_2.pointValueType).to.be.equals("String");
-        inputPoint1_1.pointValue = "I'm a String, and NotANumber";
-        inputPoint1_2.pointValue = "Me neither";
+        expect(inputPoint11.pointValueType).to.be.equals("String");
+        expect(inputPoint12.pointValueType).to.be.equals("String");
+        inputPoint11.pointValue = "I'm a String, and NotANumber";
+        inputPoint12.pointValue = "Me neither";
         expect(() => {
             block.changeTemplate("TemplateTest", "Number"); // All points cannot safely be transformed to `Number`
         }).to.throw();
-        inputPoint1_1.pointValue = "64";
-        inputPoint1_2.pointValue = "32";
+        inputPoint11.pointValue = "64";
+        inputPoint12.pointValue = "32";
         block.changeTemplate("TemplateTest", "Number"); // Now they can be transformed to `Number`
-        expect(inputPoint1_1.pointValue);
+        expect(inputPoint11.pointValue);
     });
     it("point templates and connections", () => {
-        var graph = new Graph();
-        var block1 = new Block({
+        let graph = new Graph();
+        let block1 = new Block({
             "blockTemplates": {
                 "TemplateTest": {
                     "valueType": "Number",
@@ -869,39 +869,39 @@ describe("dude-graph api", () => {
             }
         });
         graph.addBlock(block1);
-        var inputPoint1_1 = new Point(false, {
+        let inputPoint11 = new Point(false, {
             "pointName": "in",
             "pointTemplate": "TemplateTest"
         });
-        var inputPoint1_2 = new Point(false, {
+        let inputPoint12 = new Point(false, {
             "pointName": "in2",
             "pointTemplate": "TemplateTest"
         });
-        var inputPoint1_3 = new Point(false, {
+        let inputPoint13 = new Point(false, {
             "pointName": "in3",
             "pointTemplate": "TemplateTest"
         });
-        block1.addPoint(inputPoint1_1);
-        expect(inputPoint1_1.pointValueType).to.be.equals("Number");
-        block1.addPoint(inputPoint1_2);
-        expect(inputPoint1_2.pointValueType).to.be.equals("Number");
-        block1.addPoint(inputPoint1_3);
-        expect(inputPoint1_3.pointValueType).to.be.equals("Number");
-        var block2 = new Block();
+        block1.addPoint(inputPoint11);
+        expect(inputPoint11.pointValueType).to.be.equals("Number");
+        block1.addPoint(inputPoint12);
+        expect(inputPoint12.pointValueType).to.be.equals("Number");
+        block1.addPoint(inputPoint13);
+        expect(inputPoint13.pointValueType).to.be.equals("Number");
+        let block2 = new Block();
         graph.addBlock(block2);
-        var outputPointNumber = new Point(true, {
+        let outputPointNumber = new Point(true, {
             "pointName": "out",
             "pointValueType": "Number"
         });
-        var outputPointString = new Point(true, {
+        let outputPointString = new Point(true, {
             "pointName": "out2",
             "pointValueType": "String"
         });
-        var outputPointBoolean = new Point(true, {
+        let outputPointBoolean = new Point(true, {
             "pointName": "out3",
             "pointValueType": "Boolean"
         });
-        var outputPointArray = new Point(true, {
+        let outputPointArray = new Point(true, {
             "pointName": "out4",
             "pointValueType": "Array"
         });
@@ -910,29 +910,29 @@ describe("dude-graph api", () => {
         block2.addPoint(outputPointBoolean);
         block2.addPoint(outputPointArray);
         expect(() => {
-            outputPointArray.connect(inputPoint1_1); // `Array` =/=> `TemplateTest:Number`
+            outputPointArray.connect(inputPoint11); // `Array` =/=> `TemplateTest:Number`
         }).to.throw();
-        outputPointNumber.connect(inputPoint1_1); // `Number` ===> `TemplateTest:Number`
-        outputPointNumber.disconnect(inputPoint1_1);
-        inputPoint1_2.pointValue = 32;
+        outputPointNumber.connect(inputPoint11); // `Number` ===> `TemplateTest:Number`
+        outputPointNumber.disconnect(inputPoint11);
+        inputPoint12.pointValue = 32;
         block1.changeTemplate("TemplateTest", "String"); // inputPoint1_2 `TemplateTest:Number` =~=> `String`
-        expect(inputPoint1_1.pointValueType).to.be.equal("String");
-        expect(inputPoint1_2.pointValueType).to.be.equal("String");
-        expect(inputPoint1_3.pointValueType).to.be.equal("String");
-        expect(inputPoint1_2.pointValue).to.be.equal("32");
-        inputPoint1_2.pointValue = null;
-        outputPointBoolean.connect(inputPoint1_1); // inputPoint1_1 `Boolean` =~=> `TemplateTest:String`
-        inputPoint1_2.pointValue = false;
-        inputPoint1_3.pointValue = true;
-        expect(inputPoint1_1.pointValueType).to.be.equal("String");
-        expect(inputPoint1_2.pointValueType).to.be.equal("String");
-        expect(inputPoint1_3.pointValueType).to.be.equal("String");
-        expect(inputPoint1_2.pointValue).to.be.equal("false");
-        expect(inputPoint1_3.pointValue).to.be.equal("true");
+        expect(inputPoint11.pointValueType).to.be.equal("String");
+        expect(inputPoint12.pointValueType).to.be.equal("String");
+        expect(inputPoint13.pointValueType).to.be.equal("String");
+        expect(inputPoint12.pointValue).to.be.equal("32");
+        inputPoint12.pointValue = null;
+        outputPointBoolean.connect(inputPoint11); // inputPoint1_1 `Boolean` =~=> `TemplateTest:String`
+        inputPoint12.pointValue = false;
+        inputPoint13.pointValue = true;
+        expect(inputPoint11.pointValueType).to.be.equal("String");
+        expect(inputPoint12.pointValueType).to.be.equal("String");
+        expect(inputPoint13.pointValueType).to.be.equal("String");
+        expect(inputPoint12.pointValue).to.be.equal("false");
+        expect(inputPoint13.pointValue).to.be.equal("true");
     });
     it("point templates and connections w/o conversion", () => {
-        var graph = new Graph();
-        var block1 = new Block({
+        let graph = new Graph();
+        let block1 = new Block({
             "blockTemplates": {
                 "TemplateTest": {
                     "valueType": "String",
@@ -941,36 +941,36 @@ describe("dude-graph api", () => {
             }
         });
         graph.addBlock(block1);
-        var inputPoint1_1 = new Point(false, {
+        let inputPoint11 = new Point(false, {
             "pointName": "in",
             "pointTemplate": "TemplateTest"
         });
-        var inputPoint1_2 = new Point(false, {
+        let inputPoint12 = new Point(false, {
             "pointName": "in2",
             "pointTemplate": "TemplateTest"
         });
-        var inputPoint1_3 = new Point(false, {
+        let inputPoint13 = new Point(false, {
             "pointName": "in3",
             "pointTemplate": "TemplateTest"
         });
-        block1.addPoint(inputPoint1_1);
-        expect(inputPoint1_1.pointValueType).to.be.equals("String");
-        block1.addPoint(inputPoint1_2);
-        expect(inputPoint1_2.pointValueType).to.be.equals("String");
-        block1.addPoint(inputPoint1_3);
-        expect(inputPoint1_3.pointValueType).to.be.equals("String");
-        var block2 = new Block();
+        block1.addPoint(inputPoint11);
+        expect(inputPoint11.pointValueType).to.be.equals("String");
+        block1.addPoint(inputPoint12);
+        expect(inputPoint12.pointValueType).to.be.equals("String");
+        block1.addPoint(inputPoint13);
+        expect(inputPoint13.pointValueType).to.be.equals("String");
+        let block2 = new Block();
         graph.addBlock(block2);
-        var outputPointNumberConversion = new Point(true, {
+        let outputPointNumberConversion = new Point(true, {
             "pointName": "out1",
             "pointValueType": "Number"
         });
-        var outputPointNumberNoConversion = new Point(true, {
+        let outputPointNumberNoConversion = new Point(true, {
             "pointName": "out2",
             "pointValueType": "Number",
             "pointPolicy": ["VALUE", "SINGLE_CONNECTION"]
         });
-        var outputPointArrayNoConversion = new Point(true, {
+        let outputPointArrayNoConversion = new Point(true, {
             "pointName": "out3",
             "pointValueType": "Array",
             "pointPolicy": ["VALUE", "SINGLE_CONNECTION"]
@@ -981,58 +981,58 @@ describe("dude-graph api", () => {
         expect(outputPointNumberNoConversion.pointValueType).to.be.equals("Number");
         block2.addPoint(outputPointArrayNoConversion);
         expect(outputPointArrayNoConversion.pointValueType).to.be.equals("Array");
-        outputPointNumberConversion.connect(inputPoint1_1);
+        outputPointNumberConversion.connect(inputPoint11);
         expect(block1.templateByName("TemplateTest").valueType).to.be.equals("String");
         expect(outputPointNumberConversion.pointValueType).to.be.equals("Number");
-        expect(inputPoint1_1.pointValueType).to.be.equals("String");
-        outputPointNumberNoConversion.connect(inputPoint1_2);
+        expect(inputPoint11.pointValueType).to.be.equals("String");
+        outputPointNumberNoConversion.connect(inputPoint12);
         expect(block1.templateByName("TemplateTest").valueType).to.be.equals("Number");
         expect(outputPointNumberConversion.pointValueType).to.be.equals("Number");
-        expect(inputPoint1_1.pointValueType).to.be.equals("Number");
-        expect(inputPoint1_2.pointValueType).to.be.equals("Number");
-        expect(inputPoint1_3.pointValueType).to.be.equals("Number");
+        expect(inputPoint11.pointValueType).to.be.equals("Number");
+        expect(inputPoint12.pointValueType).to.be.equals("Number");
+        expect(inputPoint13.pointValueType).to.be.equals("Number");
         expect(() => {
-            outputPointArrayNoConversion.connect(inputPoint1_3);
+            outputPointArrayNoConversion.connect(inputPoint13);
         }).to.throw();
     });
     it("point policy", () => {
-        var graph = new Graph();
-        var block1 = new Block();
-        var block2 = new Block();
-        var inputPoint1 = new Point(false, {
+        let graph = new Graph();
+        let block1 = new Block();
+        let block2 = new Block();
+        let inputPoint1 = new Point(false, {
             "pointName": "in1",
             "pointValueType": "String"
         });
-        var inputPoint2 = new Point(false, {
+        let inputPoint2 = new Point(false, {
             "pointName": "in2",
             "pointValueType": "String",
             "pointPolicy": ["VALUE"]
         });
-        var inputPoint3 = new Point(false, {
+        let inputPoint3 = new Point(false, {
             "pointName": "in3",
             "pointValueType": "String",
             "pointPolicy": ["SINGLE_CONNECTION"]
         });
-        var inputPoint4 = new Point(false, {
+        let inputPoint4 = new Point(false, {
             "pointName": "in4",
             "pointValueType": "String",
             "pointPolicy": ["MULTIPLE_CONNECTIONS"]
         });
-        var inputPoint5 = new Point(false, {
+        let inputPoint5 = new Point(false, {
             "pointName": "in5",
             "pointValueType": "String",
             "pointPolicy": ["VALUE", "SINGLE_CONNECTION"]
         });
-        var inputPoint6 = new Point(false, {
+        let inputPoint6 = new Point(false, {
             "pointName": "in6",
             "pointValueType": "String",
             "pointPolicy": ["VALUE", "MULTIPLE_CONNECTIONS"]
         });
-        var outputPoint1 = new Point(true, {
+        let outputPoint1 = new Point(true, {
             "pointName": "out1",
             "pointValueType": "String"
         });
-        var outputPoint2 = new Point(true, {
+        let outputPoint2 = new Point(true, {
             "pointName": "out2",
             "pointValueType": "String"
         });
@@ -1100,8 +1100,8 @@ describe("dude-graph api", () => {
         }).to.throw();
     });
     it("remove block", () => {
-        var graph = new Graph();
-        var block1 = new Block({
+        let graph = new Graph();
+        let block1 = new Block({
             "blockTemplates": {
                 "TemplateTest": {
                     "valueType": "Number",
@@ -1109,16 +1109,16 @@ describe("dude-graph api", () => {
                 }
             }
         });
-        var block2 = new Block();
+        let block2 = new Block();
         graph.addBlock(block1);
         graph.addBlock(block2);
-        var inputPoint1 = new Point(false, {
+        let inputPoint1 = new Point(false, {
             "pointName": "in",
             "pointTemplate": "TemplateTest",
             "pointValueType": null
         });
         block1.addPoint(inputPoint1);
-        var outputPoint2 = new Point(true, {
+        let outputPoint2 = new Point(true, {
             "pointName": "out",
             "pointValueType": "Number"
         });
@@ -1141,8 +1141,8 @@ describe("dude-graph api", () => {
         expect(outputPoint2.pointConnections).to.have.length(0);
     });
     it("custom block and custom point", () => {
-        var graph = new Graph();
-        var assignationBlock = new AssignationBlock();
+        let graph = new Graph();
+        let assignationBlock = new AssignationBlock();
         graph.addBlock(assignationBlock);
         assignationBlock.addPoint(new StreamPoint(false, {"pointName": "in", "pointValueType": "Stream"}));
         assignationBlock.addPoint(new Point(false, {"pointName": "variable", "pointValueType": "Object"}));
@@ -1154,20 +1154,20 @@ describe("dude-graph api", () => {
         assignationBlock.validatePoints();
         expect(graph.blockById(assignationBlock.blockId) instanceof AssignationBlock).to.be.true;
         expect(assignationBlock.inputByName("in") instanceof StreamPoint).to.be.true;
-        var pointValueChangedSpy = sinon.spy();
-        var pointConnectedSpy = sinon.spy();
-        var pointDisconnectedSpy = sinon.spy();
-        var blockRemovedSpy = sinon.spy();
-        var CustomBlock = class extends Block {
-            pointValueChanged() { pointValueChangedSpy.apply(this, arguments); };
-            pointConnected() { pointConnectedSpy.apply(this, arguments); };
-            pointDisconnected() { pointDisconnectedSpy.apply(this, arguments); };
-            removed() { blockRemovedSpy.apply(this, arguments); };
+        let pointValueChangedSpy = sinon.spy();
+        let pointConnectedSpy = sinon.spy();
+        let pointDisconnectedSpy = sinon.spy();
+        let blockRemovedSpy = sinon.spy();
+        let CustomBlock = class extends Block {
+            pointValueChanged() { pointValueChangedSpy.apply(this, arguments); }
+            pointConnected() { pointConnectedSpy.apply(this, arguments); }
+            pointDisconnected() { pointDisconnectedSpy.apply(this, arguments); }
+            removed() { blockRemovedSpy.apply(this, arguments); }
         };
-        var customBlock = new CustomBlock();
+        let customBlock = new CustomBlock();
         graph.addBlock(customBlock);
-        var point1 = new Point(false, {"pointName": "in", "pointValueType": "Stream"});
-        var point2 = new Point(false, {"pointName": "number", "pointValueType": "Number"});
+        let point1 = new Point(false, {"pointName": "in", "pointValueType": "Stream"});
+        let point2 = new Point(false, {"pointName": "number", "pointValueType": "Number"});
         customBlock.addPoint(point1);
         customBlock.addPoint(point2);
         point1.connect(assignationBlock.outputByName("out"));
@@ -1180,8 +1180,8 @@ describe("dude-graph api", () => {
         sinon.assert.called(blockRemovedSpy);
     });
     it("create/remove variable", () => {
-        var graph = new Graph();
-        var variable = new Variable({
+        let graph = new Graph();
+        let variable = new Variable({
             "variableName": "Hello",
             "variableValueType": "String"
         });
@@ -1230,8 +1230,6 @@ describe("dude-graph api", () => {
             graph.addVariable(new Variable({
                 "variableName": "no_type"
                 // variableType is missing
-
-
             }));
         }).to.throw();
         expect(() => {
@@ -1242,8 +1240,8 @@ describe("dude-graph api", () => {
         }).to.throw();
     });
     it("variable value", () => {
-        var graph = new Graph();
-        var variable = new Variable({
+        let graph = new Graph();
+        let variable = new Variable({
             "variableName": "Hello",
             "variableValueType": "String"
         });
@@ -1260,13 +1258,13 @@ describe("dude-graph api", () => {
         }).to.throw();
     });
     it("bind VariableBlock to graph variable", () => {
-        var graph = new Graph();
-        var variable = new Variable({
+        let graph = new Graph();
+        let variable = new Variable({
             "variableName": "Hello",
             "variableValueType": "String"
         });
         graph.addVariable(variable);
-        var variableBlock = new VariableBlock({
+        let variableBlock = new VariableBlock({
             "blockName": "Hello"
         });
         graph.addBlock(variableBlock);
@@ -1292,28 +1290,28 @@ describe("dude-graph api", () => {
 });
 describe("dude-graph events", () => {
     it("block-add", () => {
-        var spy = sinon.spy();
-        var graph = new Graph();
-        var block = new Block();
+        let spy = sinon.spy();
+        let graph = new Graph();
+        let block = new Block();
         graph.on("block-add", spy);
         graph.addBlock(block);
         sinon.assert.calledWith(spy, block);
     });
     it("block-remove", () => {
-        var spy = sinon.spy();
-        var graph = new Graph();
-        var block = new Block();
+        let spy = sinon.spy();
+        let graph = new Graph();
+        let block = new Block();
         graph.on("block-remove", spy);
         graph.addBlock(block);
         graph.removeBlock(block);
         sinon.assert.calledWith(spy, block);
     });
     it("point-add", () => {
-        var graphSpy = sinon.spy();
-        var blockSpy = sinon.spy();
-        var graph = new Graph();
-        var block = new Block();
-        var point = new Point(true, {"pointName": "out", "pointValueType": "Number"});
+        let graphSpy = sinon.spy();
+        let blockSpy = sinon.spy();
+        let graph = new Graph();
+        let block = new Block();
+        let point = new Point(true, {"pointName": "out", "pointValueType": "Number"});
         graph.on("block-point-add", graphSpy);
         block.on("point-add", blockSpy);
         graph.addBlock(block);
@@ -1322,11 +1320,11 @@ describe("dude-graph events", () => {
         sinon.assert.calledWith(blockSpy, point);
     });
     it("point-remove", () => {
-        var graphSpy = sinon.spy();
-        var blockSpy = sinon.spy();
-        var graph = new Graph();
-        var block = new Block();
-        var point = new Point(true, {"pointName": "out", "pointValueType": "Number"});
+        let graphSpy = sinon.spy();
+        let blockSpy = sinon.spy();
+        let graph = new Graph();
+        let block = new Block();
+        let point = new Point(true, {"pointName": "out", "pointValueType": "Number"});
         graph.on("block-point-remove", graphSpy);
         block.on("point-remove", blockSpy);
         graph.addBlock(block);
@@ -1336,11 +1334,11 @@ describe("dude-graph events", () => {
         sinon.assert.calledWith(blockSpy, point);
     });
     it("point-value-type-change", () => {
-        var graphSpy = sinon.spy();
-        var pointSpy = sinon.spy();
-        var graph = new Graph();
-        var block = new Block();
-        var point = new Point(true, {"pointName": "out", "pointValueType": "Number"});
+        let graphSpy = sinon.spy();
+        let pointSpy = sinon.spy();
+        let graph = new Graph();
+        let block = new Block();
+        let point = new Point(true, {"pointName": "out", "pointValueType": "Number"});
         graph.addBlock(block);
         block.addPoint(point);
         graph.on("point-value-type-change", graphSpy);
@@ -1350,11 +1348,11 @@ describe("dude-graph events", () => {
         sinon.assert.calledWith(pointSpy, "String", "Number");
     });
     it("point-value-change", () => {
-        var graphSpy = sinon.spy();
-        var pointSpy = sinon.spy();
-        var graph = new Graph();
-        var block = new Block();
-        var point = new Point(true, {"pointName": "out", "pointValueType": "Number"});
+        let graphSpy = sinon.spy();
+        let pointSpy = sinon.spy();
+        let graph = new Graph();
+        let block = new Block();
+        let point = new Point(true, {"pointName": "out", "pointValueType": "Number"});
         graph.addBlock(block);
         block.addPoint(point);
         graph.on("point-value-change", graphSpy);
@@ -1364,47 +1362,47 @@ describe("dude-graph events", () => {
         sinon.assert.calledWith(pointSpy, 42, null);
     });
     it("point-connect", () => {
-        var graphSpy = sinon.spy();
-        var pointSpy = sinon.spy();
-        var graph = new Graph();
-        var block1 = new Block();
-        var block2 = new Block();
-        var point1 = new Point(true, {"pointName": "out", "pointValueType": "Number"});
-        var point2 = new Point(false, {"pointName": "in", "pointValueType": "Number"});
+        let graphSpy = sinon.spy();
+        let pointSpy = sinon.spy();
+        let graph = new Graph();
+        let block1 = new Block();
+        let block2 = new Block();
+        let point1 = new Point(true, {"pointName": "out", "pointValueType": "Number"});
+        let point2 = new Point(false, {"pointName": "in", "pointValueType": "Number"});
         graph.addBlock(block1);
         graph.addBlock(block2);
         block1.addPoint(point1);
         block2.addPoint(point2);
         graph.on("point-connect", graphSpy);
         point1.on("connect", pointSpy);
-        var connection = point1.connect(point2);
+        let connection = point1.connect(point2);
         sinon.assert.calledWith(graphSpy, point1, connection);
         sinon.assert.calledWith(pointSpy, connection);
     });
     it("point-disconnect", () => {
-        var graphSpy = sinon.spy();
-        var pointSpy = sinon.spy();
-        var graph = new Graph();
-        var block1 = new Block();
-        var block2 = new Block();
-        var point1 = new Point(true, {"pointName": "out", "pointValueType": "Number"});
-        var point2 = new Point(false, {"pointName": "in", "pointValueType": "Number"});
+        let graphSpy = sinon.spy();
+        let pointSpy = sinon.spy();
+        let graph = new Graph();
+        let block1 = new Block();
+        let block2 = new Block();
+        let point1 = new Point(true, {"pointName": "out", "pointValueType": "Number"});
+        let point2 = new Point(false, {"pointName": "in", "pointValueType": "Number"});
         graph.addBlock(block1);
         graph.addBlock(block2);
         block1.addPoint(point1);
         block2.addPoint(point2);
         graph.on("point-disconnect", graphSpy);
         point1.on("disconnect", pointSpy);
-        var connection = point1.connect(point2);
+        let connection = point1.connect(point2);
         point1.disconnect(point2);
         sinon.assert.calledWith(graphSpy, point1, connection);
         sinon.assert.calledWith(pointSpy, connection);
     });
     it("block-template-update", () => {
-        var graphSpy = sinon.spy();
-        var blockSpy = sinon.spy();
-        var graph = new Graph();
-        var block = new Block({
+        let graphSpy = sinon.spy();
+        let blockSpy = sinon.spy();
+        let graph = new Graph();
+        let block = new Block({
             "blockTemplates": {
                 "Test": {
                     "valueType": "Number",
@@ -1420,9 +1418,9 @@ describe("dude-graph events", () => {
         sinon.assert.calledWith(blockSpy, "Test", "String", "Number");
     });
     it("variable-add", () => {
-        var spy = sinon.spy();
-        var graph = new Graph();
-        var variable = new Variable({
+        let spy = sinon.spy();
+        let graph = new Graph();
+        let variable = new Variable({
             "variableName": "variable",
             "variableValueType": "String"
         });
@@ -1431,9 +1429,9 @@ describe("dude-graph events", () => {
         sinon.assert.calledWith(spy, variable);
     });
     it("variable-remove", () => {
-        var spy = sinon.spy();
-        var graph = new Graph();
-        var variable = new Variable({
+        let spy = sinon.spy();
+        let graph = new Graph();
+        let variable = new Variable({
             "variableName": "variable",
             "variableValueType": "String"
         });

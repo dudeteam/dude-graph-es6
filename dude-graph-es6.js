@@ -4286,7 +4286,7 @@ let _blockGraph = Symbol("blockGraph");
 class Block extends EventClass {
 
     /**
-     * @param {Block.blockDataTypedef} blockData - the block configuration data
+     * @param {Block.blockDataTypedef} [blockData={}] - the block configuration data
      */
     constructor(blockData) {
         super();
@@ -4458,7 +4458,7 @@ class Block extends EventClass {
     /**
      * Adds the given point to the block
      * @param {Point} point - the point to be added
-     * @param {number} position - the position of the point
+     * @param {number} [position] - the position of the point
      */
     addPoint(point, position) {
         if (this[_blockGraph] === null) {
