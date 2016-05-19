@@ -16,7 +16,8 @@ const es5config = {
     "plugins": [
         babel({
             "presets": ["es2015-rollup"],
-            "babelrc": false
+            "babelrc": false,
+            "sourceMap": true
         }),
         nodeResolve()
     ]
