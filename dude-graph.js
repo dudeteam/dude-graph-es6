@@ -1,5 +1,8 @@
-(function (exports) {
-    'use strict';
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+    typeof define === 'function' && define.amd ? define(['exports'], factory) :
+    (factory((global.dudeGraph = global.dudeGraph || {})));
+}(this, function (exports) { 'use strict';
 
     var babelHelpers = {};
     babelHelpers.typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
@@ -3471,76 +3474,76 @@
     var _connectionInputPoint = Symbol("inputPoint");
 
     var Connection = function (_EventClass) {
-      babelHelpers.inherits(Connection, _EventClass);
-
-
-      /**
-       * Creates a connection between the two specified points
-       * @param {Point} outputPoint - specifies the output point
-       * @param {Point} inputPoint - specifies the input point
-       */
-
-      function Connection(outputPoint, inputPoint) {
-        babelHelpers.classCallCheck(this, Connection);
-
-        var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Connection).call(this));
-
-        _this[_connectionOutputPoint] = outputPoint;
-        _this[_connectionInputPoint] = inputPoint;
-        return _this;
-      }
-
-      /**
-       * Returns this connection fancy name
-       * @returns {string}
-       */
-
-
-      babelHelpers.createClass(Connection, [{
-        key: "other",
+        babelHelpers.inherits(Connection, _EventClass);
 
 
         /**
-         * Returns the corresponding point connected to the specified point
-         * @param {Point} point - specifies the point
-         * @returns {Point}
-         */
-        value: function other(point) {
-          if (point === this[_connectionOutputPoint]) {
-            return this[_connectionInputPoint];
-          }
-          if (point === this[_connectionInputPoint]) {
-            return this[_connectionOutputPoint];
-          }
-          throw new Error(this.fancyName);
-        }
-      }, {
-        key: "fancyName",
-        get: function get() {
-          return this[_connectionOutputPoint].fancyName + " => " + this[_connectionInputPoint].fancyName;
-        }
-        /**
-         * Returns this connection output point
-         * @returns {Point}
+         * Creates a connection between the two specified points
+         * @param {Point} outputPoint - specifies the output point
+         * @param {Point} inputPoint - specifies the input point
          */
 
-      }, {
-        key: "connectionOutputPoint",
-        get: function get() {
-          return this[_connectionOutputPoint];
+        function Connection(outputPoint, inputPoint) {
+            babelHelpers.classCallCheck(this, Connection);
+
+            var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Connection).call(this));
+
+            _this[_connectionOutputPoint] = outputPoint;
+            _this[_connectionInputPoint] = inputPoint;
+            return _this;
         }
+
         /**
-         * Returns this connection input point
-         * @returns {Point}
+         * Returns this connection fancy name
+         * @returns {string}
          */
 
-      }, {
-        key: "connectionInputPoint",
-        get: function get() {
-          return this[_connectionInputPoint];
-        }
-      }]);
-      return Connection;
+
+        babelHelpers.createClass(Connection, [{
+            key: "other",
+
+
+            /**
+             * Returns the corresponding point connected to the specified point
+             * @param {Point} point - specifies the point
+             * @returns {Point}
+             */
+            value: function other(point) {
+                if (point === this[_connectionOutputPoint]) {
+                    return this[_connectionInputPoint];
+                }
+                if (point === this[_connectionInputPoint]) {
+                    return this[_connectionOutputPoint];
+                }
+                throw new Error(this.fancyName);
+            }
+        }, {
+            key: "fancyName",
+            get: function get() {
+                return this[_connectionOutputPoint].fancyName + " => " + this[_connectionInputPoint].fancyName;
+            }
+            /**
+             * Returns this connection output point
+             * @returns {Point}
+             */
+
+        }, {
+            key: "connectionOutputPoint",
+            get: function get() {
+                return this[_connectionOutputPoint];
+            }
+            /**
+             * Returns this connection input point
+             * @returns {Point}
+             */
+
+        }, {
+            key: "connectionInputPoint",
+            get: function get() {
+                return this[_connectionInputPoint];
+            }
+        }]);
+        return Connection;
     }(EventClass);
 
     /**
@@ -3600,125 +3603,125 @@
     }
 
     var PolicyLabels = {
-      "VALUE": 1,
-      "SINGLE_CONNECTION": 2,
-      "MULTIPLE_CONNECTIONS": 4,
-      "CONVERSION": 8
+        "VALUE": 1,
+        "SINGLE_CONNECTION": 2,
+        "MULTIPLE_CONNECTIONS": 4,
+        "CONVERSION": 8
     };
 
     var PointPolicy = function () {
-      function PointPolicy() {
-        babelHelpers.classCallCheck(this, PointPolicy);
-      }
+        function PointPolicy() {
+            babelHelpers.classCallCheck(this, PointPolicy);
+        }
 
-      babelHelpers.createClass(PointPolicy, null, [{
-        key: "serialize",
+        babelHelpers.createClass(PointPolicy, null, [{
+            key: "serialize",
 
 
-        /**
-         * Serializes the specified policy to the corresponding policy labels
-         * @param {number} policy - specifies the policy
-         * @returns {Array<string>}
-         */
-        value: function serialize(policy) {
-          var labels = [];
-          forOwn(PolicyLabels, function (policyLabelValue, policyLabel) {
-            if ((policyLabelValue & policy) !== 0) {
-              labels.push(policyLabel);
+            /**
+             * Serializes the specified policy to the corresponding policy labels
+             * @param {number} policy - specifies the policy
+             * @returns {Array<string>}
+             */
+            value: function serialize(policy) {
+                var labels = [];
+                forOwn(PolicyLabels, function (policyLabelValue, policyLabel) {
+                    if ((policyLabelValue & policy) !== 0) {
+                        labels.push(policyLabel);
+                    }
+                });
+                return labels;
             }
-          });
-          return labels;
-        }
 
-        /**
-         * Deserializes the specified policy labels to the corresponding policy
-         * @param {Array<string>} policyLabels - specifies the policy labels
-         * @returns {number}
-         */
+            /**
+             * Deserializes the specified policy labels to the corresponding policy
+             * @param {Array<string>} policyLabels - specifies the policy labels
+             * @returns {number}
+             */
 
-      }, {
-        key: "deserialize",
-        value: function deserialize(policyLabels) {
-          var policy = 0;
-          forEach(policyLabels, function (policyLabel) {
-            var labelPolicyValue = PolicyLabels[policyLabel];
-            if (typeof labelPolicyValue === "undefined") {
-              throw new Error("`" + policyLabel + "` is not a valid point policy");
+        }, {
+            key: "deserialize",
+            value: function deserialize(policyLabels) {
+                var policy = 0;
+                forEach(policyLabels, function (policyLabel) {
+                    var labelPolicyValue = PolicyLabels[policyLabel];
+                    if (typeof labelPolicyValue === "undefined") {
+                        throw new Error("`" + policyLabel + "` is not a valid point policy");
+                    }
+                    policy |= labelPolicyValue;
+                });
+                return policy;
             }
-            policy |= labelPolicyValue;
-          });
-          return policy;
-        }
 
-        /**
-         * Returns whether the specified policy corresponds to the specified check policy
-         * @param {number} policy - specifies the policy
-         * @param {number} checkPolicy - specifies the check policy
-         * @returns {boolean}
-         */
+            /**
+             * Returns whether the specified policy corresponds to the specified check policy
+             * @param {number} policy - specifies the policy
+             * @param {number} checkPolicy - specifies the check policy
+             * @returns {boolean}
+             */
 
-      }, {
-        key: "has",
-        value: function has(policy, checkPolicy) {
-          return (policy & checkPolicy) !== 0;
-        }
-      }, {
-        key: "NONE",
+        }, {
+            key: "has",
+            value: function has(policy, checkPolicy) {
+                return (policy & checkPolicy) !== 0;
+            }
+        }, {
+            key: "NONE",
 
 
-        /**
-         * @returns {number}
-         */
-        get: function get() {
-          return 0;
-        }
-        /**
-         * @returns {number}
-         */
+            /**
+             * @returns {number}
+             */
+            get: function get() {
+                return 0;
+            }
+            /**
+             * @returns {number}
+             */
 
-      }, {
-        key: "VALUE",
-        get: function get() {
-          return PolicyLabels.VALUE;
-        }
-        /**
-         * @returns {number}
-         */
+        }, {
+            key: "VALUE",
+            get: function get() {
+                return PolicyLabels.VALUE;
+            }
+            /**
+             * @returns {number}
+             */
 
-      }, {
-        key: "SINGLE_CONNECTION",
-        get: function get() {
-          return PolicyLabels.SINGLE_CONNECTION;
-        }
-        /**
-         * @returns {number}
-         */
+        }, {
+            key: "SINGLE_CONNECTION",
+            get: function get() {
+                return PolicyLabels.SINGLE_CONNECTION;
+            }
+            /**
+             * @returns {number}
+             */
 
-      }, {
-        key: "MULTIPLE_CONNECTIONS",
-        get: function get() {
-          return PolicyLabels.MULTIPLE_CONNECTIONS;
-        }
-        /**
-         * @returns {number}
-         */
+        }, {
+            key: "MULTIPLE_CONNECTIONS",
+            get: function get() {
+                return PolicyLabels.MULTIPLE_CONNECTIONS;
+            }
+            /**
+             * @returns {number}
+             */
 
-      }, {
-        key: "CONVERSION",
-        get: function get() {
-          return PolicyLabels.CONVERSION;
-        }
-        /**
-         * @returns {number}
-         */
+        }, {
+            key: "CONVERSION",
+            get: function get() {
+                return PolicyLabels.CONVERSION;
+            }
+            /**
+             * @returns {number}
+             */
 
-      }, {
-        key: "DEFAULT",
-        get: function get() {
-          return PointPolicy.VALUE | PointPolicy.SINGLE_CONNECTION | PointPolicy.CONVERSION;
-        }
-      }]);
-      return PointPolicy;
+        }, {
+            key: "DEFAULT",
+            get: function get() {
+                return PointPolicy.VALUE | PointPolicy.SINGLE_CONNECTION | PointPolicy.CONVERSION;
+            }
+        }]);
+        return PointPolicy;
     }();
 
     var _graphErrno = Symbol("graphErrno");
@@ -4833,164 +4836,164 @@
     var _variableGraph = Symbol("variableGraph");
 
     var Variable = function (_EventClass) {
-      babelHelpers.inherits(Variable, _EventClass);
+        babelHelpers.inherits(Variable, _EventClass);
 
 
-      /**
-       * @param {Variable.variableDataTypedef} variableData - the variable configuration data
-       */
+        /**
+         * @param {Variable.variableDataTypedef} variableData - the variable configuration data
+         */
 
-      function Variable(variableData) {
-        babelHelpers.classCallCheck(this, Variable);
+        function Variable(variableData) {
+            babelHelpers.classCallCheck(this, Variable);
 
-        var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Variable).call(this));
+            var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Variable).call(this));
 
-        _this[_variableName] = null;
-        _this[_variableValueType] = null;
-        _this[_variableValue] = null;
-        _this[_variableBlock] = null;
-        _this[_variableGraph] = null;
-        _this.create(variableData);
-        return _this;
-      }
-
-      /**
-       * Creates the variable from the given variable data
-       * @param {Variable.variableDataTypedef} variableData - the variable configuration data
-       */
-
-
-      babelHelpers.createClass(Variable, [{
-        key: "create",
-        value: function create(variableData) {
-          this[_variableName] = defaultValue(variableData.variableName);
-          this[_variableValueType] = defaultValue(variableData.variableValueType);
-          this[_variableValue] = defaultValue(variableData.variableValue);
-          this[_variableBlock] = defaultValue(variableData.variableBlock, null);
-          if (!isString(this[_variableName])) {
-            throw new Error("`" + this.fancyName + "` `variableName` must be a non-null String");
-          }
-          if (!isString(this[_variableValueType])) {
-            throw new Error("`" + this.fancyName + "` `_variableValueType` must be a non-null String");
-          }
-          if (this[_variableBlock] !== null && !(this[_variableBlock] instanceof VariableBlock)) {
-            throw new Error("`" + this.fancyName + "` `variableBlock` must be of type `VariableBlock`");
-          }
+            _this[_variableName] = null;
+            _this[_variableValueType] = null;
+            _this[_variableValue] = null;
+            _this[_variableBlock] = null;
+            _this[_variableGraph] = null;
+            _this.create(variableData);
+            return _this;
         }
 
         /**
-         * Returns the variable fancy name
-         * @returns {string}
+         * Creates the variable from the given variable data
+         * @param {Variable.variableDataTypedef} variableData - the variable configuration data
          */
 
-      }, {
-        key: "added",
-        value: function added() {}
-      }, {
-        key: "removed",
-        value: function removed() {}
 
-        /**
-         * Changes this variable value to the specified value
-         * @param {*|null} value - specifies the value
-         * @param {boolean} [ignoreEmit=false] - whether to emit events
-         */
+        babelHelpers.createClass(Variable, [{
+            key: "create",
+            value: function create(variableData) {
+                this[_variableName] = defaultValue(variableData.variableName);
+                this[_variableValueType] = defaultValue(variableData.variableValueType);
+                this[_variableValue] = defaultValue(variableData.variableValue);
+                this[_variableBlock] = defaultValue(variableData.variableBlock, null);
+                if (!isString(this[_variableName])) {
+                    throw new Error("`" + this.fancyName + "` `variableName` must be a non-null String");
+                }
+                if (!isString(this[_variableValueType])) {
+                    throw new Error("`" + this.fancyName + "` `_variableValueType` must be a non-null String");
+                }
+                if (this[_variableBlock] !== null && !(this[_variableBlock] instanceof VariableBlock)) {
+                    throw new Error("`" + this.fancyName + "` `variableBlock` must be of type `VariableBlock`");
+                }
+            }
 
-      }, {
-        key: "changeVariableValue",
-        value: function changeVariableValue(value, ignoreEmit) {
-          var assignValue = this[_variableGraph].convertValue(this[_variableValueType], value);
-          if (typeof assignValue === "undefined") {
-            throw new Error("`" + this.fancyName + "` " + value + "` is not compatible with type `" + this[_variableValueType] + "`");
-          }
-          var oldValue = this[_variableValue];
-          this[_variableValue] = assignValue;
-          if (!ignoreEmit) {
-            this.emit("value-change", assignValue, oldValue);
-            this[_variableGraph].emit("variable-value-change", this, assignValue, oldValue);
-          }
-        }
-      }, {
-        key: "fancyName",
-        get: function get() {
-          return this.toString();
-        }
-        /**
-         * Returns the variable name
-         * @returns {string}
-         */
+            /**
+             * Returns the variable fancy name
+             * @returns {string}
+             */
 
-      }, {
-        key: "variableName",
-        get: function get() {
-          return this[_variableName];
-        }
-        /**
-         * Returns the variable value type
-         * @returns {string}
-         */
+        }, {
+            key: "added",
+            value: function added() {}
+        }, {
+            key: "removed",
+            value: function removed() {}
 
-      }, {
-        key: "variableValueType",
-        get: function get() {
-          return this[_variableValueType];
-        }
-        /**
-         * Returns the variable value
-         * @returns {*|null}
-         */
+            /**
+             * Changes this variable value to the specified value
+             * @param {*|null} value - specifies the value
+             * @param {boolean} [ignoreEmit=false] - whether to emit events
+             */
 
-      }, {
-        key: "variableValue",
-        get: function get() {
-          return this[_variableValue];
-        }
-        /**
-         * Sets this variable value to the specified variable value
-         * @param {*|null} variableValue - specifies the variable value
-         */
-        ,
-        set: function set(variableValue) {
-          this.changeVariableValue(variableValue);
-        }
-        /**
-         * Returns this variable block
-         * @returns {Block}
-         */
+        }, {
+            key: "changeVariableValue",
+            value: function changeVariableValue(value, ignoreEmit) {
+                var assignValue = this[_variableGraph].convertValue(this[_variableValueType], value);
+                if (typeof assignValue === "undefined") {
+                    throw new Error("`" + this.fancyName + "` " + value + "` is not compatible with type `" + this[_variableValueType] + "`");
+                }
+                var oldValue = this[_variableValue];
+                this[_variableValue] = assignValue;
+                if (!ignoreEmit) {
+                    this.emit("value-change", assignValue, oldValue);
+                    this[_variableGraph].emit("variable-value-change", this, assignValue, oldValue);
+                }
+            }
+        }, {
+            key: "fancyName",
+            get: function get() {
+                return this.toString();
+            }
+            /**
+             * Returns the variable name
+             * @returns {string}
+             */
 
-      }, {
-        key: "variableBlock",
-        get: function get() {
-          return this[_variableBlock];
-        }
-        /**
-         * Sets this variable block to the specified variable block
-         * @param {Block} variableBlock - specifies the variable block
-         */
-        ,
-        set: function set(variableBlock) {
-          this[_variableBlock] = variableBlock;
-        }
-        /**
-         * Returns this variable graph
-         * @returns {Graph}
-         */
+        }, {
+            key: "variableName",
+            get: function get() {
+                return this[_variableName];
+            }
+            /**
+             * Returns the variable value type
+             * @returns {string}
+             */
 
-      }, {
-        key: "variableGraph",
-        get: function get() {
-          return this[_variableGraph];
-        }
-        /**
-         * Sets this variable graph to the specified variable graph
-         * @param {Graph} variableGraph - specifies the variable graph
-         */
-        ,
-        set: function set(variableGraph) {
-          this[_variableGraph] = variableGraph;
-        }
-      }]);
-      return Variable;
+        }, {
+            key: "variableValueType",
+            get: function get() {
+                return this[_variableValueType];
+            }
+            /**
+             * Returns the variable value
+             * @returns {*|null}
+             */
+
+        }, {
+            key: "variableValue",
+            get: function get() {
+                return this[_variableValue];
+            }
+            /**
+             * Sets this variable value to the specified variable value
+             * @param {*|null} variableValue - specifies the variable value
+             */
+            ,
+            set: function set(variableValue) {
+                this.changeVariableValue(variableValue);
+            }
+            /**
+             * Returns this variable block
+             * @returns {Block}
+             */
+
+        }, {
+            key: "variableBlock",
+            get: function get() {
+                return this[_variableBlock];
+            }
+            /**
+             * Sets this variable block to the specified variable block
+             * @param {Block} variableBlock - specifies the variable block
+             */
+            ,
+            set: function set(variableBlock) {
+                this[_variableBlock] = variableBlock;
+            }
+            /**
+             * Returns this variable graph
+             * @returns {Graph}
+             */
+
+        }, {
+            key: "variableGraph",
+            get: function get() {
+                return this[_variableGraph];
+            }
+            /**
+             * Sets this variable graph to the specified variable graph
+             * @param {Graph} variableGraph - specifies the variable graph
+             */
+            ,
+            set: function set(variableGraph) {
+                this[_variableGraph] = variableGraph;
+            }
+        }]);
+        return Variable;
     }(EventClass);
 
     var _pointOutput = Symbol("pointOutput");
@@ -5407,5 +5410,5 @@
     exports.AssignationBlock = AssignationBlock;
     exports.StreamPoint = StreamPoint;
 
-}((this.dudeGraph = this.dudeGraph || {})));
+}));
 //# sourceMappingURL=dude-graph.js.map

@@ -82,3 +82,6 @@ fabric.properties
 
 # Sourcemaps
 *.map
+
+# Index
+index.html
