@@ -7,6 +7,7 @@ const plumber = require("gulp-plumber");
 const sourcemaps = require("gulp-sourcemaps");
 const babel = require("rollup-plugin-babel");
 const nodeResolve = require("rollup-plugin-node-resolve");
+const uglify = require("rollup-plugin-uglify");
 
 const sources = ["src/*.js", "src/**/*.js"];
 const es5config = {
@@ -19,7 +20,8 @@ const es5config = {
             "babelrc": false,
             "sourceMap": true
         }),
-        nodeResolve()
+        nodeResolve(),
+        uglify()
     ]
 };
 const es6config = {
