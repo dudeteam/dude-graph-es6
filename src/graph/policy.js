@@ -14,34 +14,30 @@ export default class PointPolicy {
      * @returns {number}
      */
     static get NONE() { return 0; }
-
     /**
      * @returns {number}
      */
     static get VALUE() { return PolicyLabels.VALUE; }
-
     /**
      * @returns {number}
      */
     static get SINGLE_CONNECTION() { return PolicyLabels.SINGLE_CONNECTION; }
-
     /**
      * @returns {number}
      */
     static get MULTIPLE_CONNECTIONS() { return PolicyLabels.MULTIPLE_CONNECTIONS; }
-
     /**
      * @returns {number}
      */
     static get CONVERSION() { return PolicyLabels.CONVERSION; }
-
     /**
      * @returns {number}
      */
     static get DEFAULT() { return PointPolicy.VALUE | PointPolicy.SINGLE_CONNECTION | PointPolicy.CONVERSION; }
 
     /**
-     * @param {number} policy - the policy to serialize
+     * Serializes the specified policy to the corresponding policy labels
+     * @param {number} policy - specifies the policy
      * @returns {Array<string>}
      */
     static serialize(policy) {
@@ -55,7 +51,8 @@ export default class PointPolicy {
     }
 
     /**
-     * @param {Array<string>} policyLabels - the policy labels to deserialize
+     * Deserializes the specified policy labels to the corresponding policy
+     * @param {Array<string>} policyLabels - specifies the policy labels
      * @returns {number}
      */
     static deserialize(policyLabels) {
@@ -71,8 +68,9 @@ export default class PointPolicy {
     }
 
     /**
-     * @param {number} policy - the
-     * @param {number} checkPolicy - the
+     * Returns whether the specified policy corresponds to the specified check policy
+     * @param {number} policy - specifies the policy
+     * @param {number} checkPolicy - specifies the check policy
      * @returns {boolean}
      */
     static has(policy, checkPolicy) {

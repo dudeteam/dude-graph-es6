@@ -51,36 +51,43 @@ export default class Variable extends EventClass {
      */
     get fancyName() { return this.toString(); }
     /**
+     * Returns the variable name
      * @returns {string}
      */
     get variableName() { return this[_variableName]; }
     /**
+     * Returns the variable value type
      * @returns {string}
      */
     get variableValueType() { return this[_variableValueType]; }
     /**
+     * Returns the variable value
      * @returns {*|null}
      */
     get variableValue() { return this[_variableValue]; }
     /**
-     * Sets this variable value
-     * @param {*|null} variableValue - the variable value to set
+     * Sets this variable value to the specified variable value
+     * @param {*|null} variableValue - specifies the variable value
      */
     set variableValue(variableValue) { this.changeVariableValue(variableValue); }
     /**
+     * Returns this variable block
      * @returns {Block}
      */
     get variableBlock() { return this[_variableBlock]; }
     /**
-     * @param {Block} variableBlock - TODO document
+     * Sets this variable block to the specified variable block
+     * @param {Block} variableBlock - specifies the variable block
      */
     set variableBlock(variableBlock) { this[_variableBlock] = variableBlock; }
     /**
+     * Returns this variable graph
      * @returns {Graph}
      */
     get variableGraph() { return this[_variableGraph]; }
     /**
-     * @param {Graph} variableGraph - TODO document
+     * Sets this variable graph to the specified variable graph
+     * @param {Graph} variableGraph - specifies the variable graph
      */
     set variableGraph(variableGraph) { this[_variableGraph] = variableGraph; }
 
@@ -88,9 +95,9 @@ export default class Variable extends EventClass {
     removed() {}
 
     /**
-     * Changes the variable value
-     * @param {Object|null} value - TODO document
-     * @param {boolean} [ignoreEmit=false] - TODO document
+     * Changes this variable value to the specified value
+     * @param {*|null} value - specifies the value
+     * @param {boolean} [ignoreEmit=false] - whether to emit events
      */
     changeVariableValue(value, ignoreEmit) {
         var assignValue = this[_variableGraph].convertValue(this[_variableValueType], value);

@@ -3214,6 +3214,75 @@ function includes(collection, value, fromIndex, guard) {
     : (!!length && baseIndexOf(collection, value, fromIndex) > -1);
 }
 
+let _listeners = Symbol("listeners");
+
+class EventClass {
+
+    constructor() {
+        this[_listeners] = {};
+    }
+
+    /**
+     * Adds a listener for the given event
+     * @param {string} event - the event to listen to
+     * @param {function} listener - the callback called when the given event is emitted
+     * @returns {function} - event.off(event, listener);
+     */
+    on(event, listener) {
+        if (typeof this[_listeners][event] === "undefined") {
+            this[_listeners][event] = [];
+        }
+        this[_listeners][event].push(listener);
+        return listener;
+    }
+
+    /**
+     * Adds an one-shot listener for the given event
+     * @param {string} event - the event to listen to
+     * @param {function} listener - the callback called once when the given event is emitted
+     */
+    once(event, listener) {
+        let onceListener = () => {
+            listener();
+            this.off(event, onceListener);
+        };
+        this.on(event, onceListener);
+    }
+
+    /**
+     * Removes the listener for the given event, or removes all listeners for the given event if listener is undefined
+     * @param {string} event
+     * @param {function} [listener]
+     */
+    off(event, listener) {
+        if (typeof this[_listeners][event] !== "undefined") {
+            if (typeof listener === "undefined") {
+                this[_listeners][event] = [];
+            } else {
+                let listenerIndex = this[_listeners][event].lastIndexOf(listener);
+                if (listenerIndex !== -1) {
+                    this[_listeners][event].splice(listenerIndex, 1);
+                }
+            }
+        }
+    }
+
+    /**
+     * Emits an event
+     * @param {string} event - all listeners to this event will be notified
+     * @param {...*} arguments - all listeners to this event will be notified with the given arguments
+     */
+    emit(event) {
+        let listeners = this[_listeners][event];
+        if (typeof listeners !== "undefined") {
+            for (let i = 0; i < listeners.length; i++) {
+                listeners[i].apply(this, Array.prototype.slice.call(arguments, 1));
+            }
+        }
+    }
+
+}
+
 /** `Object#toString` result references. */
 var numberTag$2 = '[object Number]';
 
@@ -3295,74 +3364,96 @@ function isBoolean(value) {
     (isObjectLike(value) && objectToString$7.call(value) == boolTag$2);
 }
 
-let _listeners = Symbol("listeners");
-
-class EventClass {
-
-    constructor() {
-        this[_listeners] = {};
-    }
-
-    /**
-     * Adds a listener for the given event
-     * @param {string} event - the event to listen to
-     * @param {function} listener - the callback called when the given event is emitted
-     * @returns {function} - event.off(event, listener);
-     */
-    on(event, listener) {
-        if (typeof this[_listeners][event] === "undefined") {
-            this[_listeners][event] = [];
-        }
-        this[_listeners][event].push(listener);
-        return listener;
-    }
-
-    /**
-     * Adds an one-shot listener for the given event
-     * @param {string} event - the event to listen to
-     * @param {function} listener - the callback called once when the given event is emitted
-     */
-    once(event, listener) {
-        let onceListener = () => {
-            listener();
-            this.off(event, onceListener);
-        };
-        this.on(event, onceListener);
-    }
-
-    /**
-     * Removes the listener for the given event, or removes all listeners for the given event if listener is undefined
-     * @param {string} event
-     * @param {function} [listener]
-     */
-    off(event, listener) {
-        if (typeof this[_listeners][event] !== "undefined") {
-            if (typeof listener === "undefined") {
-                this[_listeners][event] = [];
-            } else {
-                let listenerIndex = this[_listeners][event].lastIndexOf(listener);
-                if (listenerIndex !== -1) {
-                    this[_listeners][event].splice(listenerIndex, 1);
-                }
+let valueTypes = {
+    "Stream": {
+        "convert": () => undefined,
+        "typeCompatibles": []
+    },
+    "String": {
+        "typeConvert": (value) => {
+            if (isString(value)) {
+                return value;
             }
-        }
-    }
-
-    /**
-     * Emits an event
-     * @param {string} event - all listeners to this event will be notified
-     * @param {...*} arguments - all listeners to this event will be notified with the given arguments
-     */
-    emit(event) {
-        let listeners = this[_listeners][event];
-        if (typeof listeners !== "undefined") {
-            for (let i = 0; i < listeners.length; i++) {
-                listeners[i].apply(this, Array.prototype.slice.call(arguments, 1));
+            if (isNumber(value) || isBoolean(value)) {
+                return toString(value);
             }
-        }
+            return undefined;
+        },
+        "typeCompatibles": ["Text", "Number", "Boolean"]
+    },
+    "Text": {
+        "typeConvert": (value) => {
+            if (isString(value)) {
+                return value;
+            }
+            if (isNumber(value) || isBoolean(value)) {
+                return toString(value);
+            }
+            return undefined;
+        },
+        "typeCompatibles": ["String", "Number", "Boolean"]
+    },
+    "Number": {
+        "typeConvert": (value) => {
+            if (isNumber(value)) {
+                return value;
+            }
+            if (/^[-+]?[0-9]+(\.[0-9]+)?$/.test(value)) {
+                return toNumber(value);
+            }
+            if (value === "true" || value === true) {
+                return 1;
+            }
+            if (value === "false" || value === false) {
+                return 0;
+            }
+            return undefined;
+        },
+        "typeCompatibles": ["Boolean"]
+    },
+    "Boolean": {
+        "typeConvert": (value) => {
+            if (isBoolean(value)) {
+                return value;
+            }
+            if (value === 1 || value === "true") {
+                return true;
+            }
+            if (value === 0 || value === "false") {
+                return false;
+            }
+            return undefined;
+        },
+        "typeCompatibles": ["Number"]
+    },
+    "Object": {
+        "typeConvert": (value) => {
+            if (isObject(value)) {
+                return value;
+            }
+            return undefined;
+        },
+        "typeCompatibles": []
+    },
+    "Array": {
+        "typeConvert": (value) => {
+            if (isArray(value)) {
+                return value;
+            }
+            return undefined;
+        },
+        "typeCompatibles": []
+    },
+    "Resource": {
+        "typeConvert": (value) => {
+            if (isObject(value)) {
+                return value;
+            }
+            return undefined;
+        },
+        "typeCompatibles": []
     }
-
-}
+};
 
 let _connectionOutputPoint = Symbol("outputPoint");
 let _connectionInputPoint = Symbol("inputPoint");
@@ -3370,9 +3461,9 @@ let _connectionInputPoint = Symbol("inputPoint");
 class Connection extends EventClass {
 
     /**
-     * Creates a connection between the two given points
-     * @param {Point} outputPoint - the output point
-     * @param {Point} inputPoint - the input point
+     * Creates a connection between the two specified points
+     * @param {Point} outputPoint - specifies the output point
+     * @param {Point} inputPoint - specifies the input point
      */
     constructor(outputPoint, inputPoint) {
         super();
@@ -3387,17 +3478,19 @@ class Connection extends EventClass {
      */
     get fancyName() { return this[_connectionOutputPoint].fancyName + " => " + this[_connectionInputPoint].fancyName }
     /**
+     * Returns this connection output point
      * @returns {Point}
      */
     get connectionOutputPoint() { return this[_connectionOutputPoint]; }
     /**
+     * Returns this connection input point
      * @returns {Point}
      */
     get connectionInputPoint() { return this[_connectionInputPoint]; }
 
     /**
-     * Returns the point connected to the given point in this connection
-     * @param {Point} point - the point connected
+     * Returns the corresponding point connected to the specified point
+     * @param {Point} point - specifies the point
      * @returns {Point}
      */
     other(point) {
@@ -3481,34 +3574,30 @@ class PointPolicy {
      * @returns {number}
      */
     static get NONE() { return 0; }
-
     /**
      * @returns {number}
      */
     static get VALUE() { return PolicyLabels.VALUE; }
-
     /**
      * @returns {number}
      */
     static get SINGLE_CONNECTION() { return PolicyLabels.SINGLE_CONNECTION; }
-
     /**
      * @returns {number}
      */
     static get MULTIPLE_CONNECTIONS() { return PolicyLabels.MULTIPLE_CONNECTIONS; }
-
     /**
      * @returns {number}
      */
     static get CONVERSION() { return PolicyLabels.CONVERSION; }
-
     /**
      * @returns {number}
      */
     static get DEFAULT() { return PointPolicy.VALUE | PointPolicy.SINGLE_CONNECTION | PointPolicy.CONVERSION; }
 
     /**
-     * @param {number} policy - the policy to serialize
+     * Serializes the specified policy to the corresponding policy labels
+     * @param {number} policy - specifies the policy
      * @returns {Array<string>}
      */
     static serialize(policy) {
@@ -3522,7 +3611,8 @@ class PointPolicy {
     }
 
     /**
-     * @param {Array<string>} policyLabels - the policy labels to deserialize
+     * Deserializes the specified policy labels to the corresponding policy
+     * @param {Array<string>} policyLabels - specifies the policy labels
      * @returns {number}
      */
     static deserialize(policyLabels) {
@@ -3538,8 +3628,9 @@ class PointPolicy {
     }
 
     /**
-     * @param {number} policy - the
-     * @param {number} checkPolicy - the
+     * Returns whether the specified policy corresponds to the specified check policy
+     * @param {number} policy - specifies the policy
+     * @param {number} checkPolicy - specifies the check policy
      * @returns {boolean}
      */
     static has(policy, checkPolicy) {
@@ -3548,115 +3639,30 @@ class PointPolicy {
 
 }
 
-let _graphValueTypes = Symbol("graphValueTypes");
-let _graphModels = Symbol("graphModels");
+let _graphErrno = Symbol("graphErrno");
 let _graphBlocks = Symbol("graphBlocks");
 let _graphBlockIds = Symbol("graphBlockIds");
 let _graphVariables = Symbol("graphVariables");
+let _graphValueTypes = Symbol("graphValueTypes");
 let _graphConnections = Symbol("graphConnections");
-let _graphErrno = Symbol("graphErrno");
 
 class Graph extends EventClass {
 
     constructor() {
         super();
 
+        this[_graphErrno] = null;
         this[_graphBlocks] = [];
         this[_graphBlockIds] = {};
         this[_graphVariables] = [];
+        this[_graphValueTypes] = {};
         this[_graphConnections] = [];
-        this[_graphValueTypes] = {
-            "Stream": {
-                "convert": () => undefined,
-                "typeCompatibles": []
-            },
-            "String": {
-                "typeConvert": (value) => {
-                    if (isString(value)) {
-                        return value;
-                    }
-                    if (isNumber(value) || isBoolean(value)) {
-                        return toString(value);
-                    }
-                    return undefined;
-                },
-                "typeCompatibles": ["Text", "Number", "Boolean"]
-            },
-            "Text": {
-                "typeConvert": (value) => {
-                    if (isString(value)) {
-                        return value;
-                    }
-                    if (isNumber(value) || isBoolean(value)) {
-                        return toString(value);
-                    }
-                    return undefined;
-                },
-                "typeCompatibles": ["String", "Number", "Boolean"]
-            },
-            "Number": {
-                "typeConvert": (value) => {
-                    if (isNumber(value)) {
-                        return value;
-                    }
-                    if (/^[-+]?[0-9]+(\.[0-9]+)?$/.test(value)) {
-                        return toNumber(value);
-                    }
-                    if (value === "true" || value === true) {
-                        return 1;
-                    }
-                    if (value === "false" || value === false) {
-                        return 0;
-                    }
-                    return undefined;
-                },
-                "typeCompatibles": ["Boolean"]
-            },
-            "Boolean": {
-                "typeConvert": (value) => {
-                    if (isBoolean(value)) {
-                        return value;
-                    }
-                    if (value === 1 || value === "true") {
-                        return true;
-                    }
-                    if (value === 0 || value === "false") {
-                        return false;
-                    }
-                    return undefined;
-                },
-                "typeCompatibles": ["Number"]
-            },
-            "Object": {
-                "typeConvert": (value) => {
-                    if (isObject(value)) {
-                        return value;
-                    }
-                    return undefined;
-                },
-                "typeCompatibles": []
-            },
-            "Array": {
-                "typeConvert": (value) => {
-                    if (isArray(value)) {
-                        return value;
-                    }
-                    return undefined;
-                },
-                "typeCompatibles": []
-            },
-            "Resource": {
-                "typeConvert": (value) => {
-                    if (isObject(value)) {
-                        return value;
-                    }
-                    return undefined;
-                },
-                "typeCompatibles": []
-            }
-        };
-        this[_graphModels] = [];
-        this[_graphErrno] = null;
+
+        this.create();
+    }
+
+    create() {
+        this[_graphValueTypes] = valueTypes;
     }
 
     /**
@@ -3665,25 +3671,24 @@ class Graph extends EventClass {
      */
     get fancyName() { return "graph (" + this[_graphBlocks].length + " blocks)"; }
     /**
+     * Returns this graph blocks
      * @returns {Array<Block>}
      */
     get graphBlocks() { return this[_graphBlocks]; }
     /**
+     * Returns this graph variables
      * @returns {Array<Variable>}
      */
     get graphVariables() { return this[_graphVariables]; }
     /**
+     * Returns this graph connections
      * @returns {Array<Connection>}
      */
     get graphConnections() { return this[_graphConnections]; }
-    /**
-     * @returns {Array<Graph.modelBlockTypedef>}
-     */
-    get graphModels() { return this[_graphModels]; }
 
     /**
-     * Adds the given block to this graph
-     * @param {Block} block - the block to be added
+     * Adds the specified block to this graph
+     * @param {Block} block - the block to add
      */
     addBlock(block) {
         if (block.blockGraph !== null) {
@@ -3705,8 +3710,8 @@ class Graph extends EventClass {
         block.added();
     }
     /**
-     * Removes the given block from this graph
-     * @param {Block} block - the block to be removed
+     * Removes the specified block from this graph
+     * @param {Block} block - the block to remove
      */
     removeBlock(block) {
         if (block.blockGraph !== this || !includes(this[_graphBlocks], block)) {
@@ -3719,23 +3724,23 @@ class Graph extends EventClass {
         block.removed();
     }
     /**
-     * Returns the next unique blockId
+     * Returns the next unique block id
      * @returns {string}
      */
     nextBlockId() {
         return (Math.random() * 9999) + this;
     }
     /**
-     * Returns the block for the given blockId
-     * @param {string} blockId - the blockId to search for
+     * Returns the block corresponding to the specified block id
+     * @param {string} blockId - specifies the block id
      * @returns {Block|null}
      */
     blockById(blockId) {
         return this[_graphBlockIds][blockId] || null;
     }
     /**
-     * Returns the blocks with the given name
-     * @param {string} blockName - the block name to search
+     * Returns the blocks corresponding to the specified block name
+     * @param {string} blockName - specifies the block name
      * @returns {Array<Block>}
      */
     blocksByName(blockName) {
@@ -3744,8 +3749,8 @@ class Graph extends EventClass {
         });
     }
     /**
-     * Returns the blocks with the given type
-     * @param {string} blockType - the block type to search
+     * Returns the blocks corresponding to the specified block type
+     * @param {string} blockType - specifies the block type
      * @returns {Array<Block>}
      */
     blocksByType(blockType) {
@@ -3755,8 +3760,8 @@ class Graph extends EventClass {
     }
 
     /**
-     * Adds the given variable to this graph
-     * @param {Variable} variable - the variable to be added
+     * Adds the specified variable to this graph
+     * @param {Variable} variable - specifies the variable
      */
     addVariable(variable) {
         if (variable.variableGraph !== null) {
@@ -3771,8 +3776,8 @@ class Graph extends EventClass {
         this.emit("variable-add", variable);
     }
     /**
-     * Removes the given variable from this graph
-     * @param {Variable} variable - the variable to be removed
+     * Removes the specified variable from this graph
+     * @param {Variable} variable - specifies the variable
      */
     removeVariable(variable) {
         if (variable.variableGraph !== this || this.variableByName(variable.variableName) === null) {
@@ -3785,8 +3790,8 @@ class Graph extends EventClass {
         this.emit("variable-remove", variable);
     }
     /**
-     * Returns this graph variable for the given variableName
-     * @param {string} variableName - the variable name to search for
+     * Returns the variable corresponding to the specified variable name
+     * @param {string} variableName - specifies the variable name
      * @returns {Variable|null}
      */
     variableByName(variableName) {
@@ -3796,10 +3801,10 @@ class Graph extends EventClass {
     }
 
     /**
-     * Converts the given value to the given type if possible or returns undefined
-     * @param {Graph.graphValueTypeTypedef} valueType - the value type to enforce
-     * @param {*|null} value - the value to convert
-     * @returns {*|undefined}
+     * Converts the specified value to the corresponding value type
+     * @param {Graph.valueTypeTypedef} valueType - specifies the value type
+     * @param {*|null} value - specifies the value
+     * @returns {*|undefined} - returns undefined on failure
      */
     convertValue(valueType, value) {
         if (value === null) {
@@ -3815,9 +3820,9 @@ class Graph extends EventClass {
         return valueTypeInfo.typeConvert(value);
     }
     /**
-     * Returns whether the connection can be converted from inputPoint to outputPoint
-     * @param {Point|Graph.modelPointTypedef} outputPoint - a
-     * @param {Point|Graph.modelPointTypedef} inputPoint - b
+     * Returns whether the connection can be converted from the specified output point to the specified input point
+     * @param {Point|Graph.modelPointTypedef} outputPoint - specifies the output point
+     * @param {Point|Graph.modelPointTypedef} inputPoint - specifies the input point
      * @returns {boolean}
      */
     convertConnection(outputPoint, inputPoint) {
@@ -3910,9 +3915,9 @@ class Graph extends EventClass {
     }
 
     /**
-     * Connects the given outputPoint to the given inputPoint
-     * @param {Point} outputPoint - TODO document
-     * @param {Point} inputPoint - TODO document
+     * Connects the specified points
+     * @param {Point} outputPoint - specifies the output point
+     * @param {Point} inputPoint - specifies the input point
      * @returns {Connection}
      */
     connect(outputPoint, inputPoint) {
@@ -3969,9 +3974,9 @@ class Graph extends EventClass {
         return connection;
     }
     /**
-     * Disconnects the given outputPoint from the given inputPoint
-     * @param {Point} outputPoint - TODO document
-     * @param {Point} inputPoint - TODO document
+     * Disconnects the specified points
+     * @param {Point} outputPoint - specifies the output point
+     * @param {Point} inputPoint - specifies the input point
      * @returns {Connection}
      */
     disconnect(outputPoint, inputPoint) {
@@ -3998,8 +4003,8 @@ class Graph extends EventClass {
         return connectionFound;
     }
     /**
-     * Adds the connection
-     * @param {Connection} connection - the connection to add
+     * Adds the specified connection
+     * @param {Connection} connection - specifies the connection
      * @private
      */
     _addConnection (connection) {
@@ -4016,8 +4021,8 @@ class Graph extends EventClass {
         this[_graphConnections].push(connection);
     }
     /**
-     * Removes the given connection
-     * @param {Connection} connection - the connection to remove
+     * Removes the specified connection
+     * @param {Connection} connection - specifies the connection
      * @private
      */
     _removeConnection (connection) {
@@ -4035,8 +4040,8 @@ class Graph extends EventClass {
     }
 
     /**
-     * Adds the value type to this graph
-     * @param {Graph.graphValueTypeInfoTypedef} valueTypeInfo - the value type to add
+     * Adds the specified value type to this graph
+     * @param {Graph.valueTypeInfoTypedef} valueTypeInfo - specifies the value type
      */
     addValueType(valueTypeInfo) {
         if (this.valueTypeByName(valueTypeInfo.typeName) !== null) {
@@ -4045,19 +4050,17 @@ class Graph extends EventClass {
         this[_graphValueTypes][valueTypeInfo.typeName] = valueTypeInfo;
     }
     /**
-     * Returns the valueTypeInfo for the given typeName, or null
-     * @param {Graph.graphValueTypeTypedef} typeName - the typeName to search for
-     * @returns {Graph.graphValueTypeInfoTypedef|null}
+     * Returns the value type corresponding to the specified value type name
+     * @param {Graph.valueTypeTypedef} typeName - specifies the value type name
+     * @returns {Graph.valueTypeInfoTypedef|null}
      */
     valueTypeByName(typeName) {
         return this[_graphValueTypes][typeName] || null;
     }
 
-    query() {}
-
     /**
      * Sets the last error
-     * @param {Error} errno - the last error
+     * @param {Error} errno - specifies the last error
      */
     errno(errno) {
         this[_graphErrno] = errno;
@@ -4072,14 +4075,20 @@ class Graph extends EventClass {
  */
 
 /**
- * @typedef {string} Graph.graphValueTypeTypedef
+ * @typedef {string} Graph.valueTypeTypedef
  */
 
 /**
- * @typedef {Object} Graph.graphValueTypeInfoTypedef
+ * @typedef {Object} Graph.valueTypeInfoTypedef
  * @property {string} typeName
- * @property {Graph.convertTypeCallback} typeConvert
+ * @property {Graph.convertTypeTypedef} typeConvert
  * @property {Array<string>} [typeCompatibles=[]]
+ */
+
+/**
+ * @typedef {function} Graph.convertTypeTypedef
+ * @param {*|null} value
+ * @returns {*|undefined}
  */
 
 /**
@@ -4109,13 +4118,6 @@ class Graph extends EventClass {
  * @property {Array<Graph.modelPointTypedef>} item.data.blockInputs
  * @property {Array<Graph.modelPointTypedef>} item.data.blockOutputs
  * @property {string} [item.data.modelPointName] - Filled for autocomplete purpose
- */
-
-/**
- * Callback to convert the given value to valueType, or undefined on conversion failure
- * @callback Graph.convertTypeCallback
- * @param {*|null} value
- * @returns {*|undefined}
  */
 
 /**
@@ -4286,7 +4288,7 @@ let _blockGraph = Symbol("blockGraph");
 class Block extends EventClass {
 
     /**
-     * @param {Block.blockDataTypedef} [blockData={}] - the block configuration data
+     * @param {Block.blockDataTypedef} blockData - the block configuration data
      */
     constructor(blockData) {
         super();
@@ -4301,8 +4303,8 @@ class Block extends EventClass {
     }
 
     /**
-     * Creates the block from the given block data
-     * @param {Block.blockDataTypedef} blockData - the block configuration data
+     * Creates the block corresponding to the specified block data
+     * @param {Block.blockDataTypedef} blockData - specifies the block data
      */
     create(blockData) {
         this[_blockId] = defaultValue(blockData.blockId, null);
@@ -4321,11 +4323,12 @@ class Block extends EventClass {
      */
     get blockType() { return this.constructor.name; }
     /**
-     * Returns this unique block id
+     * Returns this block id
      * @returns {string|null}
      */
     get blockId() { return this[_blockId]; }
     /**
+     * Sets this block id
      * @param {string|null} blockId - the block id to set
      */
     set blockId(blockId) { this[_blockId] = blockId; }
@@ -4335,12 +4338,12 @@ class Block extends EventClass {
      */
     get blockName() { return this[_blockName]; }
     /**
-     * Returns this block points in output
+     * Returns this block output points
      * @returns {Array<Point>}
      */
     get blockOutputs() { return this[_blockOutputs]; }
     /**
-     * Returns this block points in input
+     * Returns this block input points
      * @returns {Array<Point>}
      */
     get blockInputs() { return this[_blockInputs]; }
@@ -4350,12 +4353,13 @@ class Block extends EventClass {
      */
     get blockTemplates() { return this[_blockTemplates]; }
     /**
-     * Returns this block's graph
+     * Returns this block graph
      * @returns {Graph|null}
      */
     get blockGraph() { return this[_blockGraph]; }
     /**
-     * @param {Graph|null} blockGraph - the graph to set
+     * Sets this block graph to the specified block graph
+     * @param {Graph|null} blockGraph - specifies the block graph
      */
     set blockGraph(blockGraph) { this[_blockGraph] = blockGraph; }
 
@@ -4373,10 +4377,10 @@ class Block extends EventClass {
     validatePoints() {}
 
     /**
-     * Changes the given template corresponding to the given templateId
-     * @param {string} templateName - TODO document
-     * @param {string} valueType - TODO document
-     * @param {boolean} [ignoreEmit=false] - TODO document
+     * Changes this template value type corresponding to the specified template name to the specified value type
+     * @param {string} templateName - specifies the template name
+     * @param {string} valueType - specifies the value type
+     * @param {boolean} [ignoreEmit=false] - whether to emit events
      */
     changeTemplate(templateName, valueType, ignoreEmit) {
         if (this[_blockGraph] === null) {
@@ -4444,21 +4448,21 @@ class Block extends EventClass {
         }
     }
     /**
-     * Returns the template corresponding to the templateId
-     * @param {string} templateId - TODO document
+     * Returns the template corresponding to the specified template name
+     * @param {string} templateName - specifies the template name
      * @returns {Graph.templateTypedef|null}
      */
-    templateByName(templateId) {
+    templateByName(templateName) {
         if (this[_blockGraph] === null) {
             throw new Error("`" + this.fancyName + "` cannot manipulate templates when not bound to a graph");
         }
-        return this[_blockTemplates][templateId] || null;
+        return this[_blockTemplates][templateName] || null;
     }
 
     /**
-     * Adds the given point to the block
-     * @param {Point} point - the point to be added
-     * @param {number} [position] - the position of the point
+     * Adds the specified point to this block
+     * @param {Point} point - specifies the point
+     * @param {number} [position] - the position of the point in the block
      */
     addPoint(point, position) {
         if (this[_blockGraph] === null) {
@@ -4500,8 +4504,8 @@ class Block extends EventClass {
         this[_blockGraph].emit("block-point-add", this, point);
     }
     /**
-     * Removes the given point from this block
-     * @param {Point} point - the point to be removed
+     * Removes the specified point from this block
+     * @param {Point} point - specifies the point
      */
     removePoint(point) {
         if (point.pointOutput && this.outputByName(point.pointName) === null) {
@@ -4534,16 +4538,16 @@ class Block extends EventClass {
         });
     }
     /**
-     * Returns an output point for the given pointName
-     * @param {string} pointName - the pointName to search
+     * Returns the corresponding output point for the specified point name
+     * @param {string} pointName - specifies the point name
      * @returns {Point}
      */
     outputByName(pointName) {
         return find(this[_blockOutputs], (point) => { return point.pointName === pointName; }) || null;
     }
     /**
-     * Returns an input point for the given pointName
-     * @param {string} pointName - the pointName to search
+     * Returns the corresponding input point for the specified point name
+     * @param {string} pointName - specifies the point name
      * @returns {Point}
      */
     inputByName(pointName) {
@@ -4551,9 +4555,9 @@ class Block extends EventClass {
     }
 
     /**
-     * Returns whether this block allow the connection from its blockPoint to the given other point
-     * @param {Point} blockPoint - TODO document
-     * @param {Point} otherPoint - TODO document
+     * Returns whether this block allows the connection between the specified block point and the other point
+     * @param {Point} blockPoint - specifies this block point
+     * @param {Point} otherPoint - specifies the other point
      * @returns {boolean}
      */
     acceptConnect(blockPoint, otherPoint) {
@@ -4666,36 +4670,43 @@ class Variable extends EventClass {
      */
     get fancyName() { return this.toString(); }
     /**
+     * Returns the variable name
      * @returns {string}
      */
     get variableName() { return this[_variableName]; }
     /**
+     * Returns the variable value type
      * @returns {string}
      */
     get variableValueType() { return this[_variableValueType]; }
     /**
+     * Returns the variable value
      * @returns {*|null}
      */
     get variableValue() { return this[_variableValue]; }
     /**
-     * Sets this variable value
-     * @param {*|null} variableValue - the variable value to set
+     * Sets this variable value to the specified variable value
+     * @param {*|null} variableValue - specifies the variable value
      */
     set variableValue(variableValue) { this.changeVariableValue(variableValue); }
     /**
+     * Returns this variable block
      * @returns {Block}
      */
     get variableBlock() { return this[_variableBlock]; }
     /**
-     * @param {Block} variableBlock - TODO document
+     * Sets this variable block to the specified variable block
+     * @param {Block} variableBlock - specifies the variable block
      */
     set variableBlock(variableBlock) { this[_variableBlock] = variableBlock; }
     /**
+     * Returns this variable graph
      * @returns {Graph}
      */
     get variableGraph() { return this[_variableGraph]; }
     /**
-     * @param {Graph} variableGraph - TODO document
+     * Sets this variable graph to the specified variable graph
+     * @param {Graph} variableGraph - specifies the variable graph
      */
     set variableGraph(variableGraph) { this[_variableGraph] = variableGraph; }
 
@@ -4703,9 +4714,9 @@ class Variable extends EventClass {
     removed() {}
 
     /**
-     * Changes the variable value
-     * @param {Object|null} value - TODO document
-     * @param {boolean} [ignoreEmit=false] - TODO document
+     * Changes this variable value to the specified value
+     * @param {*|null} value - specifies the value
+     * @param {boolean} [ignoreEmit=false] - whether to emit events
      */
     changeVariableValue(value, ignoreEmit) {
         var assignValue = this[_variableGraph].convertValue(this[_variableValueType], value);
@@ -4761,8 +4772,8 @@ class Point extends EventClass {
     }
 
     /**
-     * Creates the point from the given point data
-     * @param {Point.pointDataTypedef} pointData - The point configuration data
+     * Creates the point corresponding to the specified point data
+     * @param {Point.pointDataTypedef} pointData - specifies the point data
      */
     create(pointData) {
         this[_pointName] = defaultValue(pointData.pointName, null);
@@ -4828,8 +4839,8 @@ class Point extends EventClass {
      */
     get pointValue() { return this[_pointValue]; }
     /**
-     * Sets this point value
-     * @param {*|null} pointValue - the point value to set
+     * Sets this point value to the specified point value
+     * @param {*|null} pointValue - specifies the point value
      */
     set pointValue(pointValue) { this.changeValue(pointValue); }
     /**
@@ -4843,8 +4854,8 @@ class Point extends EventClass {
      */
     get pointBlock() { return this[_pointBlock]; }
     /**
-     * Sets this point's block
-     * @param {Block|null} pointBlock - the block to set
+     * Sets this point block to the specified point block
+     * @param {Block|null} pointBlock - specifies the point block
      */
     set pointBlock(pointBlock) { this[_pointBlock] = pointBlock; }
     /**
@@ -4854,8 +4865,8 @@ class Point extends EventClass {
     get pointConnections() { return this[_pointConnections]; }
 
     /**
-     * Returns whether this point has the given policy
-     * @param {number} policy - the policy to check
+     * Returns whether this point has the specified policy
+     * @param {number} policy - specifies the policy
      * @returns {boolean}
      */
     hasPolicy(policy) {
@@ -4867,8 +4878,9 @@ class Point extends EventClass {
     removed() {}
 
     /**
-     * @param {*|null} value - TODO document
-     * @param {boolean} [ignoreEmit=false] - TODO document
+     * Changes this point value to the specified value
+     * @param {*|null} value - specifies the value
+     * @param {boolean} [ignoreEmit=false] - whether to emit events
      */
     changeValue(value, ignoreEmit) {
         if (this[_pointBlock] === null) {
@@ -4894,8 +4906,9 @@ class Point extends EventClass {
         }
     }
     /**
-     * @param {*|null} pointValueType - TODO document
-     * @param {boolean} [ignoreEmit=false] - TODO document
+     * Changes this point value type to the specified value type
+     * @param {*|null} pointValueType - specifies the value type
+     * @param {boolean} [ignoreEmit=false] - whether to emit events
      */
     changeValueType(pointValueType, ignoreEmit) {
         if (this[_pointBlock] === null) {
@@ -4917,24 +4930,24 @@ class Point extends EventClass {
     }
 
     /**
-     * Returns whether this point is empty or not
+     * Returns whether this point is empty
      * @returns {boolean}
      */
     empty() { return this.emptyValue() && this.emptyConnection(); }
     /**
-     * Returns true if this point has no value
+     * Returns whether this point has a null value
      * @returns {boolean}
      */
     emptyValue() { return this[_pointValue] === null; }
     /**
-     * Returns true if this point no connection
+     * Returns whether this point has no connections
      * @returns {boolean}
      */
     emptyConnection() { return this[_pointConnections].length === 0; }
 
     /**
-     * Connects this point to the given other point
-     * @param {Point} otherPoint - the point to connect to
+     * Connects the specified other point to this point
+     * @param {Point} otherPoint - specifies the other point
      * @returns {Connection}
      */
     connect(otherPoint) {
@@ -4947,8 +4960,8 @@ class Point extends EventClass {
         return this[_pointBlock].blockGraph.connect(otherPoint, this);
     }
     /**
-     * Disconnects this point from the given other point
-     * @param {Point} otherPoint - the point to disconnect from
+     * Disconnects the specified other point from this point
+     * @param {Point} otherPoint - specifies the other point
      * @returns {Connection}
      */
     disconnect(otherPoint) {
@@ -4961,7 +4974,7 @@ class Point extends EventClass {
         return this[_pointBlock].blockGraph.disconnect(otherPoint, this);
     }
     /**
-     * Disconnects this points from all other points
+     * Disconnects all points from this point
      */
     disconnectAll() {
         var point = this;

@@ -3209,85 +3209,6 @@
       return isString(collection) ? fromIndex <= length && collection.indexOf(value, fromIndex) > -1 : !!length && baseIndexOf(collection, value, fromIndex) > -1;
     }
 
-    /** `Object#toString` result references. */
-    var numberTag$2 = '[object Number]';
-
-    /** Used for built-in method references. */
-    var objectProto$12 = Object.prototype;
-
-    /**
-     * Used to resolve the
-     * [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
-     * of values.
-     */
-    var objectToString$6 = objectProto$12.toString;
-
-    /**
-     * Checks if `value` is classified as a `Number` primitive or object.
-     *
-     * **Note:** To exclude `Infinity`, `-Infinity`, and `NaN`, which are
-     * classified as numbers, use the `_.isFinite` method.
-     *
-     * @static
-     * @memberOf _
-     * @since 0.1.0
-     * @category Lang
-     * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is correctly classified,
-     *  else `false`.
-     * @example
-     *
-     * _.isNumber(3);
-     * // => true
-     *
-     * _.isNumber(Number.MIN_VALUE);
-     * // => true
-     *
-     * _.isNumber(Infinity);
-     * // => true
-     *
-     * _.isNumber('3');
-     * // => false
-     */
-    function isNumber(value) {
-      return typeof value == 'number' || isObjectLike(value) && objectToString$6.call(value) == numberTag$2;
-    }
-
-    /** `Object#toString` result references. */
-    var boolTag$2 = '[object Boolean]';
-
-    /** Used for built-in method references. */
-    var objectProto$13 = Object.prototype;
-
-    /**
-     * Used to resolve the
-     * [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
-     * of values.
-     */
-    var objectToString$7 = objectProto$13.toString;
-
-    /**
-     * Checks if `value` is classified as a boolean primitive or object.
-     *
-     * @static
-     * @memberOf _
-     * @since 0.1.0
-     * @category Lang
-     * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is correctly classified,
-     *  else `false`.
-     * @example
-     *
-     * _.isBoolean(false);
-     * // => true
-     *
-     * _.isBoolean(null);
-     * // => false
-     */
-    function isBoolean(value) {
-      return value === true || value === false || isObjectLike(value) && objectToString$7.call(value) == boolTag$2;
-    }
-
     var _listeners = Symbol("listeners");
 
     var EventClass = function () {
@@ -3374,6 +3295,178 @@
         return EventClass;
     }();
 
+    /** `Object#toString` result references. */
+    var numberTag$2 = '[object Number]';
+
+    /** Used for built-in method references. */
+    var objectProto$12 = Object.prototype;
+
+    /**
+     * Used to resolve the
+     * [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
+     * of values.
+     */
+    var objectToString$6 = objectProto$12.toString;
+
+    /**
+     * Checks if `value` is classified as a `Number` primitive or object.
+     *
+     * **Note:** To exclude `Infinity`, `-Infinity`, and `NaN`, which are
+     * classified as numbers, use the `_.isFinite` method.
+     *
+     * @static
+     * @memberOf _
+     * @since 0.1.0
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is correctly classified,
+     *  else `false`.
+     * @example
+     *
+     * _.isNumber(3);
+     * // => true
+     *
+     * _.isNumber(Number.MIN_VALUE);
+     * // => true
+     *
+     * _.isNumber(Infinity);
+     * // => true
+     *
+     * _.isNumber('3');
+     * // => false
+     */
+    function isNumber(value) {
+      return typeof value == 'number' || isObjectLike(value) && objectToString$6.call(value) == numberTag$2;
+    }
+
+    /** `Object#toString` result references. */
+    var boolTag$2 = '[object Boolean]';
+
+    /** Used for built-in method references. */
+    var objectProto$13 = Object.prototype;
+
+    /**
+     * Used to resolve the
+     * [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
+     * of values.
+     */
+    var objectToString$7 = objectProto$13.toString;
+
+    /**
+     * Checks if `value` is classified as a boolean primitive or object.
+     *
+     * @static
+     * @memberOf _
+     * @since 0.1.0
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is correctly classified,
+     *  else `false`.
+     * @example
+     *
+     * _.isBoolean(false);
+     * // => true
+     *
+     * _.isBoolean(null);
+     * // => false
+     */
+    function isBoolean(value) {
+      return value === true || value === false || isObjectLike(value) && objectToString$7.call(value) == boolTag$2;
+    }
+
+    var valueTypes = {
+        "Stream": {
+            "convert": function convert() {
+                return undefined;
+            },
+            "typeCompatibles": []
+        },
+        "String": {
+            "typeConvert": function typeConvert(value) {
+                if (isString(value)) {
+                    return value;
+                }
+                if (isNumber(value) || isBoolean(value)) {
+                    return toString(value);
+                }
+                return undefined;
+            },
+            "typeCompatibles": ["Text", "Number", "Boolean"]
+        },
+        "Text": {
+            "typeConvert": function typeConvert(value) {
+                if (isString(value)) {
+                    return value;
+                }
+                if (isNumber(value) || isBoolean(value)) {
+                    return toString(value);
+                }
+                return undefined;
+            },
+            "typeCompatibles": ["String", "Number", "Boolean"]
+        },
+        "Number": {
+            "typeConvert": function typeConvert(value) {
+                if (isNumber(value)) {
+                    return value;
+                }
+                if (/^[-+]?[0-9]+(\.[0-9]+)?$/.test(value)) {
+                    return toNumber(value);
+                }
+                if (value === "true" || value === true) {
+                    return 1;
+                }
+                if (value === "false" || value === false) {
+                    return 0;
+                }
+                return undefined;
+            },
+            "typeCompatibles": ["Boolean"]
+        },
+        "Boolean": {
+            "typeConvert": function typeConvert(value) {
+                if (isBoolean(value)) {
+                    return value;
+                }
+                if (value === 1 || value === "true") {
+                    return true;
+                }
+                if (value === 0 || value === "false") {
+                    return false;
+                }
+                return undefined;
+            },
+            "typeCompatibles": ["Number"]
+        },
+        "Object": {
+            "typeConvert": function typeConvert(value) {
+                if (isObject(value)) {
+                    return value;
+                }
+                return undefined;
+            },
+            "typeCompatibles": []
+        },
+        "Array": {
+            "typeConvert": function typeConvert(value) {
+                if (isArray(value)) {
+                    return value;
+                }
+                return undefined;
+            },
+            "typeCompatibles": []
+        },
+        "Resource": {
+            "typeConvert": function typeConvert(value) {
+                if (isObject(value)) {
+                    return value;
+                }
+                return undefined;
+            },
+            "typeCompatibles": []
+        }
+    };
+
     var _connectionOutputPoint = Symbol("outputPoint");
     var _connectionInputPoint = Symbol("inputPoint");
 
@@ -3382,9 +3475,9 @@
 
 
       /**
-       * Creates a connection between the two given points
-       * @param {Point} outputPoint - the output point
-       * @param {Point} inputPoint - the input point
+       * Creates a connection between the two specified points
+       * @param {Point} outputPoint - specifies the output point
+       * @param {Point} inputPoint - specifies the input point
        */
 
       function Connection(outputPoint, inputPoint) {
@@ -3408,8 +3501,8 @@
 
 
         /**
-         * Returns the point connected to the given point in this connection
-         * @param {Point} point - the point connected
+         * Returns the corresponding point connected to the specified point
+         * @param {Point} point - specifies the point
          * @returns {Point}
          */
         value: function other(point) {
@@ -3427,6 +3520,7 @@
           return this[_connectionOutputPoint].fancyName + " => " + this[_connectionInputPoint].fancyName;
         }
         /**
+         * Returns this connection output point
          * @returns {Point}
          */
 
@@ -3436,6 +3530,7 @@
           return this[_connectionOutputPoint];
         }
         /**
+         * Returns this connection input point
          * @returns {Point}
          */
 
@@ -3521,7 +3616,8 @@
 
 
         /**
-         * @param {number} policy - the policy to serialize
+         * Serializes the specified policy to the corresponding policy labels
+         * @param {number} policy - specifies the policy
          * @returns {Array<string>}
          */
         value: function serialize(policy) {
@@ -3535,7 +3631,8 @@
         }
 
         /**
-         * @param {Array<string>} policyLabels - the policy labels to deserialize
+         * Deserializes the specified policy labels to the corresponding policy
+         * @param {Array<string>} policyLabels - specifies the policy labels
          * @returns {number}
          */
 
@@ -3554,8 +3651,9 @@
         }
 
         /**
-         * @param {number} policy - the
-         * @param {number} checkPolicy - the
+         * Returns whether the specified policy corresponds to the specified check policy
+         * @param {number} policy - specifies the policy
+         * @param {number} checkPolicy - specifies the check policy
          * @returns {boolean}
          */
 
@@ -3574,7 +3672,6 @@
         get: function get() {
           return 0;
         }
-
         /**
          * @returns {number}
          */
@@ -3584,7 +3681,6 @@
         get: function get() {
           return PolicyLabels.VALUE;
         }
-
         /**
          * @returns {number}
          */
@@ -3594,7 +3690,6 @@
         get: function get() {
           return PolicyLabels.SINGLE_CONNECTION;
         }
-
         /**
          * @returns {number}
          */
@@ -3604,7 +3699,6 @@
         get: function get() {
           return PolicyLabels.MULTIPLE_CONNECTIONS;
         }
-
         /**
          * @returns {number}
          */
@@ -3614,7 +3708,6 @@
         get: function get() {
           return PolicyLabels.CONVERSION;
         }
-
         /**
          * @returns {number}
          */
@@ -3628,13 +3721,12 @@
       return PointPolicy;
     }();
 
-    var _graphValueTypes = Symbol("graphValueTypes");
-    var _graphModels = Symbol("graphModels");
+    var _graphErrno = Symbol("graphErrno");
     var _graphBlocks = Symbol("graphBlocks");
     var _graphBlockIds = Symbol("graphBlockIds");
     var _graphVariables = Symbol("graphVariables");
+    var _graphValueTypes = Symbol("graphValueTypes");
     var _graphConnections = Symbol("graphConnections");
-    var _graphErrno = Symbol("graphErrno");
 
     var Graph = function (_EventClass) {
         babelHelpers.inherits(Graph, _EventClass);
@@ -3644,120 +3736,35 @@
 
             var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(Graph).call(this));
 
+            _this[_graphErrno] = null;
             _this[_graphBlocks] = [];
             _this[_graphBlockIds] = {};
             _this[_graphVariables] = [];
+            _this[_graphValueTypes] = {};
             _this[_graphConnections] = [];
-            _this[_graphValueTypes] = {
-                "Stream": {
-                    "convert": function convert() {
-                        return undefined;
-                    },
-                    "typeCompatibles": []
-                },
-                "String": {
-                    "typeConvert": function typeConvert(value) {
-                        if (isString(value)) {
-                            return value;
-                        }
-                        if (isNumber(value) || isBoolean(value)) {
-                            return toString(value);
-                        }
-                        return undefined;
-                    },
-                    "typeCompatibles": ["Text", "Number", "Boolean"]
-                },
-                "Text": {
-                    "typeConvert": function typeConvert(value) {
-                        if (isString(value)) {
-                            return value;
-                        }
-                        if (isNumber(value) || isBoolean(value)) {
-                            return toString(value);
-                        }
-                        return undefined;
-                    },
-                    "typeCompatibles": ["String", "Number", "Boolean"]
-                },
-                "Number": {
-                    "typeConvert": function typeConvert(value) {
-                        if (isNumber(value)) {
-                            return value;
-                        }
-                        if (/^[-+]?[0-9]+(\.[0-9]+)?$/.test(value)) {
-                            return toNumber(value);
-                        }
-                        if (value === "true" || value === true) {
-                            return 1;
-                        }
-                        if (value === "false" || value === false) {
-                            return 0;
-                        }
-                        return undefined;
-                    },
-                    "typeCompatibles": ["Boolean"]
-                },
-                "Boolean": {
-                    "typeConvert": function typeConvert(value) {
-                        if (isBoolean(value)) {
-                            return value;
-                        }
-                        if (value === 1 || value === "true") {
-                            return true;
-                        }
-                        if (value === 0 || value === "false") {
-                            return false;
-                        }
-                        return undefined;
-                    },
-                    "typeCompatibles": ["Number"]
-                },
-                "Object": {
-                    "typeConvert": function typeConvert(value) {
-                        if (isObject(value)) {
-                            return value;
-                        }
-                        return undefined;
-                    },
-                    "typeCompatibles": []
-                },
-                "Array": {
-                    "typeConvert": function typeConvert(value) {
-                        if (isArray(value)) {
-                            return value;
-                        }
-                        return undefined;
-                    },
-                    "typeCompatibles": []
-                },
-                "Resource": {
-                    "typeConvert": function typeConvert(value) {
-                        if (isObject(value)) {
-                            return value;
-                        }
-                        return undefined;
-                    },
-                    "typeCompatibles": []
-                }
-            };
-            _this[_graphModels] = [];
-            _this[_graphErrno] = null;
+
+            _this.create();
             return _this;
         }
 
-        /**
-         * Returns this graph fancy name
-         * @returns {string}
-         */
-
-
         babelHelpers.createClass(Graph, [{
+            key: "create",
+            value: function create() {
+                this[_graphValueTypes] = valueTypes;
+            }
+
+            /**
+             * Returns this graph fancy name
+             * @returns {string}
+             */
+
+        }, {
             key: "addBlock",
 
 
             /**
-             * Adds the given block to this graph
-             * @param {Block} block - the block to be added
+             * Adds the specified block to this graph
+             * @param {Block} block - the block to add
              */
             value: function addBlock(block) {
                 if (block.blockGraph !== null) {
@@ -3779,8 +3786,8 @@
                 block.added();
             }
             /**
-             * Removes the given block from this graph
-             * @param {Block} block - the block to be removed
+             * Removes the specified block from this graph
+             * @param {Block} block - the block to remove
              */
 
         }, {
@@ -3796,7 +3803,7 @@
                 block.removed();
             }
             /**
-             * Returns the next unique blockId
+             * Returns the next unique block id
              * @returns {string}
              */
 
@@ -3806,8 +3813,8 @@
                 return Math.random() * 9999 + this;
             }
             /**
-             * Returns the block for the given blockId
-             * @param {string} blockId - the blockId to search for
+             * Returns the block corresponding to the specified block id
+             * @param {string} blockId - specifies the block id
              * @returns {Block|null}
              */
 
@@ -3817,8 +3824,8 @@
                 return this[_graphBlockIds][blockId] || null;
             }
             /**
-             * Returns the blocks with the given name
-             * @param {string} blockName - the block name to search
+             * Returns the blocks corresponding to the specified block name
+             * @param {string} blockName - specifies the block name
              * @returns {Array<Block>}
              */
 
@@ -3830,8 +3837,8 @@
                 });
             }
             /**
-             * Returns the blocks with the given type
-             * @param {string} blockType - the block type to search
+             * Returns the blocks corresponding to the specified block type
+             * @param {string} blockType - specifies the block type
              * @returns {Array<Block>}
              */
 
@@ -3844,8 +3851,8 @@
             }
 
             /**
-             * Adds the given variable to this graph
-             * @param {Variable} variable - the variable to be added
+             * Adds the specified variable to this graph
+             * @param {Variable} variable - specifies the variable
              */
 
         }, {
@@ -3863,8 +3870,8 @@
                 this.emit("variable-add", variable);
             }
             /**
-             * Removes the given variable from this graph
-             * @param {Variable} variable - the variable to be removed
+             * Removes the specified variable from this graph
+             * @param {Variable} variable - specifies the variable
              */
 
         }, {
@@ -3880,8 +3887,8 @@
                 this.emit("variable-remove", variable);
             }
             /**
-             * Returns this graph variable for the given variableName
-             * @param {string} variableName - the variable name to search for
+             * Returns the variable corresponding to the specified variable name
+             * @param {string} variableName - specifies the variable name
              * @returns {Variable|null}
              */
 
@@ -3894,10 +3901,10 @@
             }
 
             /**
-             * Converts the given value to the given type if possible or returns undefined
-             * @param {Graph.graphValueTypeTypedef} valueType - the value type to enforce
-             * @param {*|null} value - the value to convert
-             * @returns {*|undefined}
+             * Converts the specified value to the corresponding value type
+             * @param {Graph.valueTypeTypedef} valueType - specifies the value type
+             * @param {*|null} value - specifies the value
+             * @returns {*|undefined} - returns undefined on failure
              */
 
         }, {
@@ -3916,9 +3923,9 @@
                 return valueTypeInfo.typeConvert(value);
             }
             /**
-             * Returns whether the connection can be converted from inputPoint to outputPoint
-             * @param {Point|Graph.modelPointTypedef} outputPoint - a
-             * @param {Point|Graph.modelPointTypedef} inputPoint - b
+             * Returns whether the connection can be converted from the specified output point to the specified input point
+             * @param {Point|Graph.modelPointTypedef} outputPoint - specifies the output point
+             * @param {Point|Graph.modelPointTypedef} inputPoint - specifies the input point
              * @returns {boolean}
              */
 
@@ -4008,9 +4015,9 @@
             }
 
             /**
-             * Connects the given outputPoint to the given inputPoint
-             * @param {Point} outputPoint - TODO document
-             * @param {Point} inputPoint - TODO document
+             * Connects the specified points
+             * @param {Point} outputPoint - specifies the output point
+             * @param {Point} inputPoint - specifies the input point
              * @returns {Connection}
              */
 
@@ -4069,9 +4076,9 @@
                 return connection;
             }
             /**
-             * Disconnects the given outputPoint from the given inputPoint
-             * @param {Point} outputPoint - TODO document
-             * @param {Point} inputPoint - TODO document
+             * Disconnects the specified points
+             * @param {Point} outputPoint - specifies the output point
+             * @param {Point} inputPoint - specifies the input point
              * @returns {Connection}
              */
 
@@ -4100,8 +4107,8 @@
                 return connectionFound;
             }
             /**
-             * Adds the connection
-             * @param {Connection} connection - the connection to add
+             * Adds the specified connection
+             * @param {Connection} connection - specifies the connection
              * @private
              */
 
@@ -4121,8 +4128,8 @@
                 this[_graphConnections].push(connection);
             }
             /**
-             * Removes the given connection
-             * @param {Connection} connection - the connection to remove
+             * Removes the specified connection
+             * @param {Connection} connection - specifies the connection
              * @private
              */
 
@@ -4143,8 +4150,8 @@
             }
 
             /**
-             * Adds the value type to this graph
-             * @param {Graph.graphValueTypeInfoTypedef} valueTypeInfo - the value type to add
+             * Adds the specified value type to this graph
+             * @param {Graph.valueTypeInfoTypedef} valueTypeInfo - specifies the value type
              */
 
         }, {
@@ -4156,9 +4163,9 @@
                 this[_graphValueTypes][valueTypeInfo.typeName] = valueTypeInfo;
             }
             /**
-             * Returns the valueTypeInfo for the given typeName, or null
-             * @param {Graph.graphValueTypeTypedef} typeName - the typeName to search for
-             * @returns {Graph.graphValueTypeInfoTypedef|null}
+             * Returns the value type corresponding to the specified value type name
+             * @param {Graph.valueTypeTypedef} typeName - specifies the value type name
+             * @returns {Graph.valueTypeInfoTypedef|null}
              */
 
         }, {
@@ -4166,13 +4173,10 @@
             value: function valueTypeByName(typeName) {
                 return this[_graphValueTypes][typeName] || null;
             }
-        }, {
-            key: "query",
-            value: function query() {}
 
             /**
              * Sets the last error
-             * @param {Error} errno - the last error
+             * @param {Error} errno - specifies the last error
              */
 
         }, {
@@ -4186,6 +4190,7 @@
                 return "graph (" + this[_graphBlocks].length + " blocks)";
             }
             /**
+             * Returns this graph blocks
              * @returns {Array<Block>}
              */
 
@@ -4195,6 +4200,7 @@
                 return this[_graphBlocks];
             }
             /**
+             * Returns this graph variables
              * @returns {Array<Variable>}
              */
 
@@ -4204,6 +4210,7 @@
                 return this[_graphVariables];
             }
             /**
+             * Returns this graph connections
              * @returns {Array<Connection>}
              */
 
@@ -4211,15 +4218,6 @@
             key: "graphConnections",
             get: function get() {
                 return this[_graphConnections];
-            }
-            /**
-             * @returns {Array<Graph.modelBlockTypedef>}
-             */
-
-        }, {
-            key: "graphModels",
-            get: function get() {
-                return this[_graphModels];
             }
         }]);
         return Graph;
@@ -4414,8 +4412,8 @@
         }
 
         /**
-         * Creates the block from the given block data
-         * @param {Block.blockDataTypedef} blockData - the block configuration data
+         * Creates the block corresponding to the specified block data
+         * @param {Block.blockDataTypedef} blockData - specifies the block data
          */
 
 
@@ -4463,10 +4461,10 @@
             value: function validatePoints() {}
 
             /**
-             * Changes the given template corresponding to the given templateId
-             * @param {string} templateName - TODO document
-             * @param {string} valueType - TODO document
-             * @param {boolean} [ignoreEmit=false] - TODO document
+             * Changes this template value type corresponding to the specified template name to the specified value type
+             * @param {string} templateName - specifies the template name
+             * @param {string} valueType - specifies the value type
+             * @param {boolean} [ignoreEmit=false] - whether to emit events
              */
 
         }, {
@@ -4536,24 +4534,24 @@
                 }
             }
             /**
-             * Returns the template corresponding to the templateId
-             * @param {string} templateId - TODO document
+             * Returns the template corresponding to the specified template name
+             * @param {string} templateName - specifies the template name
              * @returns {Graph.templateTypedef|null}
              */
 
         }, {
             key: "templateByName",
-            value: function templateByName(templateId) {
+            value: function templateByName(templateName) {
                 if (this[_blockGraph] === null) {
                     throw new Error("`" + this.fancyName + "` cannot manipulate templates when not bound to a graph");
                 }
-                return this[_blockTemplates][templateId] || null;
+                return this[_blockTemplates][templateName] || null;
             }
 
             /**
-             * Adds the given point to the block
-             * @param {Point} point - the point to be added
-             * @param {number} [position] - the position of the point
+             * Adds the specified point to this block
+             * @param {Point} point - specifies the point
+             * @param {number} [position] - the position of the point in the block
              */
 
         }, {
@@ -4598,8 +4596,8 @@
                 this[_blockGraph].emit("block-point-add", this, point);
             }
             /**
-             * Removes the given point from this block
-             * @param {Point} point - the point to be removed
+             * Removes the specified point from this block
+             * @param {Point} point - specifies the point
              */
 
         }, {
@@ -4638,8 +4636,8 @@
                 });
             }
             /**
-             * Returns an output point for the given pointName
-             * @param {string} pointName - the pointName to search
+             * Returns the corresponding output point for the specified point name
+             * @param {string} pointName - specifies the point name
              * @returns {Point}
              */
 
@@ -4651,8 +4649,8 @@
                 }) || null;
             }
             /**
-             * Returns an input point for the given pointName
-             * @param {string} pointName - the pointName to search
+             * Returns the corresponding input point for the specified point name
+             * @param {string} pointName - specifies the point name
              * @returns {Point}
              */
 
@@ -4665,9 +4663,9 @@
             }
 
             /**
-             * Returns whether this block allow the connection from its blockPoint to the given other point
-             * @param {Point} blockPoint - TODO document
-             * @param {Point} otherPoint - TODO document
+             * Returns whether this block allows the connection between the specified block point and the other point
+             * @param {Point} blockPoint - specifies this block point
+             * @param {Point} otherPoint - specifies the other point
              * @returns {boolean}
              */
 
@@ -4695,7 +4693,7 @@
                 return this.constructor.name;
             }
             /**
-             * Returns this unique block id
+             * Returns this block id
              * @returns {string|null}
              */
 
@@ -4705,6 +4703,7 @@
                 return this[_blockId];
             }
             /**
+             * Sets this block id
              * @param {string|null} blockId - the block id to set
              */
             ,
@@ -4722,7 +4721,7 @@
                 return this[_blockName];
             }
             /**
-             * Returns this block points in output
+             * Returns this block output points
              * @returns {Array<Point>}
              */
 
@@ -4732,7 +4731,7 @@
                 return this[_blockOutputs];
             }
             /**
-             * Returns this block points in input
+             * Returns this block input points
              * @returns {Array<Point>}
              */
 
@@ -4752,7 +4751,7 @@
                 return this[_blockTemplates];
             }
             /**
-             * Returns this block's graph
+             * Returns this block graph
              * @returns {Graph|null}
              */
 
@@ -4762,7 +4761,8 @@
                 return this[_blockGraph];
             }
             /**
-             * @param {Graph|null} blockGraph - the graph to set
+             * Sets this block graph to the specified block graph
+             * @param {Graph|null} blockGraph - specifies the block graph
              */
             ,
             set: function set(blockGraph) {
@@ -4891,9 +4891,9 @@
         value: function removed() {}
 
         /**
-         * Changes the variable value
-         * @param {Object|null} value - TODO document
-         * @param {boolean} [ignoreEmit=false] - TODO document
+         * Changes this variable value to the specified value
+         * @param {*|null} value - specifies the value
+         * @param {boolean} [ignoreEmit=false] - whether to emit events
          */
 
       }, {
@@ -4916,6 +4916,7 @@
           return this.toString();
         }
         /**
+         * Returns the variable name
          * @returns {string}
          */
 
@@ -4925,6 +4926,7 @@
           return this[_variableName];
         }
         /**
+         * Returns the variable value type
          * @returns {string}
          */
 
@@ -4934,6 +4936,7 @@
           return this[_variableValueType];
         }
         /**
+         * Returns the variable value
          * @returns {*|null}
          */
 
@@ -4943,14 +4946,15 @@
           return this[_variableValue];
         }
         /**
-         * Sets this variable value
-         * @param {*|null} variableValue - the variable value to set
+         * Sets this variable value to the specified variable value
+         * @param {*|null} variableValue - specifies the variable value
          */
         ,
         set: function set(variableValue) {
           this.changeVariableValue(variableValue);
         }
         /**
+         * Returns this variable block
          * @returns {Block}
          */
 
@@ -4960,13 +4964,15 @@
           return this[_variableBlock];
         }
         /**
-         * @param {Block} variableBlock - TODO document
+         * Sets this variable block to the specified variable block
+         * @param {Block} variableBlock - specifies the variable block
          */
         ,
         set: function set(variableBlock) {
           this[_variableBlock] = variableBlock;
         }
         /**
+         * Returns this variable graph
          * @returns {Graph}
          */
 
@@ -4976,7 +4982,8 @@
           return this[_variableGraph];
         }
         /**
-         * @param {Graph} variableGraph - TODO document
+         * Sets this variable graph to the specified variable graph
+         * @param {Graph} variableGraph - specifies the variable graph
          */
         ,
         set: function set(variableGraph) {
@@ -5022,8 +5029,8 @@
         }
 
         /**
-         * Creates the point from the given point data
-         * @param {Point.pointDataTypedef} pointData - The point configuration data
+         * Creates the point corresponding to the specified point data
+         * @param {Point.pointDataTypedef} pointData - specifies the point data
          */
 
 
@@ -5060,8 +5067,8 @@
 
 
             /**
-             * Returns whether this point has the given policy
-             * @param {number} policy - the policy to check
+             * Returns whether this point has the specified policy
+             * @param {number} policy - specifies the policy
              * @returns {boolean}
              */
             value: function hasPolicy(policy) {
@@ -5078,8 +5085,9 @@
             value: function removed() {}
 
             /**
-             * @param {*|null} value - TODO document
-             * @param {boolean} [ignoreEmit=false] - TODO document
+             * Changes this point value to the specified value
+             * @param {*|null} value - specifies the value
+             * @param {boolean} [ignoreEmit=false] - whether to emit events
              */
 
         }, {
@@ -5107,8 +5115,9 @@
                 }
             }
             /**
-             * @param {*|null} pointValueType - TODO document
-             * @param {boolean} [ignoreEmit=false] - TODO document
+             * Changes this point value type to the specified value type
+             * @param {*|null} pointValueType - specifies the value type
+             * @param {boolean} [ignoreEmit=false] - whether to emit events
              */
 
         }, {
@@ -5133,7 +5142,7 @@
             }
 
             /**
-             * Returns whether this point is empty or not
+             * Returns whether this point is empty
              * @returns {boolean}
              */
 
@@ -5143,7 +5152,7 @@
                 return this.emptyValue() && this.emptyConnection();
             }
             /**
-             * Returns true if this point has no value
+             * Returns whether this point has a null value
              * @returns {boolean}
              */
 
@@ -5153,7 +5162,7 @@
                 return this[_pointValue] === null;
             }
             /**
-             * Returns true if this point no connection
+             * Returns whether this point has no connections
              * @returns {boolean}
              */
 
@@ -5164,8 +5173,8 @@
             }
 
             /**
-             * Connects this point to the given other point
-             * @param {Point} otherPoint - the point to connect to
+             * Connects the specified other point to this point
+             * @param {Point} otherPoint - specifies the other point
              * @returns {Connection}
              */
 
@@ -5181,8 +5190,8 @@
                 return this[_pointBlock].blockGraph.connect(otherPoint, this);
             }
             /**
-             * Disconnects this point from the given other point
-             * @param {Point} otherPoint - the point to disconnect from
+             * Disconnects the specified other point from this point
+             * @param {Point} otherPoint - specifies the other point
              * @returns {Connection}
              */
 
@@ -5198,7 +5207,7 @@
                 return this[_pointBlock].blockGraph.disconnect(otherPoint, this);
             }
             /**
-             * Disconnects this points from all other points
+             * Disconnects all points from this point
              */
 
         }, {
@@ -5291,8 +5300,8 @@
                 return this[_pointValue];
             }
             /**
-             * Sets this point value
-             * @param {*|null} pointValue - the point value to set
+             * Sets this point value to the specified point value
+             * @param {*|null} pointValue - specifies the point value
              */
             ,
             set: function set(pointValue) {
@@ -5319,8 +5328,8 @@
                 return this[_pointBlock];
             }
             /**
-             * Sets this point's block
-             * @param {Block|null} pointBlock - the block to set
+             * Sets this point block to the specified point block
+             * @param {Block|null} pointBlock - specifies the point block
              */
             ,
             set: function set(pointBlock) {

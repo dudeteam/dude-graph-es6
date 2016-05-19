@@ -33,8 +33,8 @@ export default class Block extends EventClass {
     }
 
     /**
-     * Creates the block from the given block data
-     * @param {Block.blockDataTypedef} blockData - the block configuration data
+     * Creates the block corresponding to the specified block data
+     * @param {Block.blockDataTypedef} blockData - specifies the block data
      */
     create(blockData) {
         this[_blockId] = defaultValue(blockData.blockId, null);
@@ -53,11 +53,12 @@ export default class Block extends EventClass {
      */
     get blockType() { return this.constructor.name; }
     /**
-     * Returns this unique block id
+     * Returns this block id
      * @returns {string|null}
      */
     get blockId() { return this[_blockId]; }
     /**
+     * Sets this block id
      * @param {string|null} blockId - the block id to set
      */
     set blockId(blockId) { this[_blockId] = blockId; }
@@ -67,12 +68,12 @@ export default class Block extends EventClass {
      */
     get blockName() { return this[_blockName]; }
     /**
-     * Returns this block points in output
+     * Returns this block output points
      * @returns {Array<Point>}
      */
     get blockOutputs() { return this[_blockOutputs]; }
     /**
-     * Returns this block points in input
+     * Returns this block input points
      * @returns {Array<Point>}
      */
     get blockInputs() { return this[_blockInputs]; }
@@ -82,12 +83,13 @@ export default class Block extends EventClass {
      */
     get blockTemplates() { return this[_blockTemplates]; }
     /**
-     * Returns this block's graph
+     * Returns this block graph
      * @returns {Graph|null}
      */
     get blockGraph() { return this[_blockGraph]; }
     /**
-     * @param {Graph|null} blockGraph - the graph to set
+     * Sets this block graph to the specified block graph
+     * @param {Graph|null} blockGraph - specifies the block graph
      */
     set blockGraph(blockGraph) { this[_blockGraph] = blockGraph; }
 
@@ -105,10 +107,10 @@ export default class Block extends EventClass {
     validatePoints() {}
 
     /**
-     * Changes the given template corresponding to the given templateId
-     * @param {string} templateName - TODO document
-     * @param {string} valueType - TODO document
-     * @param {boolean} [ignoreEmit=false] - TODO document
+     * Changes this template value type corresponding to the specified template name to the specified value type
+     * @param {string} templateName - specifies the template name
+     * @param {string} valueType - specifies the value type
+     * @param {boolean} [ignoreEmit=false] - whether to emit events
      */
     changeTemplate(templateName, valueType, ignoreEmit) {
         if (this[_blockGraph] === null) {
@@ -176,21 +178,21 @@ export default class Block extends EventClass {
         }
     }
     /**
-     * Returns the template corresponding to the templateId
-     * @param {string} templateId - TODO document
+     * Returns the template corresponding to the specified template name
+     * @param {string} templateName - specifies the template name
      * @returns {Graph.templateTypedef|null}
      */
-    templateByName(templateId) {
+    templateByName(templateName) {
         if (this[_blockGraph] === null) {
             throw new Error("`" + this.fancyName + "` cannot manipulate templates when not bound to a graph");
         }
-        return this[_blockTemplates][templateId] || null;
+        return this[_blockTemplates][templateName] || null;
     }
 
     /**
-     * Adds the given point to the block
-     * @param {Point} point - the point to be added
-     * @param {number} [position] - the position of the point
+     * Adds the specified point to this block
+     * @param {Point} point - specifies the point
+     * @param {number} [position] - the position of the point in the block
      */
     addPoint(point, position) {
         if (this[_blockGraph] === null) {
@@ -232,8 +234,8 @@ export default class Block extends EventClass {
         this[_blockGraph].emit("block-point-add", this, point);
     }
     /**
-     * Removes the given point from this block
-     * @param {Point} point - the point to be removed
+     * Removes the specified point from this block
+     * @param {Point} point - specifies the point
      */
     removePoint(point) {
         if (point.pointOutput && this.outputByName(point.pointName) === null) {
@@ -266,16 +268,16 @@ export default class Block extends EventClass {
         });
     }
     /**
-     * Returns an output point for the given pointName
-     * @param {string} pointName - the pointName to search
+     * Returns the corresponding output point for the specified point name
+     * @param {string} pointName - specifies the point name
      * @returns {Point}
      */
     outputByName(pointName) {
         return find(this[_blockOutputs], (point) => { return point.pointName === pointName; }) || null;
     }
     /**
-     * Returns an input point for the given pointName
-     * @param {string} pointName - the pointName to search
+     * Returns the corresponding input point for the specified point name
+     * @param {string} pointName - specifies the point name
      * @returns {Point}
      */
     inputByName(pointName) {
@@ -283,9 +285,9 @@ export default class Block extends EventClass {
     }
 
     /**
-     * Returns whether this block allow the connection from its blockPoint to the given other point
-     * @param {Point} blockPoint - TODO document
-     * @param {Point} otherPoint - TODO document
+     * Returns whether this block allows the connection between the specified block point and the other point
+     * @param {Point} blockPoint - specifies this block point
+     * @param {Point} otherPoint - specifies the other point
      * @returns {boolean}
      */
     acceptConnect(blockPoint, otherPoint) {

@@ -35,8 +35,8 @@ export default class Point extends EventClass {
     }
 
     /**
-     * Creates the point from the given point data
-     * @param {Point.pointDataTypedef} pointData - The point configuration data
+     * Creates the point corresponding to the specified point data
+     * @param {Point.pointDataTypedef} pointData - specifies the point data
      */
     create(pointData) {
         this[_pointName] = defaultValue(pointData.pointName, null);
@@ -102,8 +102,8 @@ export default class Point extends EventClass {
      */
     get pointValue() { return this[_pointValue]; }
     /**
-     * Sets this point value
-     * @param {*|null} pointValue - the point value to set
+     * Sets this point value to the specified point value
+     * @param {*|null} pointValue - specifies the point value
      */
     set pointValue(pointValue) { this.changeValue(pointValue); }
     /**
@@ -117,8 +117,8 @@ export default class Point extends EventClass {
      */
     get pointBlock() { return this[_pointBlock]; }
     /**
-     * Sets this point's block
-     * @param {Block|null} pointBlock - the block to set
+     * Sets this point block to the specified point block
+     * @param {Block|null} pointBlock - specifies the point block
      */
     set pointBlock(pointBlock) { this[_pointBlock] = pointBlock; }
     /**
@@ -128,8 +128,8 @@ export default class Point extends EventClass {
     get pointConnections() { return this[_pointConnections]; }
 
     /**
-     * Returns whether this point has the given policy
-     * @param {number} policy - the policy to check
+     * Returns whether this point has the specified policy
+     * @param {number} policy - specifies the policy
      * @returns {boolean}
      */
     hasPolicy(policy) {
@@ -141,8 +141,9 @@ export default class Point extends EventClass {
     removed() {}
 
     /**
-     * @param {*|null} value - TODO document
-     * @param {boolean} [ignoreEmit=false] - TODO document
+     * Changes this point value to the specified value
+     * @param {*|null} value - specifies the value
+     * @param {boolean} [ignoreEmit=false] - whether to emit events
      */
     changeValue(value, ignoreEmit) {
         if (this[_pointBlock] === null) {
@@ -168,8 +169,9 @@ export default class Point extends EventClass {
         }
     }
     /**
-     * @param {*|null} pointValueType - TODO document
-     * @param {boolean} [ignoreEmit=false] - TODO document
+     * Changes this point value type to the specified value type
+     * @param {*|null} pointValueType - specifies the value type
+     * @param {boolean} [ignoreEmit=false] - whether to emit events
      */
     changeValueType(pointValueType, ignoreEmit) {
         if (this[_pointBlock] === null) {
@@ -191,24 +193,24 @@ export default class Point extends EventClass {
     }
 
     /**
-     * Returns whether this point is empty or not
+     * Returns whether this point is empty
      * @returns {boolean}
      */
     empty() { return this.emptyValue() && this.emptyConnection(); }
     /**
-     * Returns true if this point has no value
+     * Returns whether this point has a null value
      * @returns {boolean}
      */
     emptyValue() { return this[_pointValue] === null; }
     /**
-     * Returns true if this point no connection
+     * Returns whether this point has no connections
      * @returns {boolean}
      */
     emptyConnection() { return this[_pointConnections].length === 0; }
 
     /**
-     * Connects this point to the given other point
-     * @param {Point} otherPoint - the point to connect to
+     * Connects the specified other point to this point
+     * @param {Point} otherPoint - specifies the other point
      * @returns {Connection}
      */
     connect(otherPoint) {
@@ -221,8 +223,8 @@ export default class Point extends EventClass {
         return this[_pointBlock].blockGraph.connect(otherPoint, this);
     }
     /**
-     * Disconnects this point from the given other point
-     * @param {Point} otherPoint - the point to disconnect from
+     * Disconnects the specified other point from this point
+     * @param {Point} otherPoint - specifies the other point
      * @returns {Connection}
      */
     disconnect(otherPoint) {
@@ -235,7 +237,7 @@ export default class Point extends EventClass {
         return this[_pointBlock].blockGraph.disconnect(otherPoint, this);
     }
     /**
-     * Disconnects this points from all other points
+     * Disconnects all points from this point
      */
     disconnectAll() {
         var point = this;

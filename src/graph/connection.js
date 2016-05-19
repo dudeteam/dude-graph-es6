@@ -6,9 +6,9 @@ let _connectionInputPoint = Symbol("inputPoint");
 export default class Connection extends EventClass {
 
     /**
-     * Creates a connection between the two given points
-     * @param {Point} outputPoint - the output point
-     * @param {Point} inputPoint - the input point
+     * Creates a connection between the two specified points
+     * @param {Point} outputPoint - specifies the output point
+     * @param {Point} inputPoint - specifies the input point
      */
     constructor(outputPoint, inputPoint) {
         super();
@@ -23,17 +23,19 @@ export default class Connection extends EventClass {
      */
     get fancyName() { return this[_connectionOutputPoint].fancyName + " => " + this[_connectionInputPoint].fancyName }
     /**
+     * Returns this connection output point
      * @returns {Point}
      */
     get connectionOutputPoint() { return this[_connectionOutputPoint]; }
     /**
+     * Returns this connection input point
      * @returns {Point}
      */
     get connectionInputPoint() { return this[_connectionInputPoint]; }
 
     /**
-     * Returns the point connected to the given point in this connection
-     * @param {Point} point - the point connected
+     * Returns the corresponding point connected to the specified point
+     * @param {Point} point - specifies the point
      * @returns {Point}
      */
     other(point) {

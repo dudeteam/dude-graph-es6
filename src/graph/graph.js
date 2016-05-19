@@ -2,128 +2,37 @@ import pull from "lodash-es/pull";
 import find from "lodash-es/find";
 import filter from "lodash-es/filter";
 import forOwn from "lodash-es/forOwn";
-import isArray from "lodash-es/isArray";
 import includes from "lodash-es/includes";
-import toNumber from "lodash-es/toNumber";
-import toString from "lodash-es/toString";
-import isString from "lodash-es/isString";
-import isNumber from "lodash-es/isNumber";
-import isObject from "lodash-es/isObject";
-import isBoolean from "lodash-es/isBoolean";
 import EventClass from "event-class-es6";
 
+import valueTypes from "./defaults/valueTypes";
 import Connection from "./connection";
 import PointPolicy from "./policy";
 
-let _graphValueTypes = Symbol("graphValueTypes");
-let _graphModels = Symbol("graphModels");
+let _graphErrno = Symbol("graphErrno");
 let _graphBlocks = Symbol("graphBlocks");
 let _graphBlockIds = Symbol("graphBlockIds");
 let _graphVariables = Symbol("graphVariables");
+let _graphValueTypes = Symbol("graphValueTypes");
 let _graphConnections = Symbol("graphConnections");
-let _graphErrno = Symbol("graphErrno");
 
 export default class Graph extends EventClass {
 
     constructor() {
         super();
 
+        this[_graphErrno] = null;
         this[_graphBlocks] = [];
         this[_graphBlockIds] = {};
         this[_graphVariables] = [];
+        this[_graphValueTypes] = {};
         this[_graphConnections] = [];
-        this[_graphValueTypes] = {
-            "Stream": {
-                "convert": () => undefined,
-                "typeCompatibles": []
-            },
-            "String": {
-                "typeConvert": (value) => {
-                    if (isString(value)) {
-                        return value;
-                    }
-                    if (isNumber(value) || isBoolean(value)) {
-                        return toString(value);
-                    }
-                    return undefined;
-                },
-                "typeCompatibles": ["Text", "Number", "Boolean"]
-            },
-            "Text": {
-                "typeConvert": (value) => {
-                    if (isString(value)) {
-                        return value;
-                    }
-                    if (isNumber(value) || isBoolean(value)) {
-                        return toString(value);
-                    }
-                    return undefined;
-                },
-                "typeCompatibles": ["String", "Number", "Boolean"]
-            },
-            "Number": {
-                "typeConvert": (value) => {
-                    if (isNumber(value)) {
-                        return value;
-                    }
-                    if (/^[-+]?[0-9]+(\.[0-9]+)?$/.test(value)) {
-                        return toNumber(value);
-                    }
-                    if (value === "true" || value === true) {
-                        return 1;
-                    }
-                    if (value === "false" || value === false) {
-                        return 0;
-                    }
-                    return undefined;
-                },
-                "typeCompatibles": ["Boolean"]
-            },
-            "Boolean": {
-                "typeConvert": (value) => {
-                    if (isBoolean(value)) {
-                        return value;
-                    }
-                    if (value === 1 || value === "true") {
-                        return true;
-                    }
-                    if (value === 0 || value === "false") {
-                        return false;
-                    }
-                    return undefined;
-                },
-                "typeCompatibles": ["Number"]
-            },
-            "Object": {
-                "typeConvert": (value) => {
-                    if (isObject(value)) {
-                        return value;
-                    }
-                    return undefined;
-                },
-                "typeCompatibles": []
-            },
-            "Array": {
-                "typeConvert": (value) => {
-                    if (isArray(value)) {
-                        return value;
-                    }
-                    return undefined;
-                },
-                "typeCompatibles": []
-            },
-            "Resource": {
-                "typeConvert": (value) => {
-                    if (isObject(value)) {
-                        return value;
-                    }
-                    return undefined;
-                },
-                "typeCompatibles": []
-            }
-        };
-        this[_graphModels] = [];
-        this[_graphErrno] = null;
+
+        this.create();
+    }
+
+    create() {
+        this[_graphValueTypes] = valueTypes;
     }
 
     /**
@@ -132,25 +41,24 @@ export default class Graph extends EventClass {
      */
     get fancyName() { return "graph (" + this[_graphBlocks].length + " blocks)"; }
     /**
+     * Returns this graph blocks
      * @returns {Array<Block>}
      */
     get graphBlocks() { return this[_graphBlocks]; }
     /**
+     * Returns this graph variables
      * @returns {Array<Variable>}
      */
     get graphVariables() { return this[_graphVariables]; }
     /**
+     * Returns this graph connections
      * @returns {Array<Connection>}
      */
     get graphConnections() { return this[_graphConnections]; }
-    /**
-     * @returns {Array<Graph.modelBlockTypedef>}
-     */
-    get graphModels() { return this[_graphModels]; }
 
     /**
-     * Adds the given block to this graph
-     * @param {Block} block - the block to be added
+     * Adds the specified block to this graph
+     * @param {Block} block - the block to add
      */
     addBlock(block) {
         if (block.blockGraph !== null) {
@@ -172,8 +80,8 @@ export default class Graph extends EventClass {
         block.added();
     }
     /**
-     * Removes the given block from this graph
-     * @param {Block} block - the block to be removed
+     * Removes the specified block from this graph
+     * @param {Block} block - the block to remove
      */
     removeBlock(block) {
         if (block.blockGraph !== this || !includes(this[_graphBlocks], block)) {
@@ -186,23 +94,23 @@ export default class Graph extends EventClass {
         block.removed();
     }
     /**
-     * Returns the next unique blockId
+     * Returns the next unique block id
      * @returns {string}
      */
     nextBlockId() {
         return (Math.random() * 9999) + this;
     }
     /**
-     * Returns the block for the given blockId
-     * @param {string} blockId - the blockId to search for
+     * Returns the block corresponding to the specified block id
+     * @param {string} blockId - specifies the block id
      * @returns {Block|null}
      */
     blockById(blockId) {
         return this[_graphBlockIds][blockId] || null;
     }
     /**
-     * Returns the blocks with the given name
-     * @param {string} blockName - the block name to search
+     * Returns the blocks corresponding to the specified block name
+     * @param {string} blockName - specifies the block name
      * @returns {Array<Block>}
      */
     blocksByName(blockName) {
@@ -211,8 +119,8 @@ export default class Graph extends EventClass {
         });
     }
     /**
-     * Returns the blocks with the given type
-     * @param {string} blockType - the block type to search
+     * Returns the blocks corresponding to the specified block type
+     * @param {string} blockType - specifies the block type
      * @returns {Array<Block>}
      */
     blocksByType(blockType) {
@@ -222,8 +130,8 @@ export default class Graph extends EventClass {
     }
 
     /**
-     * Adds the given variable to this graph
-     * @param {Variable} variable - the variable to be added
+     * Adds the specified variable to this graph
+     * @param {Variable} variable - specifies the variable
      */
     addVariable(variable) {
         if (variable.variableGraph !== null) {
@@ -238,8 +146,8 @@ export default class Graph extends EventClass {
         this.emit("variable-add", variable);
     }
     /**
-     * Removes the given variable from this graph
-     * @param {Variable} variable - the variable to be removed
+     * Removes the specified variable from this graph
+     * @param {Variable} variable - specifies the variable
      */
     removeVariable(variable) {
         if (variable.variableGraph !== this || this.variableByName(variable.variableName) === null) {
@@ -252,8 +160,8 @@ export default class Graph extends EventClass {
         this.emit("variable-remove", variable);
     }
     /**
-     * Returns this graph variable for the given variableName
-     * @param {string} variableName - the variable name to search for
+     * Returns the variable corresponding to the specified variable name
+     * @param {string} variableName - specifies the variable name
      * @returns {Variable|null}
      */
     variableByName(variableName) {
@@ -263,10 +171,10 @@ export default class Graph extends EventClass {
     }
 
     /**
-     * Converts the given value to the given type if possible or returns undefined
-     * @param {Graph.graphValueTypeTypedef} valueType - the value type to enforce
-     * @param {*|null} value - the value to convert
-     * @returns {*|undefined}
+     * Converts the specified value to the corresponding value type
+     * @param {Graph.valueTypeTypedef} valueType - specifies the value type
+     * @param {*|null} value - specifies the value
+     * @returns {*|undefined} - returns undefined on failure
      */
     convertValue(valueType, value) {
         if (value === null) {
@@ -282,9 +190,9 @@ export default class Graph extends EventClass {
         return valueTypeInfo.typeConvert(value);
     }
     /**
-     * Returns whether the connection can be converted from inputPoint to outputPoint
-     * @param {Point|Graph.modelPointTypedef} outputPoint - a
-     * @param {Point|Graph.modelPointTypedef} inputPoint - b
+     * Returns whether the connection can be converted from the specified output point to the specified input point
+     * @param {Point|Graph.modelPointTypedef} outputPoint - specifies the output point
+     * @param {Point|Graph.modelPointTypedef} inputPoint - specifies the input point
      * @returns {boolean}
      */
     convertConnection(outputPoint, inputPoint) {
@@ -377,9 +285,9 @@ export default class Graph extends EventClass {
     }
 
     /**
-     * Connects the given outputPoint to the given inputPoint
-     * @param {Point} outputPoint - TODO document
-     * @param {Point} inputPoint - TODO document
+     * Connects the specified points
+     * @param {Point} outputPoint - specifies the output point
+     * @param {Point} inputPoint - specifies the input point
      * @returns {Connection}
      */
     connect(outputPoint, inputPoint) {
@@ -436,9 +344,9 @@ export default class Graph extends EventClass {
         return connection;
     }
     /**
-     * Disconnects the given outputPoint from the given inputPoint
-     * @param {Point} outputPoint - TODO document
-     * @param {Point} inputPoint - TODO document
+     * Disconnects the specified points
+     * @param {Point} outputPoint - specifies the output point
+     * @param {Point} inputPoint - specifies the input point
      * @returns {Connection}
      */
     disconnect(outputPoint, inputPoint) {
@@ -465,8 +373,8 @@ export default class Graph extends EventClass {
         return connectionFound;
     }
     /**
-     * Adds the connection
-     * @param {Connection} connection - the connection to add
+     * Adds the specified connection
+     * @param {Connection} connection - specifies the connection
      * @private
      */
     _addConnection (connection) {
@@ -483,8 +391,8 @@ export default class Graph extends EventClass {
         this[_graphConnections].push(connection);
     }
     /**
-     * Removes the given connection
-     * @param {Connection} connection - the connection to remove
+     * Removes the specified connection
+     * @param {Connection} connection - specifies the connection
      * @private
      */
     _removeConnection (connection) {
@@ -502,8 +410,8 @@ export default class Graph extends EventClass {
     }
 
     /**
-     * Adds the value type to this graph
-     * @param {Graph.graphValueTypeInfoTypedef} valueTypeInfo - the value type to add
+     * Adds the specified value type to this graph
+     * @param {Graph.valueTypeInfoTypedef} valueTypeInfo - specifies the value type
      */
     addValueType(valueTypeInfo) {
         if (this.valueTypeByName(valueTypeInfo.typeName) !== null) {
@@ -512,19 +420,17 @@ export default class Graph extends EventClass {
         this[_graphValueTypes][valueTypeInfo.typeName] = valueTypeInfo;
     }
     /**
-     * Returns the valueTypeInfo for the given typeName, or null
-     * @param {Graph.graphValueTypeTypedef} typeName - the typeName to search for
-     * @returns {Graph.graphValueTypeInfoTypedef|null}
+     * Returns the value type corresponding to the specified value type name
+     * @param {Graph.valueTypeTypedef} typeName - specifies the value type name
+     * @returns {Graph.valueTypeInfoTypedef|null}
      */
     valueTypeByName(typeName) {
         return this[_graphValueTypes][typeName] || null;
     }
 
-    query() {}
-
     /**
      * Sets the last error
-     * @param {Error} errno - the last error
+     * @param {Error} errno - specifies the last error
      */
     errno(errno) {
         this[_graphErrno] = errno;
@@ -539,14 +445,20 @@ export default class Graph extends EventClass {
  */
 
 /**
- * @typedef {string} Graph.graphValueTypeTypedef
+ * @typedef {string} Graph.valueTypeTypedef
  */
 
 /**
- * @typedef {Object} Graph.graphValueTypeInfoTypedef
+ * @typedef {Object} Graph.valueTypeInfoTypedef
  * @property {string} typeName
- * @property {Graph.convertTypeCallback} typeConvert
+ * @property {Graph.convertTypeTypedef} typeConvert
  * @property {Array<string>} [typeCompatibles=[]]
+ */
+
+/**
+ * @typedef {function} Graph.convertTypeTypedef
+ * @param {*|null} value
+ * @returns {*|undefined}
  */
 
 /**
@@ -576,11 +488,4 @@ export default class Graph extends EventClass {
  * @property {Array<Graph.modelPointTypedef>} item.data.blockInputs
  * @property {Array<Graph.modelPointTypedef>} item.data.blockOutputs
  * @property {string} [item.data.modelPointName] - Filled for autocomplete purpose
- */
-
-/**
- * Callback to convert the given value to valueType, or undefined on conversion failure
- * @callback Graph.convertTypeCallback
- * @param {*|null} value
- * @returns {*|undefined}
  */
