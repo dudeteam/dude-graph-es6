@@ -25,10 +25,7 @@ const es5config = {
     ]
 };
 const es6config = {
-    "sourceMap": true,
-    "plugins": [
-        nodeResolve()
-    ]
+    "sourceMap": true
 };
 
 gulp.task("default", ["build:es5", "build:es6"]);
@@ -53,7 +50,7 @@ gulp.task("build:es5", ["lint"], () => {
         .pipe(rollup(es5config))
         .pipe(rename("dude-graph.js"))
         .pipe(sourcemaps.write("."))
-        .pipe(gulp.dest("."));
+        .pipe(gulp.dest("dist/"));
 });
 
 gulp.task("build:es6", ["lint"], () => {
@@ -61,5 +58,5 @@ gulp.task("build:es6", ["lint"], () => {
         .pipe(rollup(es6config))
         .pipe(rename("dude-graph-es6.js"))
         .pipe(sourcemaps.write("."))
-        .pipe(gulp.dest("."));
+        .pipe(gulp.dest("dist/"));
 });

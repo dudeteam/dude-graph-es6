@@ -1,7 +1,7 @@
 import {expect} from "chai";
 import sinon from "sinon";
-import {Graph, Block, Point, PointPolicy, Variable} from "../dude-graph-es6";
-import {AssignationBlock, VariableBlock, StreamPoint} from "../dude-graph-es6";
+import {Graph, Block, Point, PointPolicy, Variable} from "../src/dude-graph";
+import {AssignationBlock, VariableBlock, StreamPoint} from "../src/dude-graph";
 
 describe("dude-graph api", () => {
     /**

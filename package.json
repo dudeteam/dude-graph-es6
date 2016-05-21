@@ -1,9 +1,10 @@
 {
   "name": "dude-graph",
   "version": "0.0.1",
+  "main": "dist/dude-graph.js",
   "scripts": {
     "start": "gulp",
-    "test": "mocha --compilers js:babel-core/register test/"
+    "test": "mocha --compilers js:babel-core/register --require ./test/test-helper.js test/tests.js"
   },
   "dependencies": {
     "event-class-es6": "^1.0.2",
