@@ -2,10 +2,29 @@
   "name": "dude-graph",
   "version": "0.0.1",
   "main": "dist/dude-graph.js",
+  "author": "Jonathan Picques <jonathan.picques@gmail.com>",
+  "contributors": [
+    "Jonathan Picques <jonathan.picques@gmail.com>",
+    "Jeremie Taboada <taboada.jeremie@gmail.com>"
+  ],
+  "license": "MIT",
+  "description": "Generic tool to visually represent a graph of connected blocks.",
   "scripts": {
     "start": "gulp",
     "test": "mocha --compilers js:babel-core/register --require ./test/test-helper.js test/tests.js"
   },
+  "directories": {
+    "lib": "dist",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dudeteam/dude-graph-es6.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dudeteam/dude-graph-es6/issues"
+  },
+  "homepage": "https://github.com/dudeteam/dude-graph-es6#readme",
   "dependencies": {
     "event-class-es6": "^1.0.2",
     "lodash-es": "^4.12.0"
