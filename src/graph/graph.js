@@ -27,7 +27,6 @@ export default class Graph extends EventClass {
         this[_graphVariables] = [];
         this[_graphValueTypes] = {};
         this[_graphConnections] = [];
-
         this.create();
     }
 

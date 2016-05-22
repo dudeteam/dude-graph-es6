@@ -18,7 +18,7 @@ let _blockGraph = Symbol("blockGraph");
 export default class Block extends EventClass {
 
     /**
-     * @param {Block.blockDataTypedef} blockData - the block configuration data
+     * @param {Block.blockDataTypedef} [blockData={}] - the block configuration data
      */
     constructor(blockData) {
         super();
