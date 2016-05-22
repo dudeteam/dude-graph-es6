@@ -1141,9 +1141,35 @@ describe("dude-graph api", () => {
         expect(outputPoint2.pointConnections).to.have.length(0);
     });
     it("custom block and custom point", () => {
-        // TODO: test added, pointAdded, pointConnected, pointValueChanged, pointDisconnected, pointRemoved, removed
         // TODO: test acceptConnect
+        let pointAddedSpy = sinon.spy();
+        let pointConnectedSpy = sinon.spy();
+        let pointDisconnectedSpy = sinon.spy();
+        let pointRemovedSpy = sinon.spy();
+
+        // TODO: test acceptConnect
+        let blockAddedSpy = sinon.spy();
+        let blockRemovedSpy = sinon.spy();
+        let blockPointAddedSpy = sinon.spy();
+        let blockPointConnectedSpy = sinon.spy();
+        let blockPointValueChangedSpy = sinon.spy();
+        let blockPointDisconnectedSpy = sinon.spy();
+        let blockPointRemovedSpy = sinon.spy();
+
+        class StreamPoint extends Point {
+            added() { pointAddedSpy.apply(this, arguments); }
+            connected() { pointConnectedSpy.apply(this, arguments); }
+            disconnected() { pointDisconnectedSpy.apply(this, arguments); }
+            removed() { pointRemovedSpy.apply(this, arguments); }
+        }
         class AssignationBlock extends Block {
+            added() { blockAddedSpy.apply(this, arguments); }
+            removed() { blockRemovedSpy.apply(this, arguments); }
+            pointAdded() { blockPointAddedSpy.apply(this, arguments); }
+            pointConnected() { blockPointConnectedSpy.apply(this, arguments); }
+            pointValueChanged() { blockPointValueChangedSpy.apply(this, arguments); }
+            pointDisconnected() { blockPointDisconnectedSpy.apply(this, arguments); }
+            pointRemoved() { blockPointRemovedSpy.apply(this, arguments); }
             validatePoints() {
                 if (!(this.inputByName("in") instanceof StreamPoint)) {
                     throw new Error("`" + this.fancyName + "` must have an input `in` of type `Stream`");
@@ -1162,46 +1188,47 @@ describe("dude-graph api", () => {
                 }
             }
         }
-        // TODO: test connected disconnected
-        // TODO: test acceptConnect
-        class StreamPoint extends Point {}
+
         let graph = new Graph();
         let assignationBlock = new AssignationBlock();
+        let block = new Block();
         graph.addBlock(assignationBlock);
+        sinon.assert.called(blockAddedSpy);
+        graph.addBlock(block);
+
+        block.addPoint(new StreamPoint(true, {"pointName": "out", "pointValueType": "Stream"}));
+
         assignationBlock.addPoint(new StreamPoint(false, {"pointName": "in", "pointValueType": "Stream"}));
-        assignationBlock.addPoint(new Point(false, {"pointName": "variable", "pointValueType": "Object"}));
-        assignationBlock.addPoint(new Point(false, {"pointName": "value", "pointValueType": "Object"}));
+        sinon.assert.called(pointAddedSpy);
+        sinon.assert.calledWith(blockPointAddedSpy, assignationBlock.inputByName("in"));
+
+        assignationBlock.addPoint(new Point(false, {"pointName": "variable", "pointValueType": "Number"}));
+        assignationBlock.addPoint(new Point(false, {"pointName": "value", "pointValueType": "Number", "pointValue": 2}));
         expect(() => {
-            assignationBlock.validatePoints(); // Missing output "out `StreamPoint`"
+            assignationBlock.validatePoints();
         }).to.throw();
         assignationBlock.addPoint(new StreamPoint(true, {"pointName": "out", "pointValueType": "Stream"}));
         assignationBlock.validatePoints();
-        expect(graph.blockById(assignationBlock.blockId) instanceof AssignationBlock).to.be.true;
-        expect(assignationBlock.inputByName("in") instanceof StreamPoint).to.be.true;
-        let pointValueChangedSpy = sinon.spy();
-        let pointConnectedSpy = sinon.spy();
-        let pointDisconnectedSpy = sinon.spy();
-        let blockRemovedSpy = sinon.spy();
-        let CustomBlock = class extends Block {
-            pointValueChanged() { pointValueChangedSpy.apply(this, arguments); }
-            pointConnected() { pointConnectedSpy.apply(this, arguments); }
-            pointDisconnected() { pointDisconnectedSpy.apply(this, arguments); }
-            removed() { blockRemovedSpy.apply(this, arguments); }
-        };
-        let customBlock = new CustomBlock();
-        graph.addBlock(customBlock);
-        let point1 = new Point(false, {"pointName": "in", "pointValueType": "Stream"});
-        let point2 = new Point(false, {"pointName": "number", "pointValueType": "Number"});
-        customBlock.addPoint(point1);
-        customBlock.addPoint(point2);
-        point1.connect(assignationBlock.outputByName("out"));
-        sinon.assert.calledWith(pointConnectedSpy, point1, assignationBlock.outputByName("out"));
-        point2.pointValue = 32;
-        sinon.assert.calledWith(pointValueChangedSpy, point2, 32, null);
-        point1.disconnectAll();
-        sinon.assert.calledWith(pointDisconnectedSpy, point1, assignationBlock.outputByName("out"));
-        graph.removeBlock(customBlock);
+
+        assignationBlock.inputByName("value").pointValue = 4;
+        sinon.assert.calledWith(blockPointValueChangedSpy, assignationBlock.inputByName("in"), 4, 2);
+
+        assignationBlock.inputByName("in").connect(block.outputByName("out"));
+        sinon.assert.calledWith(pointConnectedSpy, block.outputByName("out"));
+        sinon.assert.calledWith(blockPointConnectedSpy, assignationBlock.inputByName("in"), block.outputByName("out"));
+
+        assignationBlock.inputByName("in").disconnect(block.outputByName("out"));
+        sinon.assert.calledWith(pointDisconnectedSpy, block.outputByName("out"));
+        sinon.assert.calledWith(blockPointDisconnectedSpy, assignationBlock.inputByName("in"), block.outputByName("out"));
+
+        let inPoint = assignationBlock.inputByName("in");
+        assignationBlock.removePoint(inPoint);
+        sinon.assert.called(pointRemovedSpy);
+        sinon.assert.calledWith(blockPointRemovedSpy, inPoint);
+
+        graph.removeBlock(assignationBlock);
         sinon.assert.called(blockRemovedSpy);
+        graph.removeBlock(block);
     });
     it("create/remove variable", () => {
         let graph = new Graph();

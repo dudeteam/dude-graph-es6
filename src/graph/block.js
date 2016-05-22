@@ -221,6 +221,7 @@ export default class Block extends EventClass {
             point.pointBlock = null;
             throw ex;
         }
+        this.pointAdded(point);
         point.added();
         if (typeof position === "undefined") {
             position = point.pointOutput ? this[_blockOutputs].length : this[_blockInputs].length;
@@ -245,6 +246,7 @@ export default class Block extends EventClass {
             throw new Error("`" + this.fancyName + "` has no input `" + point.pointName + "`");
         }
         point.disconnectAll();
+        this.pointRemoved(point);
         point.removed();
         point.pointBlock = null;
         if (point.pointOutput) {

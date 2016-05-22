@@ -336,6 +336,8 @@ export default class Graph extends EventClass {
         this._addConnection(connection);
         outputPoint.pointBlock.pointConnected(outputPoint, inputPoint);
         inputPoint.pointBlock.pointConnected(inputPoint, outputPoint);
+        outputPoint.connected(inputPoint);
+        inputPoint.connected(outputPoint);
         outputPoint.emit("connect", connection);
         inputPoint.emit("connect", connection);
         this.emit("point-connect", outputPoint, connection);
@@ -365,6 +367,8 @@ export default class Graph extends EventClass {
         this._removeConnection(connectionFound);
         outputPoint.pointBlock.pointDisconnected(outputPoint, inputPoint);
         inputPoint.pointBlock.pointDisconnected(inputPoint, outputPoint);
+        outputPoint.disconnected(inputPoint);
+        inputPoint.disconnected(outputPoint);
         outputPoint.emit("disconnect", connectionFound);
         inputPoint.emit("disconnect", connectionFound);
         this.emit("point-disconnect", outputPoint, connectionFound);

@@ -136,10 +136,6 @@ export default class Point extends EventClass {
         return PointPolicy.has(this[_pointPolicy], policy);
     }
 
-    added() {}
-    accept() {}
-    removed() {}
-
     /**
      * Changes this point value to the specified value
      * @param {*|null} value - specifies the value
@@ -162,10 +158,10 @@ export default class Point extends EventClass {
                 "` is not compatible with type `" + this[_pointValueType] + "`");
         }
         this[_pointValue] = assignValue;
+        this[_pointBlock].pointValueChanged(this, assignValue, oldValue);
         if (!ignoreEmit) {
             this.emit("value-change", assignValue, oldValue);
             this[_pointBlock].blockGraph.emit("point-value-change", this, assignValue, oldValue);
-            this[_pointBlock].pointValueChanged(this, assignValue, oldValue);
         }
     }
     /**
@@ -246,11 +242,13 @@ export default class Point extends EventClass {
         });
     }
 
+    added() {}
     connected() {}
-    disconnected() {}
     acceptConnect() {
         return true;
     }
+    disconnected() {}
+    removed() {}
 
 }
 
