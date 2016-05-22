@@ -6,6 +6,3 @@ export {default as PointPolicy} from "./graph/policy";
 export {default as Connection} from "./graph/connection";
 
 export {default as VariableBlock} from "./graph/blocks/variable";
-export {default as AssignationBlock} from "./graph/blocks/assignation";
-
-export {default as StreamPoint} from "./graph/points/stream";

@@ -247,6 +247,7 @@ export default class Point extends EventClass {
     }
 
     connected() {}
+    disconnected() {}
     acceptConnect() {
         return true;
     }

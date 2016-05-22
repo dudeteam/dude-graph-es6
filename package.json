@@ -10,7 +10,7 @@
   "license": "MIT",
   "description": "Generic tool to visually represent a graph of connected blocks.",
   "scripts": {
-    "start": "gulp",
+    "build": "gulp",
     "test": "mocha --compilers js:babel-core/register --require ./test/test-helper.js test/tests.js"
   },
   "directories": {

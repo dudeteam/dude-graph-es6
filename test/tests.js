@@ -1,7 +1,6 @@
 import {expect} from "chai";
 import sinon from "sinon";
-import {Graph, Block, Point, PointPolicy, Variable} from "../src/dude-graph";
-import {AssignationBlock, VariableBlock, StreamPoint} from "../src/dude-graph";
+import {Graph, Block, Point, PointPolicy, Variable, VariableBlock} from "../src/dude-graph";
 
 describe("dude-graph api", () => {
     /**
@@ -58,6 +57,7 @@ describe("dude-graph api", () => {
         });
     });
     it("graph blocksByName and blocksByType", () => {
+        class AssignationBlock extends Block {}
         let graph = new Graph();
         expect(graph.blocksByName("AssignationBlock")).to.have.length(0);
         expect(graph.blocksByType(AssignationBlock)).to.have.length(0);
@@ -1141,6 +1141,30 @@ describe("dude-graph api", () => {
         expect(outputPoint2.pointConnections).to.have.length(0);
     });
     it("custom block and custom point", () => {
+        // TODO: test added, pointAdded, pointConnected, pointValueChanged, pointDisconnected, pointRemoved, removed
+        // TODO: test acceptConnect
+        class AssignationBlock extends Block {
+            validatePoints() {
+                if (!(this.inputByName("in") instanceof StreamPoint)) {
+                    throw new Error("`" + this.fancyName + "` must have an input `in` of type `Stream`");
+                }
+                if (!(this.inputByName("variable") instanceof Point)) {
+                    throw new Error("`" + this.fancyName + "` must have an input `variable` of type `Point`");
+                }
+                if (!(this.inputByName("value") instanceof Point)) {
+                    throw new Error("`" + this.fancyName + "` must have an input `value` of type `Point`");
+                }
+                if (this.inputByName("variable").pointValueType !== this.inputByName("value").pointValueType) {
+                    throw new Error("`" + this.fancyName + "` inputs `variable` and `value` must have the same pointValueType");
+                }
+                if (!(this.outputByName("out") instanceof StreamPoint)) {
+                    throw new Error("`" + this.fancyName + "` must have an output `out` of type `Stream`");
+                }
+            }
+        }
+        // TODO: test connected disconnected
+        // TODO: test acceptConnect
+        class StreamPoint extends Point {}
         let graph = new Graph();
         let assignationBlock = new AssignationBlock();
         graph.addBlock(assignationBlock);
