@@ -24,25 +24,13 @@ export default class Point extends EventClass {
         super();
 
         this[_pointOutput] = pointOutput;
-        this[_pointName] = null;
-        this[_pointTemplate] = null;
-        this[_pointValueType] = null;
-        this[_pointValue] = null;
-        this[_pointPolicy] = PointPolicy.NONE;
-        this[_pointBlock] = null;
-        this[_pointConnections] = [];
-        this.create(pointData);
-    }
-
-    /**
-     * Creates the point corresponding to the specified point data
-     * @param {Point.pointDataTypedef} pointData - specifies the point data
-     */
-    create(pointData) {
         this[_pointName] = defaultValue(pointData.pointName, null);
         this[_pointTemplate] = defaultValue(pointData.pointTemplate, null);
         this[_pointValueType] = defaultValue(pointData.pointValueType, null);
         this[_pointValue] = defaultValue(pointData.pointValue, null);
+        this[_pointPolicy] = PointPolicy.NONE;
+        this[_pointBlock] = null;
+        this[_pointConnections] = [];
         if (typeof pointData.pointPolicy !== "undefined") {
             this[_pointPolicy] = PointPolicy.deserialize(pointData.pointPolicy);
         } else {

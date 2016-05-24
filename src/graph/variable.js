@@ -17,23 +17,11 @@ export default class Variable extends EventClass {
     constructor(variableData) {
         super();
 
-        this[_variableName] = null;
-        this[_variableValueType] = null;
-        this[_variableValue] = null;
-        this[_variableBlock] = null;
-        this[_variableGraph] = null;
-        this.create(variableData);
-    }
-
-    /**
-     * Creates the variable from the given variable data
-     * @param {Variable.variableDataTypedef} variableData - the variable configuration data
-     */
-    create(variableData) {
         this[_variableName] = defaultValue(variableData.variableName);
         this[_variableValueType] = defaultValue(variableData.variableValueType);
         this[_variableValue] = defaultValue(variableData.variableValue);
         this[_variableBlock] = defaultValue(variableData.variableBlock, null);
+        this[_variableGraph] = null;
         if (!isString(this[_variableName])) {
             throw new Error("`" + this.fancyName + "` `variableName` must be a non-null String");
         }

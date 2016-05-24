@@ -3,6 +3,7 @@ import pull from "lodash-es/pull";
 import find from "lodash-es/find";
 import forEach from "lodash-es/forEach";
 import includes from "lodash-es/includes";
+import isString from "lodash-es/isString";
 import EventClass from "event-class-es6";
 import forEachRight from "lodash-es/forEachRight";
 
@@ -18,28 +19,27 @@ let _blockGraph = Symbol("blockGraph");
 export default class Block extends EventClass {
 
     /**
-     * @param {Block.blockDataTypedef} [blockData={}] - the block configuration data
+     * Creates a block from the specified block data
+     * @param {Block.blockDataTypedef} [blockData={}] - specifies the block data
      */
     constructor(blockData) {
         super();
 
-        this[_blockId] = null;
-        this[_blockName] = null;
-        this[_blockOutputs] = [];
-        this[_blockInputs] = [];
-        this[_blockTemplates] = null;
-        this[_blockGraph] = null;
-        this.create(blockData || {});
-    }
-
-    /**
-     * Creates the block corresponding to the specified block data
-     * @param {Block.blockDataTypedef} blockData - specifies the block data
-     */
-    create(blockData) {
+        if (typeof blockData === "undefined") {
+            blockData = {};
+        }
         this[_blockId] = defaultValue(blockData.blockId, null);
         this[_blockName] = defaultValue(blockData.blockName, this.blockType);
+        this[_blockOutputs] = [];
+        this[_blockInputs] = [];
         this[_blockTemplates] = defaultValue(blockData.blockTemplates, {});
+        this[_blockGraph] = null;
+        if (this[_blockId] !== null && !isString(this[_blockId])) {
+            throw new Error("`" + this.fancyName + "` must have a null or valid string `blockId`");
+        }
+        if (!isString(this[_blockName])) {
+            throw new Error("`" + this.fancyName + "` must have a non-null `blockName`");
+        }
     }
 
     /**
