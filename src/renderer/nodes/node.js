@@ -70,16 +70,40 @@ export default class RenderNode extends EventClass {
      */
     get nodeElement() { return this[_nodeElement]; }
 
+    /**
+     * Called when the render node is added
+     */
     added() {}
+    /**
+     * Called when the render node is removed
+     */
     removed() {}
 
+    /**
+     * Called when the render node position changed and should move its element
+     */
     move() {}
+    /**
+     * Called when the render node changed and should update the element
+     */
     update() {}
 
+    /**
+     * Called when the render node has been selected
+     */
     selected() {}
+    /**
+     * Called when the render node has been deselected
+     */
     deselected() {}
 
+    /**
+     * Called when the render node should compute its size
+     */
     computeSize() {}
+    /**
+     * Called when the render node should compute its position
+     */
     computePosition() {}
 
 }
