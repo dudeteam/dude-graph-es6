@@ -24,6 +24,18 @@ export default class RenderBlock extends RenderNode {
      */
     get block() { return this[_block]; }
 
+    create() {
+
+    }
+
+    /**
+     * Updates the d3Block for this renderBlock
+     * @override
+     */
+    update() {
+        super.update();
+    }
+
 }
 
 /**

@@ -100,14 +100,17 @@ export default class RenderNode extends EventClass {
     removed() {}
 
     /**
-     * Called when the render node position changed and should move its element
+     * Moves the svg representation of this renderNode
      */
-    move() {}
+    move() {
+        this[_nodeElement]
+            .attr("transform", "translate(" + this._nodePosition + ")");
+    }
 
     /**
-     * Called when the render node changed and should update the element
+     * Updates the svg representation of this renderNode
      */
-    update() {}
+    update() { this.move(); }
 
     /**
      * Called when the render node has been selected
