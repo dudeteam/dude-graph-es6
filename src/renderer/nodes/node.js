@@ -7,6 +7,9 @@ let _nodeSize = Symbol("nodeSize");
 let _nodePosition = Symbol("nodePosition");
 let _nodeElement = Symbol("nodeElement");
 
+/**
+ * Base class which represents any visual node within the renderer.
+ */
 export default class RenderNode extends EventClass {
 
     /**
@@ -29,41 +32,57 @@ export default class RenderNode extends EventClass {
      * @returns {string}
      */
     get fancyName() { return this[_nodeId]; }
+
     /**
      * Returns this render node renderer
      * @returns {Renderer}
      */
     get renderer() { return this[_renderer]; }
+
     /**
      * Returns this render node id
      * @returns {string}
      */
     get nodeId() { return this[_nodeId]; }
+
     /**
      * Returns this render node name
      * @returns {string}
      */
     get nodeName() { return this[_nodeName]; }
+
     /**
-     * Sets this block id
+     * Assigns the name of this node. It will be used by the renderer as a title to represent the node. When the
+     * node name changes, the block automatically adapts.
      * @param {string} nodeName - the node name to set
      */
-    set nodeName(nodeName) { this[_nodeName] = nodeName; }
+    set nodeName(nodeName) {
+        this[_nodeName] = nodeName;
+        if (this[_nodeElement] !== null) {
+            this.computePosition();
+            this.computeSize();
+            this.update();
+        }
+    }
+
     /**
      * Returns this render node size
      * @returns {Array<number>}
      */
     get nodeSize() { return this[_nodeSize]; }
+
     /**
      * Returns this render node position
      * @returns {Array<number>}
      */
     get nodePosition() { return this[_nodePosition]; }
+
     /**
      * Sets this block id
      * @param {Array<number>} nodePosition - the node position to set
      */
     set nodePosition(nodePosition) { this[_nodePosition] = nodePosition; }
+
     /**
      * Returns this render node d3 element
      * @returns {string}
@@ -74,6 +93,7 @@ export default class RenderNode extends EventClass {
      * Called when the render node is added
      */
     added() {}
+
     /**
      * Called when the render node is removed
      */
@@ -83,6 +103,7 @@ export default class RenderNode extends EventClass {
      * Called when the render node position changed and should move its element
      */
     move() {}
+
     /**
      * Called when the render node changed and should update the element
      */
@@ -92,6 +113,7 @@ export default class RenderNode extends EventClass {
      * Called when the render node has been selected
      */
     selected() {}
+
     /**
      * Called when the render node has been deselected
      */
@@ -101,6 +123,7 @@ export default class RenderNode extends EventClass {
      * Called when the render node should compute its size
      */
     computeSize() {}
+
     /**
      * Called when the render node should compute its position
      */
