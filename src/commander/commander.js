@@ -3,8 +3,8 @@
 let _commanderHistory = Symbol("commanderHistory");
 
 /**
- * This class handles add the possible commands on the graph and renderer. It also takes care of undo/redo these
- * commands.
+ * This class handles add the possible commands on the graph and renderer. It also takes care of undoing/redoing these
+ * commands
  */
 export default class Commander {
 
