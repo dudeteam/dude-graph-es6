@@ -2,7 +2,7 @@ import {expect} from "chai";
 import sinon from "sinon";
 import {Graph, Block, Point, PointPolicy, Variable, VariableBlock} from "../src/dude-graph";
 
-describe("dude-graph api", () => {
+describe("dude-graph API", () => {
     /**
      *  Connection typing system (always output to input)
      *
@@ -18,7 +18,7 @@ describe("dude-graph api", () => {
      *  `Number` =~=> `Number` - Conversion and assignation
      *  `Number` =/=> `Number` - Impossible assignation
      */
-    it("create graph", () => {
+    it("should create a graph", () => {
         let graph = new Graph();
         expect(graph.graphBlocks).to.have.length(0);
         expect(graph.graphConnections).to.have.length(0);
@@ -28,7 +28,7 @@ describe("dude-graph api", () => {
         expect(graph.valueTypeByName("Object")).to.be.not.null;
         expect(graph.valueTypeByName("Array")).to.be.not.null;
     });
-    it("create block", () => {
+    it("should create blocks", () => {
         let block = new Block({
             "blockId": "testId",
             "blockName": "Test",
@@ -56,7 +56,7 @@ describe("dude-graph api", () => {
             }
         });
     });
-    it("graph blocksByName and blocksByType", () => {
+    it("should test graph blocksByName and blocksByType", () => {
         class AssignationBlock extends Block {}
         let graph = new Graph();
         expect(graph.blocksByName("AssignationBlock")).to.have.length(0);
@@ -66,7 +66,7 @@ describe("dude-graph api", () => {
         expect(graph.blocksByName("AssignationBlock")).to.have.length(1);
         expect(graph.blocksByType(AssignationBlock)).to.have.length(1);
     });
-    it("create block unique ids", () => {
+    it("should create block with unique ids", () => {
         let graph = new Graph();
         let ids = {};
         for (let i = 0; i < 5000; i++) {
@@ -78,7 +78,7 @@ describe("dude-graph api", () => {
             ids[id] = true;
         }
     });
-    it("create graph block", () => {
+    it("should add blocks to a graph", () => {
         let graph = new Graph();
         let block = new Block();
         expect(block.blockId).to.be.null;
@@ -90,7 +90,7 @@ describe("dude-graph api", () => {
             graph.addBlock(block);
         }).to.throw();
     });
-    it("create point", () => {
+    it("should create points", () => {
         let outputPoint = new Point(true, {
             "pointName": "output",
             "pointValueType": "Whatever" // pointValueType is enforced only when adding to a block
@@ -190,7 +190,7 @@ describe("dude-graph api", () => {
             }));
         }).to.throw();
     });
-    it("create block point", () => {
+    it("should add points to a block", () => {
         let graph = new Graph();
         let block = new Block();
         let outputPoint = new Point(true, {
@@ -229,7 +229,7 @@ describe("dude-graph api", () => {
             }));
         }).to.throw();
     });
-    it("create block point at positions", () => {
+    it("should add points to a given position to a block", () => {
         let graph = new Graph();
         let block = new Block();
         graph.addBlock(block);
@@ -264,7 +264,7 @@ describe("dude-graph api", () => {
         expect(block.blockOutputs[3]).to.be.equal(outputPoint4);
         expect(block.blockOutputs[4]).to.be.equal(outputPoint5);
     });
-    it("point value", () => {
+    it("should assign and test point value", () => {
         let graph = new Graph();
         let block = new Block();
         let inputPoint = new Point(true, {
@@ -314,7 +314,7 @@ describe("dude-graph api", () => {
             }));
         }).to.throw();
     });
-    it("point value type", () => {
+    it("should assign and test point value type", () => {
         let graph = new Graph();
         let block = new Block();
         let inputPoint = new Point(true, {
@@ -374,7 +374,7 @@ describe("dude-graph api", () => {
         expect(inputPoint.pointValueType).to.be.equal("NewType");
         expect(inputPoint.pointValue).to.be.equal("ThisIsACorrectNewValue");
     });
-    it("connect points of same type", () => {
+    it("should connect points of same type", () => {
         let graph = new Graph();
         let block1 = new Block();
         let block2 = new Block();
@@ -406,7 +406,7 @@ describe("dude-graph api", () => {
         expect(connection.connectionOutputPoint).to.be.equal(outputPoint1);
         expect(connection.connectionInputPoint).to.be.equal(inputPoint2);
     });
-    it("disconnect points of same type", () => {
+    it("should disconnect points of same type", () => {
         let graph = new Graph();
         let block1 = new Block();
         let block2 = new Block();
@@ -441,7 +441,7 @@ describe("dude-graph api", () => {
         expect(outputPoint1.pointConnections).to.have.length(0);
         expect(inputPoint2.pointConnections).to.have.length(0);
     });
-    it("connect/disconnect commutativity", () => {
+    it("should ensure connect/disconnect commutativity", () => {
         let graph = new Graph();
         let block1 = new Block();
         let block2 = new Block();
@@ -490,7 +490,7 @@ describe("dude-graph api", () => {
         expect(outputPoint1.pointConnections).to.have.length(0);
         expect(inputPoint2.pointConnections).to.have.length(0);
     });
-    it("connect compatible types", () => {
+    it("should connect compatible types", () => {
         let graph = new Graph();
         let block1 = new Block();
         let block2 = new Block();
@@ -548,7 +548,7 @@ describe("dude-graph api", () => {
             outputPoint1String.connect(inputPoint2Boolean); // `String` =/=> `Boolean`
         }).to.throw();
     });
-    it("cannot mix connect and point value", () => {
+    it("should ensure we cannot mix connect and point value", () => {
         let graph = new Graph();
         let block1 = new Block();
         let block2 = new Block();
@@ -583,7 +583,7 @@ describe("dude-graph api", () => {
         }).to.throw();
         inputPoint.disconnect(outputPoint);
     });
-    it("connect and value type", () => {
+    it("should ensure connect conversion", () => {
         let graph = new Graph();
         let block1 = new Block();
         let block2 = new Block();
@@ -607,7 +607,7 @@ describe("dude-graph api", () => {
         block2.addPoint(inputPoint22);
         outputPoint11.connect(inputPoint21); // `Number` => `Boolean`
     });
-    it("connect multiple points and disconnectAll", () => {
+    it("should connect multiple points and disconnect them all", () => {
         let graph = new Graph();
         let block1 = new Block();
         let outputPoint1 = new Point(true, {
@@ -657,7 +657,7 @@ describe("dude-graph api", () => {
         expect(graph.graphConnections).to.have.length(1);
         expect(outputPoint1.pointConnections).to.have.length(1);
     });
-    it("remove block points", () => {
+    it("should remove points from block", () => {
         let graph = new Graph();
         let block1 = new Block();
         let block2 = new Block();
@@ -696,7 +696,7 @@ describe("dude-graph api", () => {
         expect(graph.graphConnections).to.have.length(0);
         expect(inputPoint2.pointConnections).to.have.length(0);
     });
-    it("remove all block points", () => {
+    it("should remove all block points", () => {
         let graph = new Graph();
         let block = new Block();
         graph.addBlock(block);
@@ -738,7 +738,7 @@ describe("dude-graph api", () => {
         expect(block.blockOutputs).to.have.length(0);
         expect(block.blockInputs).to.have.length(0);
     });
-    it("block templates", () => {
+    it("should test block templates", () => {
         let graph = new Graph();
         expect(() => {
             let badBlock = new Block({
@@ -820,7 +820,7 @@ describe("dude-graph api", () => {
             block.changeTemplate("TemplateTest", "Boolean"); // `TemplateTest` has no template `Boolean`
         }).to.throw();
     });
-    it("point templates", () => {
+    it("should test point templates", () => {
         let graph = new Graph();
         let block = new Block({
             "blockTemplates": {
@@ -858,7 +858,7 @@ describe("dude-graph api", () => {
         block.changeTemplate("TemplateTest", "Number"); // Now they can be transformed to `Number`
         expect(inputPoint11.pointValue);
     });
-    it("point templates and connections", () => {
+    it("should test point templates and connections", () => {
         let graph = new Graph();
         let block1 = new Block({
             "blockTemplates": {
@@ -930,7 +930,7 @@ describe("dude-graph api", () => {
         expect(inputPoint12.pointValue).to.be.equal("false");
         expect(inputPoint13.pointValue).to.be.equal("true");
     });
-    it("point templates and connections w/o conversion", () => {
+    it("should test point templates and connections w/o conversion", () => {
         let graph = new Graph();
         let block1 = new Block({
             "blockTemplates": {
@@ -995,7 +995,7 @@ describe("dude-graph api", () => {
             outputPointArrayNoConversion.connect(inputPoint13);
         }).to.throw();
     });
-    it("point policy", () => {
+    it("should test point policy", () => {
         let graph = new Graph();
         let block1 = new Block();
         let block2 = new Block();
@@ -1099,7 +1099,7 @@ describe("dude-graph api", () => {
             });
         }).to.throw();
     });
-    it("remove block", () => {
+    it("should remove block from graph", () => {
         let graph = new Graph();
         let block1 = new Block({
             "blockTemplates": {
@@ -1140,7 +1140,7 @@ describe("dude-graph api", () => {
         expect(block2.blockOutputs).to.have.length(1);
         expect(outputPoint2.pointConnections).to.have.length(0);
     });
-    it("custom block and custom point", () => {
+    it("should create custom block and custom point and test their callbacks", () => {
         // TODO: test acceptConnect
         let pointAddedSpy = sinon.spy();
         let pointConnectedSpy = sinon.spy();
@@ -1230,7 +1230,7 @@ describe("dude-graph api", () => {
         sinon.assert.called(blockRemovedSpy);
         graph.removeBlock(block);
     });
-    it("create/remove variable", () => {
+    it("should create and remove variables", () => {
         let graph = new Graph();
         let variable = new Variable({
             "variableName": "Hello",
@@ -1290,7 +1290,7 @@ describe("dude-graph api", () => {
             }));
         }).to.throw();
     });
-    it("variable value", () => {
+    it("should create variable value", () => {
         let graph = new Graph();
         let variable = new Variable({
             "variableName": "Hello",
@@ -1308,7 +1308,7 @@ describe("dude-graph api", () => {
             variable.variableValue = {}; // `Object` =/=> `String`
         }).to.throw();
     });
-    it("bind VariableBlock to graph variable", () => {
+    it("should bind a VariableBlock to a graph variable", () => {
         let graph = new Graph();
         let variable = new Variable({
             "variableName": "Hello",
@@ -1339,8 +1339,8 @@ describe("dude-graph api", () => {
         expect(graph.graphBlocks).to.have.length(0);
     });
 });
-describe("dude-graph events", () => {
-    it("block-add", () => {
+describe("dude-graph Events", () => {
+    it("should test block-add", () => {
         let spy = sinon.spy();
         let graph = new Graph();
         let block = new Block();
@@ -1348,7 +1348,7 @@ describe("dude-graph events", () => {
         graph.addBlock(block);
         sinon.assert.calledWith(spy, block);
     });
-    it("block-remove", () => {
+    it("should test block-remove", () => {
         let spy = sinon.spy();
         let graph = new Graph();
         let block = new Block();
@@ -1357,7 +1357,7 @@ describe("dude-graph events", () => {
         graph.removeBlock(block);
         sinon.assert.calledWith(spy, block);
     });
-    it("point-add", () => {
+    it("should test point-add", () => {
         let graphSpy = sinon.spy();
         let blockSpy = sinon.spy();
         let graph = new Graph();
@@ -1370,7 +1370,7 @@ describe("dude-graph events", () => {
         sinon.assert.calledWith(graphSpy, block, point);
         sinon.assert.calledWith(blockSpy, point);
     });
-    it("point-remove", () => {
+    it("should test point-remove", () => {
         let graphSpy = sinon.spy();
         let blockSpy = sinon.spy();
         let graph = new Graph();
@@ -1384,7 +1384,7 @@ describe("dude-graph events", () => {
         sinon.assert.calledWith(graphSpy, block, point);
         sinon.assert.calledWith(blockSpy, point);
     });
-    it("point-value-type-change", () => {
+    it("should test point-value-type-change", () => {
         let graphSpy = sinon.spy();
         let pointSpy = sinon.spy();
         let graph = new Graph();
@@ -1398,7 +1398,7 @@ describe("dude-graph events", () => {
         sinon.assert.calledWith(graphSpy, point, "String", "Number");
         sinon.assert.calledWith(pointSpy, "String", "Number");
     });
-    it("point-value-change", () => {
+    it("should test point-value-change", () => {
         let graphSpy = sinon.spy();
         let pointSpy = sinon.spy();
         let graph = new Graph();
@@ -1412,7 +1412,7 @@ describe("dude-graph events", () => {
         sinon.assert.calledWith(graphSpy, point, 42, null);
         sinon.assert.calledWith(pointSpy, 42, null);
     });
-    it("point-connect", () => {
+    it("should test point-connect", () => {
         let graphSpy = sinon.spy();
         let pointSpy = sinon.spy();
         let graph = new Graph();
@@ -1430,7 +1430,7 @@ describe("dude-graph events", () => {
         sinon.assert.calledWith(graphSpy, point1, connection);
         sinon.assert.calledWith(pointSpy, connection);
     });
-    it("point-disconnect", () => {
+    it("should test point-disconnect", () => {
         let graphSpy = sinon.spy();
         let pointSpy = sinon.spy();
         let graph = new Graph();
@@ -1449,7 +1449,7 @@ describe("dude-graph events", () => {
         sinon.assert.calledWith(graphSpy, point1, connection);
         sinon.assert.calledWith(pointSpy, connection);
     });
-    it("block-template-update", () => {
+    it("should test block-template-update", () => {
         let graphSpy = sinon.spy();
         let blockSpy = sinon.spy();
         let graph = new Graph();
@@ -1468,7 +1468,7 @@ describe("dude-graph events", () => {
         sinon.assert.calledWith(graphSpy, block, "Test", "String", "Number");
         sinon.assert.calledWith(blockSpy, "Test", "String", "Number");
     });
-    it("variable-add", () => {
+    it("should test variable-add", () => {
         let spy = sinon.spy();
         let graph = new Graph();
         let variable = new Variable({
@@ -1479,7 +1479,7 @@ describe("dude-graph events", () => {
         graph.addVariable(variable);
         sinon.assert.calledWith(spy, variable);
     });
-    it("variable-remove", () => {
+    it("should test variable-remove", () => {
         let spy = sinon.spy();
         let graph = new Graph();
         let variable = new Variable({
