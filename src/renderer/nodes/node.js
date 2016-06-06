@@ -1,11 +1,11 @@
 import EventClass from "event-class-es6";
 
 let _renderer = Symbol("renderer");
-let _element = Symbol("nodeElement");
-let _nodeId = Symbol("nodeId");
-let _nodeName = Symbol("nodeName");
-let _nodeSize = Symbol("nodeSize");
-let _nodePosition = Symbol("nodePosition");
+let _element = Symbol("element");
+let _id = Symbol("id");
+let _name = Symbol("name");
+let _size = Symbol("size");
+let _position = Symbol("position");
 
 /**
  * Base class which represents any visual node within the renderer.
@@ -17,17 +17,17 @@ export default class RenderNode extends EventClass {
 
         this[_renderer] = null;
         this[_element] = null;
-        this[_nodeId] = null;
-        this[_nodeName] = null;
-        this[_nodeSize] = [0, 0];
-        this[_nodePosition] = [0, 0];
+        this[_id] = null;
+        this[_name] = null;
+        this[_size] = [0, 0];
+        this[_position] = [0, 0];
     }
 
     /**
      * Returns this render node fancy name
      * @returns {string}
      */
-    get fancyName() { return this[_nodeId]; }
+    get fancyName() { return this[_id]; }
     /**
      * Returns this render node renderer
      * @returns {Renderer}
@@ -52,42 +52,42 @@ export default class RenderNode extends EventClass {
      * Returns this render node id
      * @returns {string}
      */
-    get nodeId() { return this[_nodeId]; }
+    get id() { return this[_id]; }
     /**
      * Sets this block id
-     * @param {string} nodeId - the node id to set
+     * @param {string} id - the node id to set
      */
-    set nodeId(nodeId) { this[_nodeId] = nodeId; }
+    set id(id) { this[_id] = id; }
     /**
      * Returns this render node name
      * @returns {string}
      */
-    get nodeName() { return this[_nodeName]; }
+    get name() { return this[_name]; }
     /**
      * Sets this node name
-     * @param {string} nodeName - the node name to set
+     * @param {string} name - the node name to set
      */
-    set nodeName(nodeName) { this[_nodeName] = nodeName; }
+    set name(name) { this[_name] = name; }
     /**
      * Returns this render node size
      * @returns {Array<number>}
      */
-    get nodeSize() { return this[_nodeSize]; }
+    get size() { return this[_size]; }
     /**
      * Sets the node size
-     * @param {Array<number>} nodeSize - the node size to set
+     * @param {Array<number>} size - the node size to set
      */
-    set nodeSize(nodeSize) { this[_nodeSize] = nodeSize; }
+    set size(size) { this[_size] = size; }
     /**
      * Returns this render node position
      * @returns {Array<number>}
      */
-    get nodePosition() { return this[_nodePosition]; }
+    get position() { return this[_position]; }
     /**
      * Sets the node position
-     * @param {Array<number>} nodePosition - the node position to set
+     * @param {Array<number>} position - the node position to set
      */
-    set nodePosition(nodePosition) { this[_nodePosition] = nodePosition; }
+    set position(position) { this[_position] = position; }
 
     /**
      * Called when the render node is added

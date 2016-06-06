@@ -58,7 +58,7 @@ export default class Graph extends EventClass {
         if (block.blockGraph !== null) {
             throw new Error("`" + block.fancyName + "` cannot redefine `blockGraph`");
         }
-        if (block.blockId !== null && typeof this[_graphBlockIds][block.blockId] === "undefined") {
+        if (block.blockId !== null && typeof this[_graphBlockIds][block.blockId] !== "undefined") {
             throw new Error("`" + this.fancyName + "` cannot redefine id `" + block.blockId + "`");
         }
         block.blockGraph = this;
@@ -83,7 +83,7 @@ export default class Graph extends EventClass {
         }
         block.removePoints();
         pull(this[_graphBlocks], block);
-        delete this[_graphBlockIds][block.blockId];
+        this[_graphBlockIds][block.blockId] = undefined;
         this.emit("block-remove", block);
         block.removed();
     }

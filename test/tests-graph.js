@@ -72,7 +72,6 @@ describe("dude-graph API", () => {
         for (let i = 0; i < 5000; i++) {
             let id = graph.nextBlockId();
             if (typeof ids[id] !== "undefined") {
-                console.log(ids);
                 throw new Error();
             }
             ids[id] = true;
