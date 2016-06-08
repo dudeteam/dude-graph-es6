@@ -1,3 +1,5 @@
+/*eslint no-unused-vars: "off"*/
+
 import isString from "lodash-es/isString";
 import EventClass from "event-class-es6";
 import forEachRight from "lodash-es/forEachRight";
@@ -120,9 +122,7 @@ export default class Point extends EventClass {
      * @param {number} policy - specifies the policy
      * @returns {boolean}
      */
-    hasPolicy(policy) {
-        return PointPolicy.has(this[_pointPolicy], policy);
-    }
+    hasPolicy(policy) { return PointPolicy.has(this[_pointPolicy], policy); }
 
     /**
      * Changes this point value to the specified value
@@ -230,12 +230,29 @@ export default class Point extends EventClass {
         });
     }
 
+    /**
+     * Called when this point is added to a block
+     */
     added() {}
-    connected() {}
-    acceptConnect() {
-        return true;
-    }
-    disconnected() {}
+    /**
+     * Called when this point is connected to the specified point
+     * @param {Point} point - specifies the point
+     */
+    connected(point) {}
+    /**
+     * Returns whether this point accepts to connect to the specified point
+     * @param {Point} point - specifies the other point
+     * @returns {boolean}
+     */
+    acceptConnect(point) { return this !== point; }
+    /**
+     * Called when this point is disconnected from the specified point
+     * @param {Point} point - specifies the point
+     */
+    disconnected(point) {}
+    /**
+     * Called when this point is removed from the block
+     */
     removed() {}
 
 }

@@ -1,4 +1,4 @@
-/*eslint no-unused-vars: "warn"*/
+/*eslint no-unused-vars: "off"*/
 
 let _commanderHistory = Symbol("commanderHistory");
 

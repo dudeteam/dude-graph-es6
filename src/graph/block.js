@@ -1,3 +1,5 @@
+/*eslint no-unused-vars: "off"*/
+
 import map from "lodash-es/map";
 import pull from "lodash-es/pull";
 import find from "lodash-es/find";
@@ -93,12 +95,42 @@ export default class Block extends EventClass {
      */
     set blockGraph(blockGraph) { this[_blockGraph] = blockGraph; }
 
+    /**
+     * Called when this block is added to a graph
+     */
     added() {}
-    pointAdded() {}
-    pointConnected() {}
-    pointValueChanged() {}
-    pointDisconnected() {}
-    pointRemoved() {}
+    /**
+     * Called when the specified point is added to this block
+     * @param {Point} point - specifies the point
+     */
+    pointAdded(point) {}
+    /**
+     * Called when the specified point of this block connected to another point
+     * @param {Point} blockPoint - specifies the point of this block
+     * @param {Point} otherPoint - specifies the other point
+     */
+    pointConnected(blockPoint, otherPoint) {}
+    /**
+     * Called when the specified point of this block changed its value
+     * @param {Point} point - specifies the point
+     * @param {*} value - specifies the value
+     * @param {*} oldValue - specifies the previous value
+     */
+    pointValueChanged(point, value, oldValue) {}
+    /**
+     * Called when the specified point of this block disconnected from another point
+     * @param {Point} blockPoint - specifies the point of this block
+     * @param {Point} otherPoint - specifies the other point
+     */
+    pointDisconnected(blockPoint, otherPoint) {}
+    /**
+     * Called when the specified point is removed from this block
+     * @param {Point} point - specifies the point
+     */
+    pointRemoved(point) {}
+    /**
+     * Called when this block is removed from the graph
+     */
     removed() {}
 
     /**
