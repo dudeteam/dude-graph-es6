@@ -69,10 +69,10 @@ describe("dude-graph API", () => {
     it("should create block with unique ids", () => {
         let graph = new Graph();
         let ids = {};
-        for (let i = 0; i < 5000; i++) {
+        for (let i = 0; i < 100; i++) {
             let id = graph.nextBlockId();
             if (typeof ids[id] !== "undefined") {
-                throw new Error();
+                throw new Error(id + " redefined");
             }
             ids[id] = true;
         }

@@ -9,6 +9,8 @@ import valueTypes from "./defaults/valueTypes";
 import Connection from "./connection";
 import PointPolicy from "./policy";
 
+import uuid from "./utils/uuid";
+
 let _graphErrno = Symbol("graphErrno");
 let _graphBlocks = Symbol("graphBlocks");
 let _graphBlockIds = Symbol("graphBlockIds");
@@ -87,12 +89,14 @@ export default class Graph extends EventClass {
         this.emit("block-remove", block);
         block.removed();
     }
+
+    //noinspection JSMethodCanBeStatic
     /**
      * Returns the next unique block id
      * @returns {string}
      */
     nextBlockId() {
-        return (Math.random() * 9999) + this;
+        return uuid();
     }
     /**
      * Returns the block corresponding to the specified block id

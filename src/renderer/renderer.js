@@ -4,6 +4,8 @@ import find from "lodash-es/find";
 import filter from "lodash-es/filter";
 import includes from "lodash-es/includes";
 
+import uuid from "../graph/utils/uuid";
+
 let _graph = Symbol("graph");
 let _d3Svg = Symbol("d3svg");
 let _d3Groups = Symbol("d3groups");
@@ -53,13 +55,12 @@ export default class Renderer {
             throw new Error("`" + this.fancyName + "` cannot redefine id `" + renderBlock.id + "`");
         }
         if (renderBlock.id === null) {
-            let associatedRenderBlocks = this.renderBlocksByBlock(renderBlock.block);
-            renderBlock.id = renderBlock.block.blockId + "#" + associatedRenderBlocks.length;
+            renderBlock.id = renderBlock.block.blockId + "#" + uuid();
         }
         renderBlock.renderer = this;
         this[_renderBlocks].push(renderBlock);
         this[_renderBlockIds][renderBlock.id] = renderBlock;
-        renderBlock.element = this[_d3Blocks].append("svg:g");
+        renderBlock.element = this[_d3Blocks].append("svg:g").datum(renderBlock);
         renderBlock.added();
     }
     /**

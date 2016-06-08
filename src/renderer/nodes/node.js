@@ -50,12 +50,12 @@ export default class RenderNode extends EventClass {
     set element(element) { this[_element] = element; }
     /**
      * Returns this render node id
-     * @returns {string}
+     * @returns {string|null}
      */
     get id() { return this[_id]; }
     /**
      * Sets this block id
-     * @param {string} id - the node id to set
+     * @param {string|null} id - the node id to set
      */
     set id(id) { this[_id] = id; }
     /**

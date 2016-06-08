@@ -38,10 +38,41 @@ describe("dude-renderer API", () => {
         expect(() => {
             renderer.addRenderBlock(renderBlock); // cannot add the same renderBlock twice
         }).to.throw();
+        expect(renderer.renderBlocksByBlock(block)).to.have.length(1);
         expect(svg.getElementsByClassName("dude-graph-blocks")[0].childElementCount).to.be.equal(1);
         expect(svg.getElementsByClassName("dude-graph-blocks")[0].children[0]).to.be.equal(renderBlock.element.node());
         expect(renderBlock.element.node().childElementCount).to.be.equal(3);
+        expect(renderer.renderBlockById(renderBlock.id)).to.be.equal(renderBlock);
+    });
+    it("should remove render blocks", () => {
+        let svg = document.getElementById("svg");
+        let graph = new Graph();
+        let renderer = new Renderer(svg, graph);
+        let block = new Block();
+        graph.addBlock(block);
+        let renderBlock = new RenderBlock(block);
+        let renderBlock2 = new RenderBlock(block);
+        renderer.addRenderBlock(renderBlock);
+        renderer.addRenderBlock(renderBlock2);
+        expect(renderer.renderBlocksByBlock(block)).to.have.length(2);
+        expect(svg.getElementsByClassName("dude-graph-blocks")[0].childElementCount).to.be.equal(2);
         renderer.removeRenderBlock(renderBlock);
-        expect(svg.getElementsByClassName("dude-graph-blocks")[0].childElementCount).to.be.equal(0);
+        expect(renderer.renderBlocksByBlock(block)).to.have.length(1);
+        expect(svg.getElementsByClassName("dude-graph-blocks")[0].childElementCount).to.be.equal(1);
+        expect(svg.getElementsByClassName("dude-graph-blocks")[0].children[0]).to.be.equal(renderBlock2.element.node());
+        expect(() => {
+            renderer.removeRenderBlock(renderBlock); // cannot remove the same renderBlock twice
+        }).to.throw();
+        expect(() => {
+            renderBlock.id = renderBlock2.id;
+            renderer.addRenderBlock(renderBlock); // cannot have twice the same id
+        }).to.throw();
+        renderBlock.id = null;
+        renderer.addRenderBlock(renderBlock);
+        expect(renderer.renderBlocksByBlock(block)).to.have.length(2);
+        expect(svg.getElementsByClassName("dude-graph-blocks")[0].childElementCount).to.be.equal(2);
+        expect(renderBlock.id).to.be.not.equal(renderBlock2.id);
+        renderer.removeRenderBlock(renderBlock2);
+        expect(svg.getElementsByClassName("dude-graph-blocks")[0].childElementCount).to.be.equal(1);
     });
 });
