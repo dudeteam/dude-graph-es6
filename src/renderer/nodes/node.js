@@ -91,38 +91,48 @@ export default class RenderNode extends EventClass {
 
     /**
      * Called when the render node is added
+     * @abstract
      */
     added() {}
     /**
      * Called when the render node is removed
+     * @abstract
      */
     removed() {}
 
     /**
      * Called when the render node position changed and should move its element
+     * @abstract
      */
     move() {}
     /**
      * Called when the render node changed and should update the element
+     * @abstract
      */
     update() {}
 
     /**
-     * Called when the render node has been selected
-     */
-    selected() {}
-    /**
-     * Called when the render node has been deselected
-     */
-    deselected() {}
-
-    /**
      * Called when the render node should compute its size
+     * @abstract
      */
     computeSize() {}
     /**
      * Called when the render node should compute its position
+     * @abstract
      */
     computePosition() {}
+
+    /**
+     * Called when the render node has been selected
+     */
+    selected() {
+        this.element.classed("dude-graph-selected", true);
+    }
+    /**
+     * Called when the render node has been deselected
+     */
+    deselected() {
+        this.element.classed("dude-graph-selected", false);
+    }
 
 }

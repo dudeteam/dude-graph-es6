@@ -1,7 +1,7 @@
 let _point = Symbol("point");
 let _renderBlock = Symbol("renderBlock");
-let _pointSize = Symbol("pointSize");
-let _pointPosition = Symbol("pointPosition");
+let _size = Symbol("size");
+let _position = Symbol("position");
 
 export default class RenderPoint {
 
@@ -39,30 +39,54 @@ export default class RenderPoint {
      * Returns this render point size
      * @returns {Array<number>}
      */
-    get pointSize() { return this[_pointSize]; }
+    get size() { return this[_size]; }
     /**
      * Sets the point size
-     * @param {Array<number>} pointSize - the point size to set
+     * @param {Array<number>} size - the point size to set
      */
-    set pointSize(pointSize) { this[_pointSize] = pointSize; }
+    set size(size) { this[_size] = size; }
     /**
      * Returns this render point position
      * @returns {Array<number>}
      */
-    get pointPosition() { return this[_pointPosition]; }
+    get position() { return this[_position]; }
     /**
      * Sets the point position
-     * @param {Array<number>} pointPosition - the point position to set
+     * @param {Array<number>} position - the point position to set
      */
-    set pointPosition(pointPosition) { this[_pointPosition] = pointPosition; }
+    set position(position) { this[_position] = position; }
 
+    /**
+     * Called when the render point is added
+     * @abstract
+     */
     added() {}
+    /**
+     * Called when the render node is removed
+     * @abstract
+     */
     removed() {}
 
+    /**
+     * Called when the render point position changed and should move its element
+     * @abstract
+     */
     move() {}
+    /**
+     * Called when the render point changed and should update its element
+     * @abstract
+     */
     update() {}
 
+    /**
+     * Called when the render point is connected
+     * @abstract
+     */
     connected() {}
+    /**
+     * Called when the render point is disconnected
+     * @abstract
+     */
     disconnected() {}
 
 }
