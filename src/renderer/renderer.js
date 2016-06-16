@@ -97,12 +97,48 @@ export default class Renderer {
         });
     }
 
-    /*
-    // adds the render group and sets the renderer and sets/creates its svg:g element
-    addRenderGroup(renderGroup) {}
-    removeRenderGroup(renderGroup) {}
-    renderGroupById(renderGroupId) {}
+    /**
+     * Adds the specified render group to this renderer
+     * @param {RenderGroup} renderGroup - specifies the render group
+     */
+    addRenderGroup(renderGroup) {
+        if (renderGroup.id !== null && typeof this[_renderGroupIds][renderGroup.id] !== "undefined") {
+            throw new Error("`" + this.fancyName + "` cannot redefine id `" + renderGroup.id + "`");
+        }
+        if (renderGroup.id === null) {
+            renderGroup.id = uuid();
+        }
+        renderGroup.renderer = this;
+        this[_renderGroups].push(renderGroup);
+        this[_renderGroupIds][renderGroup.id] = renderGroup;
+        renderGroup.element = this[_d3Groups].append("svg:g").datum(renderGroup);
+        renderGroup.added();
+    }
+    /**
+     * Removes the specified render group from this renderer
+     * @param {RenderGroup} renderGroup - specifies the render group
+     */
+    removeRenderGroup(renderGroup) {
+        if (renderGroup.renderer !== this || !includes(this[_renderGroups], renderGroup)) {
+            throw new Error("`" + this.fancyName + "` has no render block `" + renderGroup.fancyName + "`");
+        }
+        renderGroup.removed();
+        renderGroup.element.remove();
+        this[_renderGroupIds][renderGroup.id] = undefined;
+        pull(this[_renderGroups], renderGroup);
+    }
+    /**
+     * Returns the corresponding render group for the specified render group id
+     * @param {string} renderGroupId - specifies the render group id
+     * @returns {RenderGroup|null}
+     */
+    renderGroupById(renderGroupId) {
+        return find(this[_renderGroups], (renderGroup) => {
+                return renderGroup.id === renderGroupId;
+            }) || null;
+    }
 
+    /*
     // adds the render point to the specified render block
     addRenderPoint(renderBlock, renderPoint) {}
     removeRenderPoint(renderPoint) {}

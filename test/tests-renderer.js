@@ -1,7 +1,7 @@
 import gjsdom from "jsdom-global";
 import {expect} from "chai";
 
-import {Renderer, RenderBlock} from "../src/dude-graph";
+import {Renderer, RenderBlock, RenderGroup} from "../src/dude-graph";
 import {Graph, Block} from "../src/dude-graph";
 
 describe("dude-renderer API", () => {
@@ -74,5 +74,36 @@ describe("dude-renderer API", () => {
         expect(renderBlock.id).to.be.not.equal(renderBlock2.id);
         renderer.removeRenderBlock(renderBlock2);
         expect(svg.getElementsByClassName("dude-graph-blocks")[0].childElementCount).to.be.equal(1);
+    });
+    it("should create render groups", () => {
+        let svg = document.getElementById("svg");
+        let graph = new Graph();
+        let renderer = new Renderer(svg, graph);
+        let renderGroup = new RenderGroup();
+        expect(svg.getElementsByClassName("dude-graph-groups")[0].childElementCount).to.be.equal(0);
+        renderer.addRenderGroup(renderGroup);
+        expect(svg.getElementsByClassName("dude-graph-groups")[0].childElementCount).to.be.equal(1);
+        expect(renderGroup.element.node().childElementCount).to.be.equal(3);
+        expect(() => {
+            renderer.addRenderGroup(renderGroup); // cannot add the same render block twice
+        }).to.throw();
+        expect(renderer.renderGroupById(renderGroup.id)).to.be.equal(renderGroup);
+    });
+    it("should remove render groups", () => {
+        let svg = document.getElementById("svg");
+        let graph = new Graph();
+        let renderer = new Renderer(svg, graph);
+        let renderGroup = new RenderGroup();
+        let renderGroup2 = new RenderGroup();
+        renderer.addRenderGroup(renderGroup);
+        renderer.addRenderGroup(renderGroup2);
+        expect(svg.getElementsByClassName("dude-graph-groups")[0].childElementCount).to.be.equal(2);
+        renderer.removeRenderGroup(renderGroup);
+        expect(svg.getElementsByClassName("dude-graph-groups")[0].childElementCount).to.be.equal(1);
+        expect(() => {
+            renderer.removeRenderGroup(renderGroup); // cannot remove the same renderGroup twice
+        }).to.throw();
+        renderer.removeRenderGroup(renderGroup2);
+        expect(svg.getElementsByClassName("dude-graph-groups")[0].childElementCount).to.be.equal(0);
     });
 });
