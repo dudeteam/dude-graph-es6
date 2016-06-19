@@ -42,12 +42,12 @@ export default class RenderConnection {
     set renderer(renderer) { this[_renderer] = renderer; }
     /**
      * Returns this render node d3 element
-     * @returns {d3.selection}
+     * @returns {select}
      */
     get element() { return this[_element]; }
     /**
      * Sets this element
-     * @param {d3.selection} element - the element to set
+     * @param {select} element - the element to set
      */
     set element(element) { this[_element] = element; }
     /**
