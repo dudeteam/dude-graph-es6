@@ -59,7 +59,7 @@ export default class Commander {
     addRenderBlock(renderer, block) {
         let renderBlock = new RenderBlock(block);
         return this.action(
-            () => { renderer.addRenderBlock(renderBlock); return renderBlock; },
+            () => { renderer.addRenderBlock(renderBlock); renderBlock.updateAll(); return renderBlock; },
             () => { renderer.removeRenderBlock(renderBlock); }
         );
     }
