@@ -1,4 +1,5 @@
 let _renderer = Symbol("renderer");
+let _element = Symbol("element");
 let _connection = Symbol("connection");
 let _outputRenderPoint = Symbol("outputRenderPoint");
 let _inputRenderPoint = Symbol("inputRenderPoint");
@@ -39,6 +40,16 @@ export default class RenderConnection {
      * @param {Renderer} renderer - the renderer to set
      */
     set renderer(renderer) { this[_renderer] = renderer; }
+    /**
+     * Returns this render node d3 element
+     * @returns {d3.selection}
+     */
+    get element() { return this[_element]; }
+    /**
+     * Sets this element
+     * @param {d3.selection} element - the element to set
+     */
+    set element(element) { this[_element] = element; }
     /**
      * Returns this render connection connection
      * @returns {Connection}

@@ -3,6 +3,9 @@ import RenderNode from "./node";
 let _block = Symbol("block");
 let _parent = Symbol("parent");
 let _renderPoints = Symbol("renderPoints");
+let _svgRect = Symbol("svgRect");
+let _svgName = Symbol("svgName");
+let _svgPoints = Symbol("svgPoints");
 
 /**
  * Data used to visually represents a block into the Renderer. They can be several RenderBlock representation
@@ -53,28 +56,19 @@ export default class RenderBlock extends RenderNode {
      * @override
      */
     added() {
-        this.element.append("svg:rect").classed("dude-graph-block-background", true);
-        this.element.append("svg:text").classed("dude-graph-block-title", true);
-        this.element.append("svg:g").classed("dude-graph-block-points", true);
+        this[_svgRect] = this.element.append("svg:rect").classed("dude-graph-block-background", true);
+        this[_svgName] = this.element.append("svg:text").classed("dude-graph-block-name", true);
+        this[_svgPoints] = this.element.append("svg:g").classed("dude-graph-block-points", true);
     }
 
     /**
-     * Called when the render node position changed and should move its element
+     * Called when the render block data changed and should update the element
      * @override
      */
-    move() { this.element.attr("transform", "translate(" + this.position + ")"); }
+    updateData() { this[_svgName].text(this.name); }
     /**
-     * Called when the render node changed and should update the element
+     * Called when the render block position changed and should update its element
      * @override
      */
-    update() { this.move(); }
-
-    /**
-     * Called when the render node should compute its size
-     * @override
-     */
-    computeSize() {
-
-    }
-
+    updatePosition() { this.element.attr("transform", "translate(" + this.position + ")"); }
 }

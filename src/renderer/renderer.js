@@ -61,6 +61,7 @@ export default class Renderer {
         this[_renderBlocks].push(renderBlock);
         this[_renderBlockIds][renderBlock.id] = renderBlock;
         renderBlock.element = this[_d3Blocks].append("svg:g").datum(renderBlock);
+        renderBlock.element.attr("id", "bid-" + renderBlock.id);
         renderBlock.added();
     }
     /**

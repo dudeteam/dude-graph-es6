@@ -1,6 +1,9 @@
 import RenderNode from "./node";
 
 let _renderBlocks = Symbol("renderBlocks");
+let _svgRect = Symbol("svgRect");
+let _svgName = Symbol("svgName");
+let _svgPoints = Symbol("svgPoints");
 
 export default class RenderGroup extends RenderNode {
 
@@ -23,31 +26,25 @@ export default class RenderGroup extends RenderNode {
      * @override
      */
     added() {
-        this.element.append("svg:rect").classed("dude-graph-block-background", true);
-        this.element.append("svg:text").classed("dude-graph-block-title", true);
-        this.element.append("svg:g").classed("dude-graph-block-points", true);
+        this[_svgRect] = this.element.append("svg:rect").classed("dude-graph-block-background", true);
+        this[_svgName] = this.element.append("svg:text").classed("dude-graph-block-name", true);
+        this[_svgPoints] = this.element.append("svg:g").classed("dude-graph-block-points", true);
     }
 
     /**
-     * Called when the render node position changed and should move its element
+     * Called when the render group data changed and should update the element
      * @override
      */
-    move() { this.element.attr("transform", "translate(" + this.position + ")"); }
+    updateData() { this[_svgName].text(this.name); }
     /**
-     * Called when the render node changed and should update the element
+     * Called when the render group size changed and should update its element
      * @override
      */
-    update() { this.move(); }
-
+    updateSize() {}
     /**
-     * Called when the render node should compute its size
+     * Called when the render group position changed and should update its element
      * @override
      */
-    computeSize() {}
-    /**
-     * Called when the render node should compute its position
-     * @override
-     */
-    computePosition() {}
+    updatePosition() { this.element.attr("transform", "translate(" + this.position + ")"); }
 
 }

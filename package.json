@@ -2,6 +2,7 @@
   "name": "dude-graph",
   "version": "0.0.1",
   "main": "dist/dude-graph.js",
+  "jsnext:main": "src/dude-graph.js",
   "author": "Jonathan Picques <jonathan.picques@gmail.com>",
   "contributors": [
     "Jonathan Picques <jonathan.picques@gmail.com>",
@@ -10,7 +11,7 @@
   "license": "MIT",
   "description": "Generic tool to visually represent a graph of connected blocks.",
   "scripts": {
-    "build": "gulp",
+    "build": "gulp build",
     "test": "mocha --compilers js:babel-core/register --require ./test/helper.js test/tests-*.js"
   },
   "directories": {
@@ -26,25 +27,29 @@
   },
   "homepage": "https://github.com/dudeteam/dude-graph-es6#readme",
   "dependencies": {
-    "d3": "^4.0.0-alpha.40",
+    "d3": "^4.0.0-alpha.49",
     "event-class-es6": "^1.0.2",
-    "lodash-es": "^4.12.0"
+    "lodash-es": "^4.13.1"
   },
   "devDependencies": {
-    "babel-core": "^6.9.0",
+    "babel-core": "^6.9.1",
     "babel-preset-es2015": "^6.9.0",
+    "babel-preset-es2015-rollup": "^1.1.1",
     "chai": "^3.5.0",
     "eslint-clang-formatter": "^1.3.0",
     "gulp": "^3.9.1",
     "gulp-eslint": "^2.0.0",
     "gulp-notify": "^2.2.0",
     "gulp-plumber": "^1.1.0",
+    "gulp-rename": "^1.2.2",
     "gulp-rollup": "^1.9.0",
     "gulp-sourcemaps": "^1.6.0",
-    "jsdom": "^9.2.0",
+    "jsdom": "^9.2.1",
     "jsdom-global": "^2.0.0",
-    "mocha": "^2.4.5",
-    "rollup": "^0.26.3",
+    "mocha": "^2.5.3",
+    "rollup": "^0.31.2",
+    "rollup-plugin-babel": "^2.5.1",
+    "rollup-plugin-node-resolve": "^1.7.0",
     "sinon": "^1.17.4"
   }
 }

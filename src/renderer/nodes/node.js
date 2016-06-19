@@ -101,26 +101,28 @@ export default class RenderNode extends EventClass {
     removed() {}
 
     /**
-     * Called when the render node position changed and should move its element
-     * @abstract
+     * Called when the render node should be updated
      */
-    move() {}
+    updateAll() {
+        this.updateData();
+        this.updatePosition();
+        this.updateSize();
+    }
     /**
-     * Called when the render node changed and should update the element
+     * Called when the render node data changed and should update the element
      * @abstract
      */
-    update() {}
-
+    updateData() {}
     /**
-     * Called when the render node should compute its size
+     * Called when the render node size changed and should update its element
      * @abstract
      */
-    computeSize() {}
+    updateSize() {}
     /**
-     * Called when the render node should compute its position
+     * Called when the render node position changed and should update its element
      * @abstract
      */
-    computePosition() {}
+    updatePosition() {}
 
     /**
      * Called when the render node has been selected
