@@ -60,8 +60,8 @@ export default class Block extends EventClass {
      */
     get blockId() { return this[_blockId]; }
     /**
-     * Sets this block id
-     * @param {string|null} blockId - the block id to set
+     * Sets this block id to the specified id
+     * @param {string|null} blockId - specifies the id
      */
     set blockId(blockId) { this[_blockId] = blockId; }
     /**
@@ -90,8 +90,8 @@ export default class Block extends EventClass {
      */
     get blockGraph() { return this[_blockGraph]; }
     /**
-     * Sets this block graph to the specified block graph
-     * @param {Graph|null} blockGraph - specifies the block graph
+     * Sets this block graph to the specified graph
+     * @param {Graph|null} blockGraph - specifies the graph
      */
     set blockGraph(blockGraph) { this[_blockGraph] = blockGraph; }
 

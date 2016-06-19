@@ -4,9 +4,11 @@ import find from "lodash-es/find";
 import filter from "lodash-es/filter";
 import includes from "lodash-es/includes";
 
+import config from "./defaults/config";
 import uuid from "../graph/utils/uuid";
 
 let _graph = Symbol("graph");
+let _config = Symbol("config");
 let _d3Svg = Symbol("d3svg");
 let _d3Groups = Symbol("d3groups");
 let _d3Connections = Symbol("d3connections");
@@ -26,6 +28,7 @@ export default class Renderer {
      */
     constructor(svg, graph) {
         this[_graph] = graph;
+        this[_config] = config;
         this[_d3Svg] = select(svg);
         this[_d3Groups] = this[_d3Svg].append("svg:g").classed("dude-graph-groups", true);
         this[_d3Connections] = this[_d3Svg].append("svg:g").classed("dude-graph-connections", true);
@@ -42,6 +45,17 @@ export default class Renderer {
      * @returns {string}
      */
     get fancyName() { return "renderer (" + this[_renderBlocks].length + " render blocks)"; }
+
+    /**
+     * Returns this renderer config
+     * @returns {Object}
+     */
+    get config() { return this[_config]; }
+    /**
+     * Sets this renderer config to the specified config
+     * @param {Object} config - specifies the config
+     */
+    set config(config) { this[_config] = config; }
 
     /**
      * Adds the specified render block to this renderer

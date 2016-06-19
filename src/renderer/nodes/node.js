@@ -34,8 +34,8 @@ export default class RenderNode extends EventClass {
      */
     get renderer() { return this[_renderer]; }
     /**
-     * Sets this render node renderer
-     * @param {Renderer} renderer - the renderer to set
+     * Sets this render node renderer to the specified renderer
+     * @param {Renderer} renderer - specifies the renderer
      */
     set renderer(renderer) { this[_renderer] = renderer; }
     /**
@@ -44,8 +44,8 @@ export default class RenderNode extends EventClass {
      */
     get element() { return this[_element]; }
     /**
-     * Sets this element
-     * @param {select} element - the element to set
+     * Sets this render node element to the specified d3 element
+     * @param {select} element - specifies the d3 element
      */
     set element(element) { this[_element] = element; }
     /**
@@ -54,8 +54,8 @@ export default class RenderNode extends EventClass {
      */
     get id() { return this[_id]; }
     /**
-     * Sets this block id
-     * @param {string|null} id - the node id to set
+     * Sets this render node id to the specified id
+     * @param {string|null} id - specifies the id
      */
     set id(id) { this[_id] = id; }
     /**
@@ -64,8 +64,8 @@ export default class RenderNode extends EventClass {
      */
     get name() { return this[_name]; }
     /**
-     * Sets this node name
-     * @param {string} name - the node name to set
+     * Sets this node name to the specified name
+     * @param {string} name - specifies the name
      */
     set name(name) { this[_name] = name; }
     /**
@@ -74,8 +74,8 @@ export default class RenderNode extends EventClass {
      */
     get size() { return this[_size]; }
     /**
-     * Sets the node size
-     * @param {Array<number>} size - the node size to set
+     * Sets this node size to the specified size
+     * @param {Array<number>} size - specifies the size
      */
     set size(size) { this[_size] = size; }
     /**
@@ -84,24 +84,24 @@ export default class RenderNode extends EventClass {
      */
     get position() { return this[_position]; }
     /**
-     * Sets the node position
-     * @param {Array<number>} position - the node position to set
+     * Sets this node position to the specified position
+     * @param {Array<number>} position - specifies the position
      */
     set position(position) { this[_position] = position; }
 
     /**
-     * Called when the render node is added
+     * Called when this render node is added
      * @abstract
      */
     added() {}
     /**
-     * Called when the render node is removed
+     * Called when this render node is removed
      * @abstract
      */
     removed() {}
 
     /**
-     * Called when the render node should be updated
+     * Called when this render node should be updated
      */
     updateAll() {
         this.updateData();
@@ -109,29 +109,29 @@ export default class RenderNode extends EventClass {
         this.updateSize();
     }
     /**
-     * Called when the render node data changed and should update the element
+     * Called when this render node data changed and should update the element
      * @abstract
      */
     updateData() {}
     /**
-     * Called when the render node size changed and should update its element
+     * Called when this render node size changed and should update its element
      * @abstract
      */
     updateSize() {}
     /**
-     * Called when the render node position changed and should update its element
+     * Called when this render node position changed and should update its element
      * @abstract
      */
     updatePosition() {}
 
     /**
-     * Called when the render node has been selected
+     * Called when this render node has been selected
      */
     selected() {
         this.element.classed("dude-graph-selected", true);
     }
     /**
-     * Called when the render node has been deselected
+     * Called when this render node has been deselected
      */
     deselected() {
         this.element.classed("dude-graph-selected", false);

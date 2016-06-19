@@ -54,8 +54,8 @@ export default class Variable extends EventClass {
      */
     get variableValue() { return this[_variableValue]; }
     /**
-     * Sets this variable value to the specified variable value
-     * @param {*|null} variableValue - specifies the variable value
+     * Sets this variable value to the specified value
+     * @param {*|null} variableValue - specifies the value
      */
     set variableValue(variableValue) { this.changeVariableValue(variableValue); }
     /**
@@ -64,8 +64,8 @@ export default class Variable extends EventClass {
      */
     get variableBlock() { return this[_variableBlock]; }
     /**
-     * Sets this variable block to the specified variable block
-     * @param {Block} variableBlock - specifies the variable block
+     * Sets this variable block to the specified block
+     * @param {Block} variableBlock - specifies the block
      */
     set variableBlock(variableBlock) { this[_variableBlock] = variableBlock; }
     /**
@@ -74,8 +74,8 @@ export default class Variable extends EventClass {
      */
     get variableGraph() { return this[_variableGraph]; }
     /**
-     * Sets this variable graph to the specified variable graph
-     * @param {Graph} variableGraph - specifies the variable graph
+     * Sets this variable graph to the specified graph
+     * @param {Graph} variableGraph - specifies the graph
      */
     set variableGraph(variableGraph) { this[_variableGraph] = variableGraph; }
 

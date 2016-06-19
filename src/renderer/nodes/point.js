@@ -41,8 +41,8 @@ export default class RenderPoint {
      */
     get size() { return this[_size]; }
     /**
-     * Sets the point size
-     * @param {Array<number>} size - the point size to set
+     * Sets the point size to the specified size
+     * @param {Array<number>} size - specifies the size
      */
     set size(size) { this[_size] = size; }
     /**
@@ -51,40 +51,40 @@ export default class RenderPoint {
      */
     get position() { return this[_position]; }
     /**
-     * Sets the point position
-     * @param {Array<number>} position - the point position to set
+     * Sets the point position to the specified position
+     * @param {Array<number>} position - specifies the position
      */
     set position(position) { this[_position] = position; }
 
     /**
-     * Called when the render point is added
+     * Called when this render point is added
      * @abstract
      */
     added() {}
     /**
-     * Called when the render node is removed
+     * Called when this render point is removed
      * @abstract
      */
     removed() {}
 
     /**
-     * Called when the render point position changed and should move its element
+     * Called when this render point data changed and should update its element
      * @abstract
      */
-    move() {}
+    updateData() {}
     /**
-     * Called when the render point changed and should update its element
+     * Called when this render point position changed and should update its element
      * @abstract
      */
-    update() {}
+    updatePosition() {}
 
     /**
-     * Called when the render point is connected
+     * Called when this render point is connected
      * @abstract
      */
     connected() {}
     /**
-     * Called when the render point is disconnected
+     * Called when this render point is disconnected
      * @abstract
      */
     disconnected() {}

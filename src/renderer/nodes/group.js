@@ -22,7 +22,7 @@ export default class RenderGroup extends RenderNode {
     }
 
     /**
-     * Called when the render node is added
+     * Called when this render node is added
      * @override
      */
     added() {
@@ -32,17 +32,17 @@ export default class RenderGroup extends RenderNode {
     }
 
     /**
-     * Called when the render group data changed and should update the element
+     * Called when this render group data changed and should update the element
      * @override
      */
     updateData() { this[_svgName].text(this.name); }
     /**
-     * Called when the render group size changed and should update its element
+     * Called when this render group size changed and should update its element
      * @override
      */
     updateSize() {}
     /**
-     * Called when the render group position changed and should update its element
+     * Called when this render group position changed and should update its element
      * @override
      */
     updatePosition() { this.element.attr("transform", "translate(" + this.position + ")"); }

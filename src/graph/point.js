@@ -82,8 +82,8 @@ export default class Point extends EventClass {
      */
     get pointValueType() { return this[_pointValueType]; }
     /**
-     * Sets this point value type
-     * @param {string} pointValueType - the point value type to set
+     * Sets this point value type to the specified value type
+     * @param {string} pointValueType - specifies the value type
      */
     set pointValueType(pointValueType) { this.changeValueType(pointValueType); }
     /**
@@ -92,8 +92,8 @@ export default class Point extends EventClass {
      */
     get pointValue() { return this[_pointValue]; }
     /**
-     * Sets this point value to the specified point value
-     * @param {*|null} pointValue - specifies the point value
+     * Sets this point value to the specified value
+     * @param {*|null} pointValue - specifies the value
      */
     set pointValue(pointValue) { this.changeValue(pointValue); }
     /**
@@ -107,8 +107,8 @@ export default class Point extends EventClass {
      */
     get pointBlock() { return this[_pointBlock]; }
     /**
-     * Sets this point block to the specified point block
-     * @param {Block|null} pointBlock - specifies the point block
+     * Sets this point block to the specified block
+     * @param {Block|null} pointBlock - specifies the block
      */
     set pointBlock(pointBlock) { this[_pointBlock] = pointBlock; }
     /**

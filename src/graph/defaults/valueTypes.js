@@ -6,6 +6,10 @@ import isNumber from "lodash-es/isNumber";
 import isObject from "lodash-es/isObject";
 import isBoolean from "lodash-es/isBoolean";
 
+/**
+ * Graph default value types
+ * @type {object}
+ */
 let valueTypes = {
     "Stream": {
         "convert": () => undefined,

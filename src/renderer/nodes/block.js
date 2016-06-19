@@ -41,8 +41,8 @@ export default class RenderBlock extends RenderNode {
      */
     get parent() { return this[_parent]; }
     /**
-     * Sets this render block parent
-     * @param {RenderGroup|null} parent - the block render group parent to set
+     * Sets this render block parent to the specified render group
+     * @param {RenderGroup|null} parent - specifies the render group
      */
     set parent(parent) { this[_parent] = parent; }
     /**
@@ -52,7 +52,7 @@ export default class RenderBlock extends RenderNode {
     get renderPoints() { return this[_renderPoints]; }
 
     /**
-     * Called when the render node is added
+     * Called when this render node is added
      * @override
      */
     added() {
@@ -62,12 +62,12 @@ export default class RenderBlock extends RenderNode {
     }
 
     /**
-     * Called when the render block data changed and should update the element
+     * Called when this render block data changed and should update the element
      * @override
      */
     updateData() { this[_svgName].text(this.name); }
     /**
-     * Called when the render block position changed and should update its element
+     * Called when this render block position changed and should update its element
      * @override
      */
     updatePosition() { this.element.attr("transform", "translate(" + this.position + ")"); }
