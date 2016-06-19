@@ -74,4 +74,27 @@ describe("dude-commander API", () => {
         sinon.assert.calledTwice(undoSpy2);
         sinon.assert.calledOnce(undoSpy1);
     });
+    it("should clear redo stack if a new action is pushed after an undo", () => {
+        let commander = new Commander();
+        let undoSpy = sinon.spy();
+        let redoSpy = sinon.spy();
+        commander.action(redoSpy, undoSpy); // [action1], []
+        commander.action(() => {}, () => {}); // [action2, action1], []
+        commander.undo(); // [action1], [action2]
+        sinon.assert.calledOnce(redoSpy);
+        sinon.assert.notCalled(undoSpy);
+        commander.undo(); // [], [action1, action2]
+        sinon.assert.calledOnce(redoSpy);
+        sinon.assert.calledOnce(undoSpy);
+        commander.redo(); // [action1], [action2]
+        sinon.assert.calledTwice(redoSpy);
+        sinon.assert.calledOnce(undoSpy);
+        commander.action(() => {}, () => {}); // [action3, action1], []
+        commander.undo(); // [action1], [action3]
+        sinon.assert.calledTwice(redoSpy);
+        sinon.assert.calledOnce(undoSpy);
+        commander.undo(); // [], [action1, action3]
+        sinon.assert.calledTwice(redoSpy);
+        sinon.assert.calledTwice(undoSpy);
+    });
 });

@@ -26,6 +26,7 @@ export default class Commander {
             "undo": undo,
             "redo": redo
         });
+        this[_redo] = [];
         return redo();
     }
 
@@ -83,8 +84,30 @@ export default class Commander {
     addRenderBlockToRenderGroup(renderer, renderBlock, renderGroup) {}
     removeRenderBlockToRenderGroup(renderer, renderBlock, renderGroup) {}
 
-    changeRenderNodePosition(renderer, renderNode, position) {}
-    changeRenderNodeName(renderer, renderNode, name) {}
+    /**
+     * Changes the specified render node position to the specified position
+     * @param {RenderNode} renderNode - specifies the render node
+     * @param {Array<number>} position - specifies the position
+     */
+    changeRenderNodePosition(renderNode, position) {
+        let oldPosition = renderNode.position;
+        this.action(
+            () => { renderNode.position = position; renderNode.updatePosition(); },
+            () => { renderNode.position = oldPosition; renderNode.updatePosition(); }
+        );
+    }
+    /**
+     * Changes the specified render node name to the specified name
+     * @param {RenderNode} renderNode - specifies the render node
+     * @param {string} name - specifies the name
+     */
+    changeRenderNodeName(renderNode, name) {
+        let oldName = renderNode.name;
+        this.action(
+            () => { renderNode.name = name; renderNode.updateAll(); },
+            () => { renderNode.name = oldName; renderNode.updateAll(); }
+        );
+    }
 
     addPoint(graph, block, pointData) {}
     removePoint(graph, point) {}
