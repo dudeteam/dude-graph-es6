@@ -97,19 +97,15 @@ export default class Renderer {
      * @returns {RenderBlock|null}
      */
     renderBlockById(renderBlockId) {
-        return find(this[_renderBlocks], (renderBlock) => {
-            return renderBlock.id === renderBlockId;
-        }) || null;
+        return find(this[_renderBlocks], renderBlock => renderBlock.id === renderBlockId) || null;
     }
     /**
-     * Returns the corresponding render block for the specified block
+     * Returns the corresponding render blocks for the specified block
      * @param {Block} block - specifies the block
      * @returns {Array<RenderBlock>}
      */
     renderBlocksByBlock(block) {
-        return filter(this[_renderBlocks], (renderBlock) => {
-            return renderBlock.block === block;
-        });
+        return filter(this[_renderBlocks], renderBlock => renderBlock.block === block);
     }
 
     /**
@@ -148,9 +144,7 @@ export default class Renderer {
      * @returns {RenderGroup|null}
      */
     renderGroupById(renderGroupId) {
-        return find(this[_renderGroups], (renderGroup) => {
-                return renderGroup.id === renderGroupId;
-            }) || null;
+        return find(this[_renderGroups], renderGroup => renderGroup.id === renderGroupId) || null;
     }
 
     /*

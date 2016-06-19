@@ -112,9 +112,7 @@ export default class Graph extends EventClass {
      * @returns {Array<Block>}
      */
     blocksByName(blockName) {
-        return filter(this[_graphBlocks], (block) => {
-            return block.blockName === blockName;
-        });
+        return filter(this[_graphBlocks], block => block.blockName === blockName);
     }
     /**
      * Returns the blocks corresponding to the specified block type
@@ -122,9 +120,7 @@ export default class Graph extends EventClass {
      * @returns {Array<Block>}
      */
     blocksByType(blockType) {
-        return filter(this[_graphBlocks], (block) => {
-            return block.blockType === blockType || block instanceof blockType;
-        });
+        return filter(this[_graphBlocks], block => block.blockType === blockType || block instanceof blockType);
     }
 
     /**
@@ -163,9 +159,7 @@ export default class Graph extends EventClass {
      * @returns {Variable|null}
      */
     variableByName(variableName) {
-        return find(this[_graphVariables], (variable) => {
-                return variable.variableName === variableName;
-        }) || null;
+        return find(this[_graphVariables], variable => variable.variableName === variableName) || null;
     }
 
     /**
