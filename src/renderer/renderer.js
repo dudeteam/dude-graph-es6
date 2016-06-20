@@ -76,6 +76,7 @@ export default class Renderer {
         this[_renderBlockIds][renderBlock.id] = renderBlock;
         renderBlock.element = this[_d3Blocks].append("svg:g").datum(renderBlock);
         renderBlock.element.attr("id", "bid-" + renderBlock.id);
+        renderBlock.element.attr("class", "dude-graph-block");
         renderBlock.added();
     }
     /**
@@ -123,6 +124,8 @@ export default class Renderer {
         this[_renderGroups].push(renderGroup);
         this[_renderGroupIds][renderGroup.id] = renderGroup;
         renderGroup.element = this[_d3Groups].append("svg:g").datum(renderGroup);
+        renderGroup.element.attr("id", "gid-" + renderGroup.id);
+        renderGroup.element.attr("class", "dude-graph-group");
         renderGroup.added();
     }
     /**

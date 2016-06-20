@@ -1,5 +1,6 @@
 /*eslint no-unused-vars: "off"*/
 import RenderBlock from "../renderer/nodes/block";
+import RenderGroup from "../renderer/nodes/group";
 
 let _undo = Symbol("undo");
 let _redo = Symbol("redo");
@@ -19,7 +20,6 @@ export default class Commander {
      * Adds an action in the commander
      * @param {function} redo - the function to make/redo the action
      * @param {function} undo - the function to undo the action
-     * @returns {*} - returns the value returned by redo
      */
     action(redo, undo) {
         this[_undo].splice(0, 0, {
@@ -27,9 +27,8 @@ export default class Commander {
             "redo": redo
         });
         this[_redo] = [];
-        return redo();
+        redo();
     }
-
     /**
      * Undoes the last action
      */
@@ -54,13 +53,11 @@ export default class Commander {
     /**
      * @see {Renderer.addRenderBlock}
      * @param {Renderer} renderer - @see {Renderer.addRenderBlock}
-     * @param {Block} block - @see {Renderer.addRenderBlock}
-     * @returns {RenderBlock} - @see {Renderer.addRenderBlock}
+     * @param {RenderBlock} renderBlock - @see {Renderer.addRenderBlock}
      */
-    addRenderBlock(renderer, block) {
-        let renderBlock = new RenderBlock(block);
-        return this.action(
-            () => { renderer.addRenderBlock(renderBlock); renderBlock.updateAll(); return renderBlock; },
+    addRenderBlock(renderer, renderBlock) {
+        this.action(
+            () => { renderer.addRenderBlock(renderBlock); renderBlock.updateAll(); },
             () => { renderer.removeRenderBlock(renderBlock); }
         );
     }
@@ -79,10 +76,31 @@ export default class Commander {
     addRenderConnection(renderer, renderOutputPoint, renderInputPoint) {}
     removeRenderConnection(renderer, renderConnection) {}
 
-    addRenderGroup(renderer, renderGroupData) {}
-    removeRenderGroup(renderer, renderGroup) {}
-    addRenderBlockToRenderGroup(renderer, renderBlock, renderGroup) {}
-    removeRenderBlockToRenderGroup(renderer, renderBlock, renderGroup) {}
+    /**
+     * @see {Renderer.addRenderGroup}
+     * @param {Renderer} renderer - @see {Renderer.addRenderGroup}
+     * @param {RenderGroup} renderGroup - @see {Renderer.addRenderGroup}
+     * @returns {RenderGroup}
+     */
+    addRenderGroup(renderer, renderGroup) {
+        return this.action(
+            () => { renderer.addRenderGroup(renderGroup); renderGroup.updateAll(); },
+            () => { renderer.removeRenderGroup(renderGroup); }
+        );
+    }
+    /**
+     * @see {Renderer.addRenderGroup}
+     * @param {Renderer} renderer - @see {Renderer.addRenderGroup}
+     * @param {RenderGroup} renderGroup - @see {Renderer.addRenderGroup}
+     */
+    removeRenderGroup(renderer, renderGroup) {
+        this.action(
+            () => { renderer.removeRenderGroup(renderGroup); },
+            () => { renderer.addRenderGroup(renderGroup); }
+        );
+    }
+    addRenderBlockToRenderGroup(renderBlock, renderGroup) {}
+    removeRenderBlockToRenderGroup(renderBlock, renderGroup) {}
 
     /**
      * Changes the specified render node position to the specified position

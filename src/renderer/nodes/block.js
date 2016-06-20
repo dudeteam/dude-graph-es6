@@ -1,7 +1,7 @@
 import filter from "lodash-es/filter";
 
 import RenderNode from "./node";
-import {measureRenderBlock} from "../utils/measure";
+import {sizeRenderBlock} from "../utils/measure";
 
 let _block = Symbol("block");
 let _parent = Symbol("parent");
@@ -103,7 +103,7 @@ export default class RenderBlock extends RenderNode {
      * @override
      */
     updateSize() {
-        this.size = measureRenderBlock(this);
+        this.size = sizeRenderBlock(this);
 
         this[_svgRect].attr("width", this.size[0]);
         this[_svgRect].attr("height", this.size[1]);
