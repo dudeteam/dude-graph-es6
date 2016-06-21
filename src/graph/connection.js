@@ -45,7 +45,7 @@ export default class Connection extends EventClass {
         if (point === this[_connectionInputPoint]) {
             return this[_connectionOutputPoint];
         }
-        throw new Error(this.fancyName);
+        throw new Error("`" + this.fancyName + "` has no point `" + point.fancyName + "`");
     }
 
 }

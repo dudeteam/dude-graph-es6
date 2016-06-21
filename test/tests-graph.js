@@ -88,6 +88,10 @@ describe("dude-graph API", () => {
         expect(() => {
             graph.addBlock(block);
         }).to.throw();
+        let graph2 = new Graph();
+        expect(() => {
+            graph2.addBlock(block); // block is already in graph
+        }).to.throw();
     });
     it("should create points", () => {
         let outputPoint = new Point(true, {

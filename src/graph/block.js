@@ -326,7 +326,7 @@ export default class Block extends EventClass {
      */
     acceptConnect(blockPoint, otherPoint) {
         if (blockPoint.pointBlock !== this) {
-            throw new Error("`" + this.fancyName + "` has no `" + blockPoint.pointName + "`");
+            throw new Error("`" + this.fancyName + "` has no point `" + blockPoint.pointName + "`");
         }
         return otherPoint === otherPoint;
     }
@@ -342,6 +342,6 @@ export default class Block extends EventClass {
 /**
  * @typedef {Object} Block.blockDataTypedef
  * @property {string|null} [blockId=null]
- * @property {string} blockName
+ * @property {string} [blockName]
  * @property {Object<string, Graph.templateTypedef>} [blockTemplates={}]
  */
