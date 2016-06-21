@@ -20,8 +20,8 @@ describe("dude-graph API", () => {
      */
     it("should create a graph", () => {
         let graph = new Graph();
-        expect(graph.graphBlocks).to.have.length(0);
-        expect(graph.graphConnections).to.have.length(0);
+        expect(graph.graphBlocks).to.have.lengthOf(0);
+        expect(graph.graphConnections).to.have.lengthOf(0);
         expect(graph.valueTypeByName("Number")).to.be.not.null;
         expect(graph.valueTypeByName("String")).to.be.not.null;
         expect(graph.valueTypeByName("Boolean")).to.be.not.null;
@@ -59,12 +59,12 @@ describe("dude-graph API", () => {
     it("should test graph blocksByName and blocksByType", () => {
         class AssignationBlock extends Block {}
         let graph = new Graph();
-        expect(graph.blocksByName("AssignationBlock")).to.have.length(0);
-        expect(graph.blocksByType(AssignationBlock)).to.have.length(0);
+        expect(graph.blocksByName("AssignationBlock")).to.have.lengthOf(0);
+        expect(graph.blocksByType(AssignationBlock)).to.have.lengthOf(0);
         let block = new AssignationBlock();
         graph.addBlock(block);
-        expect(graph.blocksByName("AssignationBlock")).to.have.length(1);
-        expect(graph.blocksByType(AssignationBlock)).to.have.length(1);
+        expect(graph.blocksByName("AssignationBlock")).to.have.lengthOf(1);
+        expect(graph.blocksByType(AssignationBlock)).to.have.lengthOf(1);
     });
     it("should create block with unique ids", () => {
         let graph = new Graph();
@@ -201,8 +201,8 @@ describe("dude-graph API", () => {
         }).to.throw();
         graph.addBlock(block);
         block.addPoint(outputPoint);
-        expect(block.blockOutputs).to.have.length(1);
-        expect(block.blockInputs).to.have.length(0);
+        expect(block.blockOutputs).to.have.lengthOf(1);
+        expect(block.blockInputs).to.have.lengthOf(0);
         expect(() => {
             block.addPoint(new Point(true, {
                 "pointName": "output", // Cannot add 2 outputs with the same name
@@ -213,8 +213,8 @@ describe("dude-graph API", () => {
             "pointName": "output", // But can add an input with the same name as an output
             "pointValueType": "String"
         }));
-        expect(block.blockOutputs).to.have.length(1);
-        expect(block.blockInputs).to.have.length(1);
+        expect(block.blockOutputs).to.have.lengthOf(1);
+        expect(block.blockInputs).to.have.lengthOf(1);
         expect(() => {
             block.addPoint(new Point(false, {
                 "pointName": "output", // But still cannot add 2 inputs with the same name
@@ -396,9 +396,9 @@ describe("dude-graph API", () => {
         }).to.throw();
         block2.addPoint(inputPoint2);
         let connection = outputPoint1.connect(inputPoint2);
-        expect(graph.graphConnections).to.have.length(1);
-        expect(outputPoint1.pointConnections).to.have.length(1);
-        expect(inputPoint2.pointConnections).to.have.length(1);
+        expect(graph.graphConnections).to.have.lengthOf(1);
+        expect(outputPoint1.pointConnections).to.have.lengthOf(1);
+        expect(inputPoint2.pointConnections).to.have.lengthOf(1);
         expect(graph.graphConnections[0]).to.be.equal(connection);
         expect(outputPoint1.pointConnections[0]).to.be.equal(connection);
         expect(inputPoint2.pointConnections[0]).to.be.equal(connection);
@@ -434,11 +434,11 @@ describe("dude-graph API", () => {
             inputPoint2.disconnect(outputPoint1); // Cannot disconnect non connected points
         }).to.throw();
         outputPoint1.connect(inputPoint2);
-        expect(graph.graphConnections).to.have.length(1);
+        expect(graph.graphConnections).to.have.lengthOf(1);
         outputPoint1.disconnect(inputPoint2);
-        expect(graph.graphConnections).to.have.length(0);
-        expect(outputPoint1.pointConnections).to.have.length(0);
-        expect(inputPoint2.pointConnections).to.have.length(0);
+        expect(graph.graphConnections).to.have.lengthOf(0);
+        expect(outputPoint1.pointConnections).to.have.lengthOf(0);
+        expect(inputPoint2.pointConnections).to.have.lengthOf(0);
     });
     it("should ensure connect/disconnect commutativity", () => {
         let graph = new Graph();
@@ -457,37 +457,37 @@ describe("dude-graph API", () => {
         block1.addPoint(outputPoint1);
         block2.addPoint(inputPoint2);
         outputPoint1.connect(inputPoint2);
-        expect(graph.graphConnections).to.have.length(1);
-        expect(outputPoint1.pointConnections).to.have.length(1);
-        expect(inputPoint2.pointConnections).to.have.length(1);
+        expect(graph.graphConnections).to.have.lengthOf(1);
+        expect(outputPoint1.pointConnections).to.have.lengthOf(1);
+        expect(inputPoint2.pointConnections).to.have.lengthOf(1);
         outputPoint1.disconnect(inputPoint2);
-        expect(graph.graphConnections).to.have.length(0);
-        expect(outputPoint1.pointConnections).to.have.length(0);
-        expect(inputPoint2.pointConnections).to.have.length(0);
+        expect(graph.graphConnections).to.have.lengthOf(0);
+        expect(outputPoint1.pointConnections).to.have.lengthOf(0);
+        expect(inputPoint2.pointConnections).to.have.lengthOf(0);
         inputPoint2.connect(outputPoint1);
-        expect(graph.graphConnections).to.have.length(1);
-        expect(outputPoint1.pointConnections).to.have.length(1);
-        expect(inputPoint2.pointConnections).to.have.length(1);
+        expect(graph.graphConnections).to.have.lengthOf(1);
+        expect(outputPoint1.pointConnections).to.have.lengthOf(1);
+        expect(inputPoint2.pointConnections).to.have.lengthOf(1);
         inputPoint2.disconnect(outputPoint1);
-        expect(graph.graphConnections).to.have.length(0);
-        expect(outputPoint1.pointConnections).to.have.length(0);
-        expect(inputPoint2.pointConnections).to.have.length(0);
+        expect(graph.graphConnections).to.have.lengthOf(0);
+        expect(outputPoint1.pointConnections).to.have.lengthOf(0);
+        expect(inputPoint2.pointConnections).to.have.lengthOf(0);
         outputPoint1.connect(inputPoint2);
-        expect(graph.graphConnections).to.have.length(1);
-        expect(outputPoint1.pointConnections).to.have.length(1);
-        expect(inputPoint2.pointConnections).to.have.length(1);
+        expect(graph.graphConnections).to.have.lengthOf(1);
+        expect(outputPoint1.pointConnections).to.have.lengthOf(1);
+        expect(inputPoint2.pointConnections).to.have.lengthOf(1);
         inputPoint2.disconnect(outputPoint1);
-        expect(graph.graphConnections).to.have.length(0);
-        expect(outputPoint1.pointConnections).to.have.length(0);
-        expect(inputPoint2.pointConnections).to.have.length(0);
+        expect(graph.graphConnections).to.have.lengthOf(0);
+        expect(outputPoint1.pointConnections).to.have.lengthOf(0);
+        expect(inputPoint2.pointConnections).to.have.lengthOf(0);
         inputPoint2.connect(outputPoint1);
-        expect(graph.graphConnections).to.have.length(1);
-        expect(outputPoint1.pointConnections).to.have.length(1);
-        expect(inputPoint2.pointConnections).to.have.length(1);
+        expect(graph.graphConnections).to.have.lengthOf(1);
+        expect(outputPoint1.pointConnections).to.have.lengthOf(1);
+        expect(inputPoint2.pointConnections).to.have.lengthOf(1);
         outputPoint1.disconnect(inputPoint2);
-        expect(graph.graphConnections).to.have.length(0);
-        expect(outputPoint1.pointConnections).to.have.length(0);
-        expect(inputPoint2.pointConnections).to.have.length(0);
+        expect(graph.graphConnections).to.have.lengthOf(0);
+        expect(outputPoint1.pointConnections).to.have.lengthOf(0);
+        expect(inputPoint2.pointConnections).to.have.lengthOf(0);
     });
     it("should connect compatible types", () => {
         let graph = new Graph();
@@ -640,21 +640,21 @@ describe("dude-graph API", () => {
         block2.addPoint(inputPoint2);
         outputPoint1.connect(inputPoint1);
         outputPoint1.connect(inputPoint2);
-        expect(graph.graphConnections).to.have.length(2);
-        expect(outputPoint1.pointConnections).to.have.length(2);
+        expect(graph.graphConnections).to.have.lengthOf(2);
+        expect(outputPoint1.pointConnections).to.have.lengthOf(2);
         expect(() => {
             inputPoint2.connect(outputPoint2);
         }).to.throw();
         outputPoint1.disconnectAll();
-        expect(graph.graphConnections).to.have.length(0);
-        expect(outputPoint1.pointConnections).to.have.length(0);
+        expect(graph.graphConnections).to.have.lengthOf(0);
+        expect(outputPoint1.pointConnections).to.have.lengthOf(0);
         outputPoint1.connect(inputPoint1);
         outputPoint1.connect(inputPoint2);
-        expect(graph.graphConnections).to.have.length(2);
-        expect(outputPoint1.pointConnections).to.have.length(2);
+        expect(graph.graphConnections).to.have.lengthOf(2);
+        expect(outputPoint1.pointConnections).to.have.lengthOf(2);
         outputPoint1.disconnect(inputPoint2);
-        expect(graph.graphConnections).to.have.length(1);
-        expect(outputPoint1.pointConnections).to.have.length(1);
+        expect(graph.graphConnections).to.have.lengthOf(1);
+        expect(outputPoint1.pointConnections).to.have.lengthOf(1);
     });
     it("should remove points from block", () => {
         let graph = new Graph();
@@ -683,17 +683,17 @@ describe("dude-graph API", () => {
         block1.addPoint(outputPoint1);
         block2.addPoint(inputPoint2);
         let connection = outputPoint1.connect(inputPoint2);
-        expect(graph.graphConnections).to.have.length(1);
-        expect(outputPoint1.pointConnections).to.have.length(1);
-        expect(inputPoint2.pointConnections).to.have.length(1);
+        expect(graph.graphConnections).to.have.lengthOf(1);
+        expect(outputPoint1.pointConnections).to.have.lengthOf(1);
+        expect(inputPoint2.pointConnections).to.have.lengthOf(1);
         expect(graph.graphConnections[0]).to.be.equal(connection);
         expect(outputPoint1.pointConnections[0]).to.be.equal(connection);
         expect(inputPoint2.pointConnections[0]).to.be.equal(connection);
         expect(connection.connectionOutputPoint).to.be.equal(outputPoint1);
         expect(connection.connectionInputPoint).to.be.equal(inputPoint2);
         block1.removePoint(outputPoint1);
-        expect(graph.graphConnections).to.have.length(0);
-        expect(inputPoint2.pointConnections).to.have.length(0);
+        expect(graph.graphConnections).to.have.lengthOf(0);
+        expect(inputPoint2.pointConnections).to.have.lengthOf(0);
     });
     it("should remove all block points", () => {
         let graph = new Graph();
@@ -731,11 +731,11 @@ describe("dude-graph API", () => {
             "pointName": "in3",
             "pointValueType": "Number"
         }));
-        expect(block.blockOutputs).to.have.length(5);
-        expect(block.blockInputs).to.have.length(3);
+        expect(block.blockOutputs).to.have.lengthOf(5);
+        expect(block.blockInputs).to.have.lengthOf(3);
         block.removePoints();
-        expect(block.blockOutputs).to.have.length(0);
-        expect(block.blockInputs).to.have.length(0);
+        expect(block.blockOutputs).to.have.lengthOf(0);
+        expect(block.blockInputs).to.have.lengthOf(0);
     });
     it("should test block templates", () => {
         let graph = new Graph();
@@ -1123,21 +1123,21 @@ describe("dude-graph API", () => {
         });
         block2.addPoint(outputPoint2);
         outputPoint2.connect(inputPoint1);
-        expect(graph.graphBlocks).to.have.length(2);
+        expect(graph.graphBlocks).to.have.lengthOf(2);
         expect(graph.blockById(block1.blockId)).to.be.equals(block1);
         expect(graph.blockById(block2.blockId)).to.be.equals(block2);
-        expect(graph.graphConnections).to.have.length(1);
-        expect(block1.blockInputs).to.have.length(1);
-        expect(block2.blockOutputs).to.have.length(1);
-        expect(outputPoint2.pointConnections).to.have.length(1);
+        expect(graph.graphConnections).to.have.lengthOf(1);
+        expect(block1.blockInputs).to.have.lengthOf(1);
+        expect(block2.blockOutputs).to.have.lengthOf(1);
+        expect(outputPoint2.pointConnections).to.have.lengthOf(1);
         graph.removeBlock(block1);
-        expect(graph.graphBlocks).to.have.length(1);
+        expect(graph.graphBlocks).to.have.lengthOf(1);
         expect(graph.blockById(block1.blockId)).to.be.null;
         expect(graph.blockById(block2.blockId)).to.be.equals(block2);
-        expect(graph.graphConnections).to.have.length(0);
-        expect(block1.blockInputs).to.have.length(0);
-        expect(block2.blockOutputs).to.have.length(1);
-        expect(outputPoint2.pointConnections).to.have.length(0);
+        expect(graph.graphConnections).to.have.lengthOf(0);
+        expect(block1.blockInputs).to.have.lengthOf(0);
+        expect(block2.blockOutputs).to.have.lengthOf(1);
+        expect(outputPoint2.pointConnections).to.have.lengthOf(0);
     });
     it("should create custom block and custom point and test their callbacks", () => {
         // TODO: test acceptConnect
@@ -1236,7 +1236,7 @@ describe("dude-graph API", () => {
             "variableValueType": "String"
         });
         graph.addVariable(variable);
-        expect(graph.graphVariables).to.have.length(1);
+        expect(graph.graphVariables).to.have.lengthOf(1);
         expect(graph.variableByName("Hello")).to.be.equal(variable);
         expect(() => {
             graph.addVariable(variable); // Duplicate name
@@ -1245,7 +1245,7 @@ describe("dude-graph API", () => {
         expect(() => {
             graph.removeVariable(variable); // Already removed
         }).to.throw();
-        expect(graph.graphVariables).to.have.length(0);
+        expect(graph.graphVariables).to.have.lengthOf(0);
         expect(graph.variableByName("Hello")).to.be.null;
         expect(() => {
             //noinspection JSCheckFunctionSignatures
@@ -1319,7 +1319,7 @@ describe("dude-graph API", () => {
         });
         graph.addBlock(variableBlock);
         expect(variable.variableBlock).to.be.equal(variableBlock);
-        expect(graph.graphBlocks).to.have.length(1);
+        expect(graph.graphBlocks).to.have.lengthOf(1);
         expect(() => {
             graph.addBlock(new VariableBlock({
                 "blockName": "Hello" // Duplicate VariableBlock for Hello
@@ -1327,15 +1327,15 @@ describe("dude-graph API", () => {
         }).to.throw();
         graph.removeBlock(variableBlock);
         expect(variable.variableBlock).to.be.null;
-        expect(graph.graphBlocks).to.have.length(0);
+        expect(graph.graphBlocks).to.have.lengthOf(0);
         variableBlock = new VariableBlock({
             "blockName": "Hello"
         });
         graph.addBlock(variableBlock);
         expect(variable.variableBlock).to.be.equal(variableBlock);
-        expect(graph.graphBlocks).to.have.length(1);
+        expect(graph.graphBlocks).to.have.lengthOf(1);
         graph.removeVariable(variable); // Should remove all related blocks
-        expect(graph.graphBlocks).to.have.length(0);
+        expect(graph.graphBlocks).to.have.lengthOf(0);
     });
 });
 describe("dude-graph Events", () => {

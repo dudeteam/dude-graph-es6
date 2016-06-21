@@ -1,3 +1,6 @@
+import pull from "lodash-es/pull";
+import includes from "lodash-es/includes";
+
 import RenderNode from "./node";
 import {sizeRenderGroup, positionRenderGroup} from "../utils/measure";
 
@@ -19,6 +22,38 @@ export default class RenderGroup extends RenderNode {
      */
     get renderBlocks() {
         return this[_renderBlocks];
+    }
+
+    /**
+     * Adds the specified render block to this render group
+     * @param {RenderBlock} renderBlock - specifies the render block
+     */
+    addRenderBlock(renderBlock) {
+        if (this.renderer === null) {
+            throw new Error("`" + this.fancyName + "` cannot add renderBlock when not bound to a renderer");
+        }
+        if (this.renderer !== renderBlock.renderer) {
+            throw new Error("`" + this.fancyName + "` is not in the same renderer as `" + renderBlock.fancyName + "`");
+        }
+        if (renderBlock.parent !== null) {
+            throw new Error("`" + renderBlock.fancyName + "` already has a parent");
+        }
+        this[_renderBlocks].push(renderBlock);
+        renderBlock.parent = this;
+    }
+    /**
+     * Removes the specified render block from this render group
+     * @param {RenderBlock} renderBlock - specifies the render block
+     */
+    removeRenderBlock(renderBlock) {
+        if (this.renderer === null) {
+            throw new Error("`" + this.fancyName + "` cannot remove renderBlock when not bound to a renderer");
+        }
+        if (renderBlock.parent !== this || !includes(this[_renderBlocks], renderBlock)) {
+            throw new Error("`" + this.fancyName + "` has no `" + renderBlock.fancyName + "`");
+        }
+        pull(this[_renderBlocks], renderBlock);
+        renderBlock.parent = null;
     }
 
     /**
