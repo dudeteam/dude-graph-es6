@@ -36,7 +36,7 @@ export default class RenderGroup extends RenderNode {
             throw new Error("`" + this.fancyName + "` is not in the same renderer as `" + renderBlock.fancyName + "`");
         }
         if (renderBlock.parent !== null) {
-            throw new Error("`" + renderBlock.fancyName + "` already has a parent");
+            throw new Error("`" + renderBlock.fancyName + "` cannot redefine `parent`");
         }
         this[_renderBlocks].push(renderBlock);
         renderBlock.parent = this;

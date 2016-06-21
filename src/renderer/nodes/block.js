@@ -79,8 +79,6 @@ export default class RenderBlock extends RenderNode {
 
         this[_svgName].attr("text-anchor", "middle");
         this[_svgName].attr("dominant-baseline", "text-before-edge");
-
-        this.updateAll();
     }
 
     /**

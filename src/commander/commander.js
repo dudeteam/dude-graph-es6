@@ -69,7 +69,7 @@ export default class Commander {
     removeRenderBlock(renderer, renderBlock) {
         this.action(
             () => { renderer.removeRenderBlock(renderBlock); },
-            () => { renderer.addRenderBlock(renderBlock); }
+            () => { renderer.addRenderBlock(renderBlock); renderBlock.updateAll(); }
         );
     }
 
@@ -96,11 +96,31 @@ export default class Commander {
     removeRenderGroup(renderer, renderGroup) {
         this.action(
             () => { renderer.removeRenderGroup(renderGroup); },
-            () => { renderer.addRenderGroup(renderGroup); }
+            () => { renderer.addRenderGroup(renderGroup); renderGroup.updateAll(); }
         );
     }
-    addRenderBlockToRenderGroup(renderBlock, renderGroup) {}
-    removeRenderBlockToRenderGroup(renderBlock, renderGroup) {}
+    /**
+     * @see {RenderGroup.addRenderBlock}
+     * @param {RenderGroup} renderGroup - @see {RenderGroup.addRenderBlock}
+     * @param {RenderBlock} renderBlock - @see {RenderGroup.addRenderBlock}
+     */
+    addRenderGroupRenderBlock(renderGroup, renderBlock) {
+        this.action(
+            () => { renderGroup.addRenderBlock(renderBlock); renderGroup.updateAll(); },
+            () => { renderGroup.removeRenderBlock(renderBlock); renderGroup.updateAll(); }
+        );
+    }
+    /**
+     * @see {RenderGroup.removeRenderBlock}
+     * @param {RenderGroup} renderGroup - @see {RenderGroup.removeRenderBlock}
+     * @param {RenderBlock} renderBlock - @see {RenderGroup.removeRenderBlock}
+     */
+    removeRenderGroupRenderBlock(renderGroup, renderBlock) {
+        this.action(
+            () => { renderGroup.removeRenderBlock(renderBlock); renderGroup.updateAll(); },
+            () => { renderGroup.addRenderBlock(renderBlock); renderGroup.updateAll(); }
+        );
+    }
 
     /**
      * Changes the specified render node position to the specified position
@@ -110,8 +130,22 @@ export default class Commander {
     changeRenderNodePosition(renderNode, position) {
         let oldPosition = renderNode.position;
         this.action(
-            () => { renderNode.position = position; renderNode.updatePosition(); },
-            () => { renderNode.position = oldPosition; renderNode.updatePosition(); }
+            () => {
+                renderNode.position = position;
+                renderNode.updatePosition();
+                if (renderNode instanceof RenderBlock && renderNode.parent !== null) {
+                    renderNode.parent.updatePosition();
+                    renderNode.parent.updateSize();
+                }
+            },
+            () => {
+                renderNode.position = oldPosition;
+                renderNode.updatePosition();
+                if (renderNode instanceof RenderBlock && renderNode.parent !== null) {
+                    renderNode.parent.updatePosition();
+                    renderNode.parent.updateSize();
+                }
+            }
         );
     }
     /**
