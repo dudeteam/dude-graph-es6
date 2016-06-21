@@ -87,6 +87,9 @@ export default class Renderer {
         if (renderBlock.renderer !== this || !includes(this[_renderBlocks], renderBlock)) {
             throw new Error("`" + this.fancyName + "` has no render block `" + renderBlock.fancyName + "`");
         }
+        if (renderBlock.parent !== null) {
+            throw new Error("`" + this.fancyName + "` cannot remove render block with a parent");
+        }
         renderBlock.removed();
         renderBlock.element.remove();
         this[_renderBlockIds][renderBlock.id] = undefined;
@@ -135,6 +138,9 @@ export default class Renderer {
     removeRenderGroup(renderGroup) {
         if (renderGroup.renderer !== this || !includes(this[_renderGroups], renderGroup)) {
             throw new Error("`" + this.fancyName + "` has no render block `" + renderGroup.fancyName + "`");
+        }
+        if (renderGroup.renderBlocks.length > 0) {
+            throw new Error("`" + this.fancyName + "` cannot remove render group with render blocks");
         }
         renderGroup.removed();
         renderGroup.element.remove();

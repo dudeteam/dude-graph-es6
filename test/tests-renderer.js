@@ -32,8 +32,8 @@ describe("dude-renderer API", () => {
         expect(() => {
             renderer.addRenderBlock(new RenderBlock(block)); // block not bound to graph
         }).to.throw();
-        graph.addBlock(block);
         let renderBlock = new RenderBlock(block);
+        graph.addBlock(block);
         renderer.addRenderBlock(renderBlock);
         expect(() => {
             renderer.addRenderBlock(renderBlock); // cannot add the same renderBlock twice
@@ -49,9 +49,9 @@ describe("dude-renderer API", () => {
         let graph = new Graph();
         let renderer = new Renderer(svg, graph);
         let block = new Block();
-        graph.addBlock(block);
         let renderBlock = new RenderBlock(block);
         let renderBlock2 = new RenderBlock(block);
+        graph.addBlock(block);
         renderer.addRenderBlock(renderBlock);
         renderer.addRenderBlock(renderBlock2);
         expect(renderer.renderBlocksByBlock(block)).to.have.lengthOf(2);
@@ -114,14 +114,14 @@ describe("dude-renderer API", () => {
         let block3 = new Block();
         let renderer = new Renderer(svg, graph);
         let renderer2 = new Renderer(svg, graph);
-        graph.addBlock(block);
-        graph.addBlock(block2);
-        graph.addBlock(block3);
         let renderBlock = new RenderBlock(block);
         let renderBlock2 = new RenderBlock(block2);
         let renderBlock3 = new RenderBlock(block3);
         let renderGroup = new RenderGroup();
         let renderGroup2 = new RenderGroup();
+        graph.addBlock(block);
+        graph.addBlock(block2);
+        graph.addBlock(block3);
         expect(renderGroup.renderBlocks).to.have.lengthOf(0);
         expect(() => {
             renderGroup.addRenderBlock(renderBlock); // renderGroup is not in the renderer
@@ -153,5 +153,23 @@ describe("dude-renderer API", () => {
         }).to.throw();
         renderGroup2.removeRenderBlock(renderBlock3);
         renderGroup.addRenderBlock(renderBlock3);
+    });
+    it("should not let the renderer to remove a render block with a parent or render group with children", () => {
+        let svg = document.getElementById("svg");
+        let graph = new Graph();
+        let block = new Block();
+        let renderer = new Renderer(svg, graph);
+        let renderBlock = new RenderBlock(block);
+        let renderGroup = new RenderGroup();
+        graph.addBlock(block);
+        renderer.addRenderBlock(renderBlock);
+        renderer.addRenderGroup(renderGroup);
+        renderGroup.addRenderBlock(renderBlock);
+        expect(() => {
+            renderer.removeRenderBlock(renderBlock);
+        }).to.throw();
+        expect(() => {
+            renderer.removeRenderGroup(renderGroup);
+        }).to.throw();
     });
 });
