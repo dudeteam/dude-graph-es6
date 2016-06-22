@@ -4,9 +4,8 @@
  */
 let rendererConfig = {
     "zoom": {
-        "min": 0.01,
-        "max": 5,
         "margin": [10, 10],
+        "scaleExtent": [0.01, 5],
         "transitionSpeed": 800
     },
     "block": {

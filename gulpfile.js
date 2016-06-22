@@ -30,7 +30,7 @@ gulp.task("build", ["lint"], () => {
     return gulp.src("src/dude-graph.js")
         .pipe(rollup({
             "rollup": require("rollup"),
-            "format": "iife",
+            "format": "umd",
             "sourceMap": true,
             "moduleName": "dudeGraph",
             "plugins": [

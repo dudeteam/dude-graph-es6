@@ -1,4 +1,4 @@
-import {select} from "d3";
+import {select, zoom} from "d3";
 import pull from "lodash-es/pull";
 import find from "lodash-es/find";
 import filter from "lodash-es/filter";
@@ -9,10 +9,12 @@ import uuid from "../graph/utils/uuid";
 
 let _graph = Symbol("graph");
 let _config = Symbol("config");
-let _d3Svg = Symbol("d3svg");
-let _d3Groups = Symbol("d3groups");
-let _d3Connections = Symbol("d3connections");
-let _d3Blocks = Symbol("d3blocks");
+let _zoom = Symbol("zoom");
+let _d3Svg = Symbol("d3Svg");
+let _d3Root = Symbol("d3Root");
+let _d3Groups = Symbol("d3Groups");
+let _d3Connections = Symbol("d3Connections");
+let _d3Blocks = Symbol("d3Blocks");
 let _renderGroups = Symbol("renderGroups");
 let _renderBlocks = Symbol("renderBlocks");
 let _renderConnections = Symbol("renderConnections");
@@ -29,15 +31,20 @@ export default class Renderer {
     constructor(svg, graph) {
         this[_graph] = graph;
         this[_config] = config;
+        this[_zoom] = zoom();
         this[_d3Svg] = select(svg);
-        this[_d3Groups] = this[_d3Svg].append("svg:g").classed("dude-graph-groups", true);
-        this[_d3Connections] = this[_d3Svg].append("svg:g").classed("dude-graph-connections", true);
-        this[_d3Blocks] = this[_d3Svg].append("svg:g").classed("dude-graph-blocks", true);
+        this[_d3Root] = this[_d3Svg].append("svg:g");
+        this[_d3Groups] = this[_d3Root].append("svg:g").classed("dude-graph-groups", true);
+        this[_d3Connections] = this[_d3Root].append("svg:g").classed("dude-graph-connections", true);
+        this[_d3Blocks] = this[_d3Root].append("svg:g").classed("dude-graph-blocks", true);
         this[_renderGroups] = [];
         this[_renderBlocks] = [];
         this[_renderConnections] = [];
         this[_renderGroupIds] = {};
         this[_renderBlockIds] = {};
+
+        this[_zoom].scaleExtent(this[_config].zoom.scaleExtent);
+        this[_d3Svg].call(this[_zoom]);
     }
 
     /**
@@ -56,6 +63,11 @@ export default class Renderer {
      * @param {Object} config - specifies the config
      */
     set config(config) { this[_config] = config; }
+    /**
+     * Returns this renderer zoom
+     * @returns {zoom}
+     */
+    get zoom() { return this[_zoom]; }
 
     /**
      * Adds the specified render block to this renderer
@@ -154,6 +166,15 @@ export default class Renderer {
      */
     renderGroupById(renderGroupId) {
         return find(this[_renderGroups], renderGroup => renderGroup.id === renderGroupId) || null;
+    }
+
+    /**
+     * Zooms and pans to the specified zoom and pan
+     * @param {number} zoom - specifies the zoom
+     * @param {Array<number>} pan - specifies the pan
+     */
+    zoomAndPan(zoom, pan) {
+        this[_d3Root].attr("transform", "translate(" + pan + ")scale(" + zoom + ")");
     }
 
     /*

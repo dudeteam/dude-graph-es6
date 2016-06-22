@@ -203,13 +203,28 @@ export default class Commander {
         );
     }
 
-    addPoint(graph, block, pointData) {}
-    removePoint(graph, point) {}
-
-    changePointValue(graph, point, value) {}
-    changePointValueType(graph, point, valueType) {}
-
-    addVariable(graph, variable) {}
-    removeVariable(graph, variable) {}
-
+    /**
+     * Registers undo/redo zoom for the specified renderer
+     * @param {Renderer} renderer - specifies the renderer
+     */
+    registerZoom(renderer) {
+        var startZoom = 0;
+        var startPan = [0, 0];
+        renderer.zoom.on("start", (a, b, e) => {
+            let zoom = e[0].__zoom;
+            startZoom = zoom.k;
+            startPan = [zoom.x, zoom.y];
+        });
+        renderer.zoom.on("zoom", (a, b, e) => {
+            let zoom = e[0].__zoom;
+            renderer.zoomAndPan(zoom.k, [zoom.x, zoom.y]);
+        });
+        renderer.zoom.on("end", (a, b, e) => {
+            let zoom = e[0].__zoom;
+            this.action(
+                () => { renderer.zoomAndPan(zoom.k, [zoom.x, zoom.y]); },
+                () => { renderer.zoomAndPan(startZoom, startPan); }
+            )
+        });
+    }
 }

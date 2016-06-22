@@ -155,5 +155,12 @@ describe("dude-commander API", () => {
         sinon.assert.calledOnce(undoSpy1);
         sinon.assert.notCalled(undoSpy2);
         sinon.assert.calledOnce(undoSpy3);
+        commander.redo();
+        sinon.assert.calledTwice(redoSpy1);
+        sinon.assert.notCalled(redoSpy2);
+        sinon.assert.calledTwice(redoSpy3);
+        sinon.assert.calledOnce(undoSpy1);
+        sinon.assert.notCalled(undoSpy2);
+        sinon.assert.calledOnce(undoSpy3);
     });
 });
