@@ -1,9 +1,13 @@
 /*eslint no-unused-vars: "off"*/
+import forEach from "lodash-es/forEach";
+import forEachRight from "lodash-es/forEachRight";
+
 import RenderBlock from "../renderer/nodes/block";
 import RenderGroup from "../renderer/nodes/group";
 
 let _undo = Symbol("undo");
 let _redo = Symbol("redo");
+let _transactions = Symbol("transactions");
 
 /**
  * This class handles add the possible actions on the graph and renderer
@@ -14,6 +18,7 @@ export default class Commander {
     constructor() {
         this[_undo] = [];
         this[_redo] = [];
+        this[_transactions] = [];
     }
 
     /**
@@ -22,12 +27,18 @@ export default class Commander {
      * @param {function} undo - the function to undo the action
      */
     action(redo, undo) {
-        this[_undo].splice(0, 0, {
+        let action = {
             "undo": undo,
             "redo": redo
-        });
-        this[_redo] = [];
-        redo();
+        };
+        if (this[_transactions].length > 0) {
+            let transaction = this[_transactions].slice(-1)[0];
+            transaction.push(action);
+        } else {
+            this[_undo].splice(0, 0, action);
+            this[_redo] = [];
+            redo();
+        }
     }
     /**
      * Undoes the last action
@@ -48,6 +59,37 @@ export default class Commander {
             redo.redo();
             this[_undo].splice(0, 0, redo);
         }
+    }
+
+    /**
+     * Starts a transaction of actions that will be grouped under a single action
+     */
+    transaction() {
+        this[_transactions].push([]);
+    }
+    /**
+     * Commits the latest transaction into a single action
+     */
+    commit() {
+        if (this[_transactions].length === 0) {
+            throw new Error("There is no transaction to commit");
+        }
+        let actions = this[_transactions].pop();
+        if (actions.length > 0) {
+            this.action(
+                () => { forEach(actions, transaction => transaction.redo()); },
+                () => { forEachRight(actions, transaction => transaction.undo()); }
+            );
+        }
+    }
+    /**
+     * Cancels the latest transaction
+     */
+    rollback() {
+        if (this[_transactions].length === 0) {
+            throw new Error("There is no transaction to rollback");
+        }
+        this[_transactions].pop();
     }
 
     /**
