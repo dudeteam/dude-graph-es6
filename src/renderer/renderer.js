@@ -9,7 +9,8 @@ import uuid from "../graph/utils/uuid";
 
 let _graph = Symbol("graph");
 let _config = Symbol("config");
-let _zoom = Symbol("zoom");
+let _zoomDrag = Symbol("zoomDrag");
+let _zoomPan = Symbol("zoomPan");
 let _d3Svg = Symbol("d3Svg");
 let _d3Root = Symbol("d3Root");
 let _d3Groups = Symbol("d3Groups");
@@ -24,14 +25,15 @@ let _renderBlockIds = Symbol("renderBlockIds");
 export default class Renderer {
 
     /**
-     * Creates a renderer for the specified svg element and graph
-     * @param {HTMLElement} svg - specifies the svg element
+     * Creates a renderer for the specified graph and svg element
      * @param {Graph} graph - specifies the graph
+     * @param {HTMLElement} svg - specifies the svg element
      */
-    constructor(svg, graph) {
+    constructor(graph, svg) {
         this[_graph] = graph;
         this[_config] = config;
-        this[_zoom] = zoom();
+        this[_zoomDrag] = zoom();
+        this[_zoomPan] = {"zoom": 1, "pan": [0, 0]};
         this[_d3Svg] = select(svg);
         this[_d3Root] = this[_d3Svg].append("svg:g");
         this[_d3Groups] = this[_d3Root].append("svg:g").classed("dude-graph-groups", true);
@@ -43,8 +45,8 @@ export default class Renderer {
         this[_renderGroupIds] = {};
         this[_renderBlockIds] = {};
 
-        this[_zoom].scaleExtent(this[_config].zoom.scaleExtent);
-        this[_d3Svg].call(this[_zoom]);
+        this[_zoomDrag].scaleExtent(this[_config].zoom.scaleExtent);
+        this[_d3Svg].call(this[_zoomDrag]);
     }
 
     /**
@@ -64,10 +66,15 @@ export default class Renderer {
      */
     set config(config) { this[_config] = config; }
     /**
-     * Returns this renderer zoom
+     * Returns this renderer zoom drag behavior
      * @returns {zoom}
      */
-    get zoom() { return this[_zoom]; }
+    get zoomDrag() { return this[_zoomDrag]; }
+    /**
+     * Returns this renderer current zoom and pan
+     * @returns {{zoom: number, pan: Array<number>}}
+     */
+    get zoomPan() { return this[_zoomPan]; }
 
     /**
      * Adds the specified render block to this renderer
@@ -174,6 +181,8 @@ export default class Renderer {
      * @param {Array<number>} pan - specifies the pan
      */
     zoomAndPan(zoom, pan) {
+        this[_zoomPan].zoom = zoom;
+        this[_zoomPan].pan = pan;
         this[_d3Root].attr("transform", "translate(" + pan + ")scale(" + zoom + ")");
     }
 

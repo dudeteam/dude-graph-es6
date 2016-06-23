@@ -109,10 +109,17 @@ export default class Commander {
      * @param {RenderBlock} renderBlock - @see {Renderer.removeRenderBlock}
      */
     removeRenderBlock(renderer, renderBlock) {
-        this.action(
-            () => { renderer.removeRenderBlock(renderBlock); },
-            () => { renderer.addRenderBlock(renderBlock); renderBlock.updateAll(); }
-        );
+        this.transaction();
+        {
+            if (renderBlock.parent !== null) {
+                this.removeRenderGroupRenderBlock(renderBlock.parent, renderBlock);
+            }
+            this.action(
+                () => { renderer.removeRenderBlock(renderBlock); },
+                () => { renderer.addRenderBlock(renderBlock); renderBlock.updateAll(); }
+            );
+        }
+        this.commit();
     }
 
     addRenderConnection(renderer, renderOutputPoint, renderInputPoint) {}
@@ -136,10 +143,17 @@ export default class Commander {
      * @param {RenderGroup} renderGroup - @see {Renderer.addRenderGroup}
      */
     removeRenderGroup(renderer, renderGroup) {
-        this.action(
-            () => { renderer.removeRenderGroup(renderGroup); },
-            () => { renderer.addRenderGroup(renderGroup); renderGroup.updateAll(); }
-        );
+        this.transaction();
+        {
+            forEachRight(renderGroup.renderBlocks, (renderBlock) => {
+                this.removeRenderGroupRenderBlock(renderGroup, renderBlock);
+            });
+            this.action(
+                () => { renderer.removeRenderGroup(renderGroup); },
+                () => { renderer.addRenderGroup(renderGroup); renderGroup.updateAll(); }
+            );
+        }
+        this.commit();
     }
     /**
      * @see {RenderGroup.addRenderBlock}
@@ -208,22 +222,21 @@ export default class Commander {
      * @param {Renderer} renderer - specifies the renderer
      */
     registerZoom(renderer) {
-        var startZoom = 0;
-        var startPan = [0, 0];
-        renderer.zoom.on("start", (a, b, e) => {
-            let zoom = e[0].__zoom;
-            startZoom = zoom.k;
-            startPan = [zoom.x, zoom.y];
+        let origin = {"zoom": 1, "pan": [0, 0]};
+        renderer.zoomDrag.on("start", () => {
+            origin.zoom = renderer.zoomPan.zoom;
+            origin.pan = renderer.zoomPan.pan;
         });
-        renderer.zoom.on("zoom", (a, b, e) => {
+        renderer.zoomDrag.on("zoom", (a, b, e) => {
             let zoom = e[0].__zoom;
             renderer.zoomAndPan(zoom.k, [zoom.x, zoom.y]);
         });
-        renderer.zoom.on("end", (a, b, e) => {
+        renderer.zoomDrag.on("end", (a, b, e) => {
             let zoom = e[0].__zoom;
+            let zoomPan = {"zoom": origin.zoom, "pan": origin.pan};
             this.action(
                 () => { renderer.zoomAndPan(zoom.k, [zoom.x, zoom.y]); },
-                () => { renderer.zoomAndPan(startZoom, startPan); }
+                () => { renderer.zoomAndPan(zoomPan.zoom, zoomPan.pan); }
             )
         });
     }

@@ -14,6 +14,7 @@ export default class RenderGroup extends RenderNode {
         super();
 
         this[_renderBlocks] = [];
+        this.name = "";
     }
 
     /**
