@@ -18,16 +18,18 @@ describe("dude-renderer API", () => {
         let svg = document.getElementById("svg");
         let graph = new Graph();
         expect(svg.childElementCount).to.be.equal(0);
-        new Renderer(svg, graph);
-        expect(svg.childElementCount).to.be.equal(3);
-        expect(svg.children[0]).to.be.equal(svg.getElementsByClassName("dude-graph-groups")[0]);
-        expect(svg.children[1]).to.be.equal(svg.getElementsByClassName("dude-graph-connections")[0]);
-        expect(svg.children[2]).to.be.equal(svg.getElementsByClassName("dude-graph-blocks")[0]);
+        new Renderer(graph, svg);
+        expect(svg.childElementCount).to.be.equal(1);
+        let svgRoot = svg.firstElementChild;
+        expect(svgRoot.childElementCount).to.be.equal(3);
+        expect(svgRoot.children[0]).to.be.equal(svg.getElementsByClassName("dude-graph-groups")[0]);
+        expect(svgRoot.children[1]).to.be.equal(svg.getElementsByClassName("dude-graph-connections")[0]);
+        expect(svgRoot.children[2]).to.be.equal(svg.getElementsByClassName("dude-graph-blocks")[0]);
     });
     it("should create render blocks", () => {
         let svg = document.getElementById("svg");
         let graph = new Graph();
-        let renderer = new Renderer(svg, graph);
+        let renderer = new Renderer(graph, svg);
         let block = new Block();
         expect(() => {
             renderer.addRenderBlock(new RenderBlock(block)); // block not bound to graph
@@ -47,7 +49,7 @@ describe("dude-renderer API", () => {
     it("should remove render blocks", () => {
         let svg = document.getElementById("svg");
         let graph = new Graph();
-        let renderer = new Renderer(svg, graph);
+        let renderer = new Renderer(graph, svg);
         let block = new Block();
         let renderBlock = new RenderBlock(block);
         let renderBlock2 = new RenderBlock(block);
@@ -78,7 +80,7 @@ describe("dude-renderer API", () => {
     it("should create render groups", () => {
         let svg = document.getElementById("svg");
         let graph = new Graph();
-        let renderer = new Renderer(svg, graph);
+        let renderer = new Renderer(graph, svg);
         let renderGroup = new RenderGroup();
         expect(svg.getElementsByClassName("dude-graph-groups")[0].childElementCount).to.be.equal(0);
         renderer.addRenderGroup(renderGroup);
@@ -92,7 +94,7 @@ describe("dude-renderer API", () => {
     it("should remove render groups", () => {
         let svg = document.getElementById("svg");
         let graph = new Graph();
-        let renderer = new Renderer(svg, graph);
+        let renderer = new Renderer(graph, svg);
         let renderGroup = new RenderGroup();
         let renderGroup2 = new RenderGroup();
         renderer.addRenderGroup(renderGroup);
@@ -112,8 +114,8 @@ describe("dude-renderer API", () => {
         let block = new Block();
         let block2 = new Block();
         let block3 = new Block();
-        let renderer = new Renderer(svg, graph);
-        let renderer2 = new Renderer(svg, graph);
+        let renderer = new Renderer(graph, svg);
+        let renderer2 = new Renderer(graph, svg);
         let renderBlock = new RenderBlock(block);
         let renderBlock2 = new RenderBlock(block2);
         let renderBlock3 = new RenderBlock(block3);
@@ -158,7 +160,7 @@ describe("dude-renderer API", () => {
         let svg = document.getElementById("svg");
         let graph = new Graph();
         let block = new Block();
-        let renderer = new Renderer(svg, graph);
+        let renderer = new Renderer(graph, svg);
         let renderBlock = new RenderBlock(block);
         let renderGroup = new RenderGroup();
         graph.addBlock(block);
