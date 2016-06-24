@@ -5,28 +5,34 @@ import forEachRight from "lodash-es/forEachRight";
 import RenderBlock from "../renderer/nodes/block";
 import RenderGroup from "../renderer/nodes/group";
 
+let _renderer = Symbol("renderer");
+let _transactions = Symbol("transactions");
 let _undo = Symbol("undo");
 let _redo = Symbol("redo");
-let _transactions = Symbol("transactions");
 
 /**
- * This class handles add the possible actions on the graph and renderer
+ * This class handles add the possible commands on the graph and renderer
  * It also takes care of undoing/redoing these commands
  */
 export default class Commander {
 
-    constructor() {
+    /**
+     * Creates a commander for the specified renderer
+     * @param {Renderer} renderer - specifies the renderer
+     */
+    constructor(renderer) {
+        this[_renderer] = renderer;
+        this[_transactions] = [];
         this[_undo] = [];
         this[_redo] = [];
-        this[_transactions] = [];
     }
 
     /**
-     * Adds an action in the commander
-     * @param {function} redo - the function to make/redo the action
-     * @param {function} undo - the function to undo the action
+     * Adds an command in the commander
+     * @param {function} redo - the function to make/redo the command
+     * @param {function} undo - the function to undo the command
      */
-    action(redo, undo) {
+    command(redo, undo) {
         let action = {
             "undo": undo,
             "redo": redo
@@ -41,7 +47,7 @@ export default class Commander {
         }
     }
     /**
-     * Undoes the last action
+     * Undoes the last command
      */
     undo() {
         let undo = this[_undo].shift();
@@ -51,7 +57,7 @@ export default class Commander {
         }
     }
     /**
-     * Redoes the last undone action
+     * Redoes the last undone command
      */
     redo() {
         let redo = this[_redo].shift();
@@ -62,13 +68,13 @@ export default class Commander {
     }
 
     /**
-     * Starts a transaction of actions that will be grouped under a single action
+     * Starts a transaction of commands that will be grouped under a single command
      */
     transaction() {
         this[_transactions].push([]);
     }
     /**
-     * Commits the latest transaction into a single action
+     * Commits the latest transaction into a single command
      */
     commit() {
         if (this[_transactions].length === 0) {
@@ -76,7 +82,7 @@ export default class Commander {
         }
         let actions = this[_transactions].pop();
         if (actions.length > 0) {
-            this.action(
+            this.command(
                 () => { forEach(actions, transaction => transaction.redo()); },
                 () => { forEachRight(actions, transaction => transaction.undo()); }
             );
@@ -94,63 +100,59 @@ export default class Commander {
 
     /**
      * @see {Renderer.addRenderBlock}
-     * @param {Renderer} renderer - @see {Renderer.addRenderBlock}
      * @param {RenderBlock} renderBlock - @see {Renderer.addRenderBlock}
      */
-    addRenderBlock(renderer, renderBlock) {
-        this.action(
-            () => { renderer.addRenderBlock(renderBlock); renderBlock.updateAll(); },
-            () => { renderer.removeRenderBlock(renderBlock); }
+    addRenderBlock(renderBlock) {
+        this.command(
+            () => { this[_renderer].addRenderBlock(renderBlock); renderBlock.updateAll(); },
+            () => { this[_renderer].removeRenderBlock(renderBlock); }
         );
     }
     /**
      * @see {Renderer.removeRenderBlock}
-     * @param {Renderer} renderer - @see {Renderer.removeRenderBlock}
      * @param {RenderBlock} renderBlock - @see {Renderer.removeRenderBlock}
      */
-    removeRenderBlock(renderer, renderBlock) {
+    removeRenderBlock(renderBlock) {
         this.transaction();
         {
             if (renderBlock.parent !== null) {
                 this.removeRenderGroupRenderBlock(renderBlock.parent, renderBlock);
             }
-            this.action(
-                () => { renderer.removeRenderBlock(renderBlock); },
-                () => { renderer.addRenderBlock(renderBlock); renderBlock.updateAll(); }
+            this.command(
+                () => { this[_renderer].removeRenderBlock(renderBlock); },
+                () => { this[_renderer].addRenderBlock(renderBlock); renderBlock.updateAll(); }
             );
         }
         this.commit();
     }
 
-    addRenderConnection(renderer, renderOutputPoint, renderInputPoint) {}
-    removeRenderConnection(renderer, renderConnection) {}
+    addRenderConnection(renderOutputPoint, renderInputPoint) {}
+    removeRenderConnection(renderConnection) {}
 
     /**
      * @see {Renderer.addRenderGroup}
-     * @param {Renderer} renderer - @see {Renderer.addRenderGroup}
      * @param {RenderGroup} renderGroup - @see {Renderer.addRenderGroup}
      * @returns {RenderGroup}
      */
-    addRenderGroup(renderer, renderGroup) {
-        return this.action(
-            () => { renderer.addRenderGroup(renderGroup); renderGroup.updateAll(); },
-            () => { renderer.removeRenderGroup(renderGroup); }
+    addRenderGroup(renderGroup) {
+        return this.command(
+            () => { this[_renderer].addRenderGroup(renderGroup); renderGroup.updateAll(); },
+            () => { this[_renderer].removeRenderGroup(renderGroup); }
         );
     }
     /**
      * @see {Renderer.addRenderGroup}
-     * @param {Renderer} renderer - @see {Renderer.addRenderGroup}
      * @param {RenderGroup} renderGroup - @see {Renderer.addRenderGroup}
      */
-    removeRenderGroup(renderer, renderGroup) {
+    removeRenderGroup(renderGroup) {
         this.transaction();
         {
             forEachRight(renderGroup.renderBlocks, (renderBlock) => {
                 this.removeRenderGroupRenderBlock(renderGroup, renderBlock);
             });
-            this.action(
-                () => { renderer.removeRenderGroup(renderGroup); },
-                () => { renderer.addRenderGroup(renderGroup); renderGroup.updateAll(); }
+            this.command(
+                () => { this[_renderer].removeRenderGroup(renderGroup); },
+                () => { this[_renderer].addRenderGroup(renderGroup); renderGroup.updateAll(); }
             );
         }
         this.commit();
@@ -161,7 +163,7 @@ export default class Commander {
      * @param {RenderBlock} renderBlock - @see {RenderGroup.addRenderBlock}
      */
     addRenderGroupRenderBlock(renderGroup, renderBlock) {
-        this.action(
+        this.command(
             () => { renderGroup.addRenderBlock(renderBlock); renderGroup.updateAll(); },
             () => { renderGroup.removeRenderBlock(renderBlock); renderGroup.updateAll(); }
         );
@@ -172,7 +174,7 @@ export default class Commander {
      * @param {RenderBlock} renderBlock - @see {RenderGroup.removeRenderBlock}
      */
     removeRenderGroupRenderBlock(renderGroup, renderBlock) {
-        this.action(
+        this.command(
             () => { renderGroup.removeRenderBlock(renderBlock); renderGroup.updateAll(); },
             () => { renderGroup.addRenderBlock(renderBlock); renderGroup.updateAll(); }
         );
@@ -185,7 +187,7 @@ export default class Commander {
      */
     changeRenderNodePosition(renderNode, position) {
         let oldPosition = renderNode.position;
-        this.action(
+        this.command(
             () => {
                 renderNode.position = position;
                 renderNode.updatePosition();
@@ -211,7 +213,7 @@ export default class Commander {
      */
     changeRenderNodeName(renderNode, name) {
         let oldName = renderNode.name;
-        this.action(
+        this.command(
             () => { renderNode.name = name; renderNode.updateAll(); },
             () => { renderNode.name = oldName; renderNode.updateAll(); }
         );
@@ -219,24 +221,23 @@ export default class Commander {
 
     /**
      * Registers undo/redo zoom for the specified renderer
-     * @param {Renderer} renderer - specifies the renderer
      */
-    registerZoom(renderer) {
+    registerZoom() {
         let origin = {"zoom": 1, "pan": [0, 0]};
-        renderer.zoomDrag.on("start", () => {
-            origin.zoom = renderer.zoomPan.zoom;
-            origin.pan = renderer.zoomPan.pan;
+        this[_renderer].zoomDrag.on("start", () => {
+            origin.zoom = this[_renderer].zoomPan.zoom;
+            origin.pan = this[_renderer].zoomPan.pan;
         });
-        renderer.zoomDrag.on("zoom", (a, b, e) => {
+        this[_renderer].zoomDrag.on("zoom", (a, b, e) => {
             let zoom = e[0].__zoom;
-            renderer.zoomAndPan(zoom.k, [zoom.x, zoom.y]);
+            this[_renderer].zoomAndPan(zoom.k, [zoom.x, zoom.y]);
         });
-        renderer.zoomDrag.on("end", (a, b, e) => {
+        this[_renderer].zoomDrag.on("end", (a, b, e) => {
             let zoom = e[0].__zoom;
             let zoomPan = {"zoom": origin.zoom, "pan": origin.pan};
-            this.action(
-                () => { renderer.zoomAndPan(zoom.k, [zoom.x, zoom.y]); },
-                () => { renderer.zoomAndPan(zoomPan.zoom, zoomPan.pan); }
+            this.command(
+                () => { this[_renderer].zoomAndPan(zoom.k, [zoom.x, zoom.y]); },
+                () => { this[_renderer].zoomAndPan(zoomPan.zoom, zoomPan.pan); }
             )
         });
     }
