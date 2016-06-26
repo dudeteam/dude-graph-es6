@@ -21,7 +21,7 @@ export default class Connection extends EventClass {
      * Returns this connection fancy name
      * @returns {string}
      */
-    get fancyName() { return this[_connectionOutputPoint].fancyName + " => " + this[_connectionInputPoint].fancyName }
+    get fancyName() { return this[_connectionOutputPoint].fancyName + " => " + this[_connectionInputPoint].fancyName; }
     /**
      * Returns this connection output point
      * @returns {Point}

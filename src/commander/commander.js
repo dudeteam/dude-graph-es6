@@ -238,7 +238,7 @@ export default class Commander {
             this.command(
                 () => { this[_renderer].zoomAndPan(zoom.k, [zoom.x, zoom.y]); },
                 () => { this[_renderer].zoomAndPan(zoomPan.zoom, zoomPan.pan); }
-            )
+            );
         });
     }
 }

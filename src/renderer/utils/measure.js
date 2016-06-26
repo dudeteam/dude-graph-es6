@@ -72,7 +72,7 @@ let sizeRenderGroup = (renderGroup) => {
     let contentBoundingBox = renderNodesBoundingRect(renderGroup.renderBlocks, true);
     if (contentBoundingBox !== null) {
         size[0] = contentBoundingBox[1][0] - contentBoundingBox[0][0] + renderGroup.renderer.config.group.padding * 2;
-        size[1] = contentBoundingBox[1][1] - contentBoundingBox[0][1] + renderGroup.renderer.config.group.padding * 2 + renderGroup.renderer.config.group.header
+        size[1] = contentBoundingBox[1][1] - contentBoundingBox[0][1] + renderGroup.renderer.config.group.padding * 2 + renderGroup.renderer.config.group.header;
     }
     size[0] = Math.max(size[0], renderGroup.renderer.config.group.minSize[0] + renderGroup.renderer.config.group.padding * 2);
     size[1] = Math.max(size[1], renderGroup.renderer.config.group.minSize[1] + renderGroup.renderer.config.group.padding * 2 + renderGroup.renderer.config.group.header);
@@ -91,7 +91,7 @@ let positionRenderGroup = (renderGroup) => {
         return [
             contentBoundingBox[0][0] - renderGroup.renderer.config.group.padding,
             contentBoundingBox[0][1] - renderGroup.renderer.config.group.padding - renderGroup.renderer.config.group.header
-        ]
+        ];
     }
     return [0, 0];
 };
