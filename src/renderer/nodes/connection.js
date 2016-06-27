@@ -14,6 +14,7 @@ export default class RenderConnection {
      */
     constructor(connection, outputRenderPoint, inputRenderPoint) {
         this[_renderer] = null;
+        this[_element] = null;
         this[_connection] = connection;
         this[_outputRenderPoint] = outputRenderPoint;
         this[_inputRenderPoint] = inputRenderPoint;

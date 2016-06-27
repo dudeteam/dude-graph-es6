@@ -90,9 +90,9 @@ export default class Renderer {
         if (renderBlock.id === null) {
             renderBlock.id = renderBlock.block.blockId + "#" + uuid();
         }
-        renderBlock.renderer = this;
         this[_renderBlocks].push(renderBlock);
         this[_renderBlockIds][renderBlock.id] = renderBlock;
+        renderBlock.renderer = this;
         renderBlock.element = this[_d3Blocks].append("svg:g").datum(renderBlock);
         renderBlock.element.attr("id", "bid-" + renderBlock.id);
         renderBlock.element.attr("class", "dude-graph-block");

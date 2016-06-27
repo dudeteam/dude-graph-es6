@@ -1,5 +1,6 @@
 let _point = Symbol("point");
 let _renderBlock = Symbol("renderBlock");
+let _element = Symbol("element");
 let _size = Symbol("size");
 let _position = Symbol("position");
 
@@ -8,16 +9,11 @@ export default class RenderPoint {
     /**
      * Creates a render point for the specified point and the specified render block
      * @param {Point} point - specifies the point
-     * @param {RenderBlock} renderBlock - specifies the render block
      */
-    constructor(point, renderBlock) {
+    constructor(point) {
         this[_point] = point;
-        this[_renderBlock] = renderBlock;
-        if (point.pointOutput && renderBlock.block.outputByName(point.pointName) !== point) {
-            throw new Error("` " + point.fancyName + "` is not a point of `" + renderBlock.block.fancyName + "`");
-        } else if (!point.pointOutput && renderBlock.block.inputByName(point.pointName) !== point) {
-            throw new Error("` " + point.fancyName + "` is not a point of `" + renderBlock.block.fancyName + "`");
-        }
+        this[_renderBlock] = null;
+        this[_element] = null;
     }
 
     /**
@@ -35,6 +31,21 @@ export default class RenderPoint {
      * @returns {RenderBlock}
      */
     get renderBlock() { return this[_renderBlock]; }
+    /**
+     * Sets this render point element to the specified render block
+     * @param {RenderBlock} renderBlock - specifies the render block
+     */
+    set renderBlock(renderBlock) { this[_renderBlock] = renderBlock; }
+    /**
+     * Returns this render point d3 element
+     * @returns {select}
+     */
+    get element() { return this[_element]; }
+    /**
+     * Sets this render point element to the specified d3 element
+     * @param {select} element - specifies the d3 element
+     */
+    set element(element) { this[_element] = element; }
     /**
      * Returns this render point size
      * @returns {Array<number>}

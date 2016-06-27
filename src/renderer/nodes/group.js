@@ -58,7 +58,7 @@ export default class RenderGroup extends RenderNode {
     }
 
     /**
-     * Called when this render node is added
+     * Called when this render group is added
      * @override
      */
     added() {

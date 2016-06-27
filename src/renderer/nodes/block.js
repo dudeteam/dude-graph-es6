@@ -1,4 +1,7 @@
+import pull from "lodash-es/pull";
+import some from "lodash-es/some";
 import filter from "lodash-es/filter";
+import includes from "lodash-es/includes";
 
 import RenderNode from "./node";
 import {sizeRenderBlock} from "../utils/measure";
@@ -66,7 +69,41 @@ export default class RenderBlock extends RenderNode {
     get renderInputPoints() { return filter(this[_renderPoints], renderPoint => !renderPoint.point.pointOutput); }
 
     /**
-     * Called when this render node is added
+     * Adds the specified render point to this render block
+     * @param {RenderPoint} renderPoint - specifies the render point
+     */
+    addRenderPoint(renderPoint) {
+        if (this.renderer === null) {
+            throw new Error("`" + this.fancyName + "` cannot add renderPoint when not bound to a renderer");
+        }
+        if (renderPoint.element !== null || some(this[_renderPoints], rp => rp.point === renderPoint.point)) {
+            throw new Error("`" + this.fancyName + "` cannot redefine render point `" + renderPoint.fancyName + "`");
+        }
+        this[_renderPoints].push(renderPoint);
+        renderPoint.renderBlock = this;
+        renderPoint.element = this[_svgPoints].append("svg:g").classed("dude-graph-point", true);
+        renderPoint.added();
+    }
+    /**
+     * Removes the specified render point from this render block
+     * @param {RenderPoint} renderPoint - specifies the render point
+     */
+    removeRenderPoint(renderPoint) {
+        if (this.renderer === null) {
+            throw new Error("`" + this.fancyName + "` cannot remove renderPoint when not bound to a renderer");
+        }
+        if (renderPoint.element === null || !includes(this[_renderPoints], renderPoint)) {
+            throw new Error("`" + this.fancyName + "` cannot redefine render point `" + renderPoint.fancyName + "`");
+        }
+        pull(this[_renderPoints], renderPoint);
+        renderPoint.removed();
+        renderPoint.element.remove();
+        renderPoint.element = null;
+        renderPoint.renderBlock = null;
+    }
+
+    /**
+     * Called when this render block is added
      * @override
      */
     added() {

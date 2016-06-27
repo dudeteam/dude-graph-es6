@@ -1,8 +1,8 @@
 import gjsdom from "jsdom-global";
 import {expect} from "chai";
 
-import {Renderer, RenderBlock, RenderGroup} from "../src/dude-graph";
-import {Graph, Block} from "../src/dude-graph";
+import {Renderer, RenderBlock, RenderGroup, RenderPoint} from "../src/dude-graph";
+import {Graph, Block, Point} from "../src/dude-graph";
 
 describe("dude-renderer API", () => {
     beforeEach(function () {
@@ -173,5 +173,22 @@ describe("dude-renderer API", () => {
         expect(() => {
             renderer.removeRenderGroup(renderGroup);
         }).to.throw();
+    });
+    it("should add render points", () => {
+        let svg = document.getElementById("svg");
+        let graph = new Graph();
+        let block = new Block();
+        let point = new Point(false, {"pointName": "point", "pointValueType": "String"});
+        let renderer = new Renderer(graph, svg);
+        let renderBlock = new RenderBlock(block);
+        let renderPoint = new RenderPoint(point);
+        graph.addBlock(block);
+        block.addPoint(point);
+        renderer.addRenderBlock(renderBlock);
+        expect(renderBlock.renderPoints).to.have.lengthOf(0);
+        expect(renderBlock.element.select(".dude-graph-block-points").node().childElementCount).to.be.equal(0);
+        renderBlock.addRenderPoint(renderPoint);
+        expect(renderBlock.renderPoints).to.have.lengthOf(1);
+        expect(renderBlock.element.select(".dude-graph-block-points").node().childElementCount).to.be.equal(1);
     });
 });
