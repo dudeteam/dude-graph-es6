@@ -130,6 +130,29 @@ export default class Commander {
     removeRenderConnection(renderConnection) {}
 
     /**
+     * @see {RenderBlock.addRenderPoint}
+     * @param {RenderBlock} renderBlock - @see {RenderBlock.addRenderPoint}
+     * @param {RenderPoint} renderPoint - @see {RenderBlock.addRenderPoint}
+     */
+    addRenderBlockRenderPoint(renderBlock, renderPoint) {
+        this.command(
+            () => { renderBlock.addRenderPoint(renderPoint); renderPoint.updateAll(); renderBlock.updateSize(); renderPoint.updatePosition(); },
+            () => { renderBlock.removeRenderPoint(renderPoint); renderBlock.updateSize(); }
+        );
+    }
+    /**
+     * @see {RenderBlock.removeRenderPoint}
+     * @param {RenderBlock} renderBlock - @see {RenderBlock.removeRenderPoint}
+     * @param {RenderPoint} renderPoint - @see {RenderBlock.removeRenderPoint}
+     */
+    removeRenderBlockRenderPoint(renderBlock, renderPoint) {
+        this.command(
+            () => { renderBlock.removeRenderPoint(renderPoint); renderBlock.updateSize(); },
+            () => { renderBlock.addRenderPoint(renderPoint); renderPoint.updateAll(); renderBlock.updateSize(); renderPoint.updatePosition(); }
+        );
+    }
+
+    /**
      * @see {Renderer.addRenderGroup}
      * @param {RenderGroup} renderGroup - @see {Renderer.addRenderGroup}
      * @returns {RenderGroup}
@@ -223,22 +246,9 @@ export default class Commander {
      * Registers undo/redo zoom for the specified renderer
      */
     registerZoom() {
-        let origin = {"zoom": 1, "pan": [0, 0]};
-        this[_renderer].zoomDrag.on("start", () => {
-            origin.zoom = this[_renderer].zoomPan.zoom;
-            origin.pan = this[_renderer].zoomPan.pan;
-        });
         this[_renderer].zoomDrag.on("zoom", (a, b, e) => {
             let zoom = e[0].__zoom;
             this[_renderer].zoomAndPan(zoom.k, [zoom.x, zoom.y]);
-        });
-        this[_renderer].zoomDrag.on("end", (a, b, e) => {
-            let zoom = e[0].__zoom;
-            let zoomPan = {"zoom": origin.zoom, "pan": origin.pan};
-            this.command(
-                () => { this[_renderer].zoomAndPan(zoom.k, [zoom.x, zoom.y]); },
-                () => { this[_renderer].zoomAndPan(zoomPan.zoom, zoomPan.pan); }
-            );
         });
     }
 }

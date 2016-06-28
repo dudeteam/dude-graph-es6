@@ -1,8 +1,13 @@
+import {sizeRenderPoint} from "../utils/measure";
+import {positionRenderPoint} from "../utils/measure";
+
 let _point = Symbol("point");
 let _renderBlock = Symbol("renderBlock");
 let _element = Symbol("element");
 let _size = Symbol("size");
 let _position = Symbol("position");
+let _d3Circle = Symbol("d3Circle");
+let _d3Name = Symbol("d3Name");
 
 export default class RenderPoint {
 
@@ -14,6 +19,8 @@ export default class RenderPoint {
         this[_point] = point;
         this[_renderBlock] = null;
         this[_element] = null;
+        this[_size] = [0, 0];
+        this[_position] = [0, 0];
     }
 
     /**
@@ -69,25 +76,57 @@ export default class RenderPoint {
 
     /**
      * Called when this render point is added
-     * @abstract
      */
-    added() {}
+    added() {
+        let r = this.renderBlock.renderer.config.point.radius;
+
+        this[_d3Circle] = this.element.append("svg:path");
+        this[_d3Name] = this.element.append("svg:text");
+
+        this[_d3Circle].attr("d", () => {
+            return "M 0,0m " + -r + ", 0a " + [r, r] + " 0 1,0 " + r * 2 + ",0a " + [r, r] + " 0 1,0 " + -(r * 2) + ",0";
+        });
+        this[_d3Name].attr("text-anchor", this.point.pointOutput ? "end" : "start");
+        this[_d3Name].attr("dominant-baseline", "middle");
+        this[_d3Name].attr("x", (this.point.pointOutput ? -1 : 1) * this.renderBlock.renderer.config.point.padding);
+    }
     /**
      * Called when this render point is removed
-     * @abstract
      */
     removed() {}
 
     /**
-     * Called when this render point data changed and should update its element
-     * @abstract
+     * Called when this render point should be updated
      */
-    updateData() {}
+    updateAll() {
+        this.updateData();
+        this.updatePosition();
+        this.updateSize();
+    }
+    /**
+     * Called when this render point data changed and should update its element
+     */
+    updateData() {
+        let empty = false;
+        let pointColor = this.renderBlock.renderer.config.typeColors[this.point.pointValueType] || this.renderBlock.renderer.config.typeColors.default;
+        this[_d3Circle].attr("stroke", pointColor);
+        this[_d3Circle].attr("fill", empty ? "transparent" : pointColor);
+        this[_d3Name].text(this.point.pointName);
+    }
     /**
      * Called when this render point position changed and should update its element
-     * @abstract
      */
-    updatePosition() {}
+    updatePosition() {
+        this.position = positionRenderPoint(this);
+
+        this.element.attr("transform", "translate(" + this.position + ")");
+    }
+    /**
+     * Called when this render point size changed and should update its element
+     */
+    updateSize() {
+        this.size = sizeRenderPoint(this);
+    }
 
     /**
      * Called when this render point is connected
