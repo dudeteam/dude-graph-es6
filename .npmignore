@@ -1,6 +1,5 @@
 /.idea
 /dist/*.map
-/src
 /test
 .babelrc
 .eslintrc
