@@ -58,6 +58,11 @@
     "directories": {
       "lib": "src"
     },
+    "overrides": {
+      "lodash-es": {
+        "format": "esm"
+      }
+    },
     "registry": "npm"
   }
 }
