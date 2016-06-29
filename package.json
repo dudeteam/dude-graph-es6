@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/dudeteam/dude-graph-es6#readme",
   "dependencies": {
-    "d3": "^4.0.0-alpha.49",
+    "d3": "^4.0.0",
     "event-class-es6": "^1.0.3",
     "lodash-es": "^4.13.1"
   },
