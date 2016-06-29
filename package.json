@@ -11,8 +11,8 @@
   "license": "MIT",
   "description": "Generic tool to visually represent a graph of connected blocks.",
   "scripts": {
-    "build": "gulp build",
-    "test": "mocha --compilers js:babel-core/register --require ./test/helper.js test/tests-*.js"
+    "test": "mocha --compilers js:babel-core/register --require ./test/helper.js test/tests-*.js",
+    "prepublish": "npm run test && gulp build"
   },
   "directories": {
     "lib": "dist",
@@ -54,6 +54,7 @@
   },
   "jspm": {
     "main": "dude-graph",
+    "format" : "esm",
     "directories": {
       "lib": "src"
     },
