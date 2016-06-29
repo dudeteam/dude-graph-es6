@@ -51,5 +51,12 @@
     "rollup-plugin-babel": "^2.5.1",
     "rollup-plugin-node-resolve": "^1.7.0",
     "sinon": "^1.17.4"
+  },
+  "jspm": {
+    "main": "dude-graph",
+    "directories": {
+      "lib": "src"
+    },
+    "registry": "npm"
   }
 }
