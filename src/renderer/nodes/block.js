@@ -1,7 +1,9 @@
 import pull from "lodash-es/pull";
 import some from "lodash-es/some";
+import clone from "lodash-es/clone";
 import filter from "lodash-es/filter";
 import includes from "lodash-es/includes";
+import {event, drag} from "d3";
 
 import RenderNode from "./node";
 import {sizeRenderBlock} from "../utils/measure";
@@ -12,6 +14,7 @@ let _renderPoints = Symbol("renderPoints");
 let _svgRect = Symbol("svgRect");
 let _svgName = Symbol("svgName");
 let _svgPoints = Symbol("svgPoints");
+let _behaviorDrag = Symbol("behaviorDrag");
 
 /**
  * Data used to visually represents a block into the Renderer. They can be several RenderBlock representation
@@ -29,6 +32,7 @@ export default class RenderBlock extends RenderNode {
         this[_block] = block;
         this[_parent] = null;
         this[_renderPoints] = [];
+        this[_behaviorDrag] = drag();
         this.name = block.blockName;
     }
 
@@ -116,6 +120,8 @@ export default class RenderBlock extends RenderNode {
 
         this[_svgName].attr("text-anchor", "middle");
         this[_svgName].attr("dominant-baseline", "text-before-edge");
+
+        this.handleDrag();
     }
 
     /**
@@ -145,5 +151,29 @@ export default class RenderBlock extends RenderNode {
 
         this[_svgName].attr("x", this.size[0] / 2);
         this[_svgName].attr("y", this.renderer.config.block.padding);
+    }
+
+    /**
+     * Handles drag
+     */
+    handleDrag() {
+        let oldPosition = [0, 0];
+        this.element.call(this[_behaviorDrag]);
+        this[_behaviorDrag].on("start", () => {
+            oldPosition = clone(this.position);
+        });
+        this[_behaviorDrag].on("drag", () => {
+            this.position[0] += event.dx;
+            this.position[1] += event.dy;
+            this.updatePosition();
+            if (this.parent !== null) {
+                this.parent.updateSize();
+                this.parent.updatePosition();
+            }
+        });
+        this[_behaviorDrag].on("end", () => {
+            // TODO: check is a render group can accept this render block
+            this.renderer.emit("render-block-drop", this, this.position, oldPosition);
+        });
     }
 }

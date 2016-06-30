@@ -1,4 +1,6 @@
 /*eslint no-unused-vars: "off"*/
+import clone from "lodash-es/clone";
+import isEqual from "lodash-es/isEqual";
 import forEach from "lodash-es/forEach";
 import forEachRight from "lodash-es/forEachRight";
 
@@ -204,15 +206,18 @@ export default class Commander {
     }
 
     /**
-     * Changes the specified render node position to the specified position
+     * Changes the specified render node position to the specified position from the specified oldPosition
      * @param {RenderNode} renderNode - specifies the render node
      * @param {Array<number>} position - specifies the position
+     * @param {Array<number>} [oldPosition=renderNode.position] - specifies the old position
      */
-    changeRenderNodePosition(renderNode, position) {
-        let oldPosition = renderNode.position;
+    changeRenderNodePosition(renderNode, position, oldPosition) {
+        if (typeof oldPosition === "undefined") {
+            oldPosition = clone(renderNode.position);
+        }
         this.command(
             () => {
-                renderNode.position = position;
+                renderNode.position = clone(position);
                 renderNode.updatePosition();
                 if (renderNode instanceof RenderBlock && renderNode.parent !== null) {
                     renderNode.parent.updatePosition();
@@ -220,7 +225,7 @@ export default class Commander {
                 }
             },
             () => {
-                renderNode.position = oldPosition;
+                renderNode.position = clone(oldPosition);
                 renderNode.updatePosition();
                 if (renderNode instanceof RenderBlock && renderNode.parent !== null) {
                     renderNode.parent.updatePosition();
@@ -243,12 +248,13 @@ export default class Commander {
     }
 
     /**
-     * Registers undo/redo zoom for the specified renderer
+     * Registers render block drag and drop undo/redo
      */
-    registerZoom() {
-        this[_renderer].zoomDrag.on("zoom", (a, b, e) => {
-            let zoom = e[0].__zoom;
-            this[_renderer].zoomAndPan(zoom.k, [zoom.x, zoom.y]);
+    registerRenderBlockDrag() {
+        this[_renderer].on("render-block-drop", (renderBlock, position, oldPosition) => {
+            if (!isEqual(position, oldPosition)) {
+                this.changeRenderNodePosition(renderBlock, position, oldPosition);
+            }
         });
     }
 }

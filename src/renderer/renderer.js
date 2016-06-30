@@ -1,28 +1,30 @@
-import {select, zoom} from "d3";
+import {event, select, zoom} from "d3";
 import pull from "lodash-es/pull";
 import find from "lodash-es/find";
+import clone from "lodash-es/clone";
 import filter from "lodash-es/filter";
 import includes from "lodash-es/includes";
+import EventClass from "event-class-es6";
 
 import config from "./defaults/config";
 import uuid from "../graph/utils/uuid";
 
 let _graph = Symbol("graph");
 let _config = Symbol("config");
-let _zoomDrag = Symbol("zoomDrag");
-let _zoomPan = Symbol("zoomPan");
-let _d3Svg = Symbol("d3Svg");
-let _d3Root = Symbol("d3Root");
-let _d3Groups = Symbol("d3Groups");
-let _d3Connections = Symbol("d3Connections");
-let _d3Blocks = Symbol("d3Blocks");
+let _zoom = Symbol("zoomPan");
 let _renderGroups = Symbol("renderGroups");
 let _renderBlocks = Symbol("renderBlocks");
 let _renderConnections = Symbol("renderConnections");
 let _renderGroupIds = Symbol("renderGroupIds");
 let _renderBlockIds = Symbol("renderBlockIds");
+let _d3Svg = Symbol("d3Svg");
+let _d3Root = Symbol("d3Root");
+let _d3Groups = Symbol("d3Groups");
+let _d3Connections = Symbol("d3Connections");
+let _d3Blocks = Symbol("d3Blocks");
+let _behaviorZoom = Symbol("zoomDrag");
 
-export default class Renderer {
+export default class Renderer extends EventClass {
 
     /**
      * Creates a renderer for the specified graph and svg element
@@ -30,23 +32,23 @@ export default class Renderer {
      * @param {HTMLElement} svg - specifies the svg element
      */
     constructor(graph, svg) {
+        super();
+
         this[_graph] = graph;
         this[_config] = config;
-        this[_zoomDrag] = zoom();
-        this[_zoomPan] = {"zoom": 1, "pan": [0, 0]};
-        this[_d3Svg] = select(svg);
-        this[_d3Root] = this[_d3Svg].append("svg:g");
-        this[_d3Groups] = this[_d3Root].append("svg:g").classed("dude-graph-groups", true);
-        this[_d3Connections] = this[_d3Root].append("svg:g").classed("dude-graph-connections", true);
-        this[_d3Blocks] = this[_d3Root].append("svg:g").classed("dude-graph-blocks", true);
+        this[_zoom] = {"zoom": 1, "pan": [0, 0]};
         this[_renderGroups] = [];
         this[_renderBlocks] = [];
         this[_renderConnections] = [];
         this[_renderGroupIds] = {};
         this[_renderBlockIds] = {};
-
-        this[_zoomDrag].scaleExtent(this[_config].zoom.scaleExtent);
-        this[_d3Svg].call(this[_zoomDrag]);
+        this[_d3Svg] = select(svg);
+        this[_d3Root] = this[_d3Svg].append("svg:g");
+        this[_d3Groups] = this[_d3Root].append("svg:g").classed("dude-graph-groups", true);
+        this[_d3Connections] = this[_d3Root].append("svg:g").classed("dude-graph-connections", true);
+        this[_d3Blocks] = this[_d3Root].append("svg:g").classed("dude-graph-blocks", true);
+        this[_behaviorZoom] = zoom();
+        this._behaviorZoom();
     }
 
     /**
@@ -66,15 +68,10 @@ export default class Renderer {
      */
     set config(config) { this[_config] = config; }
     /**
-     * Returns this renderer zoom drag behavior
-     * @returns {zoom}
-     */
-    get zoomDrag() { return this[_zoomDrag]; }
-    /**
      * Returns this renderer current zoom and pan
      * @returns {{zoom: number, pan: Array<number>}}
      */
-    get zoomPan() { return this[_zoomPan]; }
+    get zoomPan() { return this[_zoom]; }
 
     /**
      * Adds the specified render block to this renderer
@@ -180,18 +177,31 @@ export default class Renderer {
      * @param {number} zoom - specifies the zoom
      * @param {Array<number>} pan - specifies the pan
      */
-    zoomAndPan(zoom, pan) {
-        this[_zoomPan].zoom = zoom;
-        this[_zoomPan].pan = pan;
+    zoom(zoom, pan) {
+        this[_zoom].zoom = zoom;
+        this[_zoom].pan = pan;
         this[_d3Root].attr("transform", "translate(" + pan + ")scale(" + zoom + ")");
+    }
+    /**
+     * Handles the renderer zoom
+     * @private
+     */
+    _behaviorZoom() {
+        let oldZoom = {"zoom": 1, "pan": [0, 0]};
+        this[_d3Svg].call(this[_behaviorZoom]);
+        this[_behaviorZoom].scaleExtent(this[_config].zoom.scaleExtent);
+        this[_behaviorZoom].on("start", () => {
+            oldZoom = clone(this[_zoom]);
+        });
+        this[_behaviorZoom].on("zoom", () => {
+            this.zoom(event.transform.k, [event.transform.x, event.transform.y]);
+        });
+        this[_behaviorZoom].on("end", () => {
+            this.emit("renderer-zoom-pan", this[_zoom], oldZoom);
+        });
     }
 
     /*
-    // adds the render point to the specified render block
-    addRenderPoint(renderBlock, renderPoint) {}
-    removeRenderPoint(renderPoint) {}
-    renderPointByName(renderBlock, pointOutput, pointName) {}
-
     // adds the render connection and sets/create its svg:path element
     addRenderConnection(renderConnection) {}
     removeRenderConnection(renderConnection) {}
