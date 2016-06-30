@@ -1,5 +1,6 @@
 import maxBy from "lodash-es/maxBy";
 import sumBy from "lodash-es/sumBy";
+import isEqual from "lodash-es/isEqual";
 import forEach from "lodash-es/forEach";
 import {selection} from "d3";
 
@@ -12,7 +13,7 @@ let sizeText = (text) => {
     if (text instanceof selection) {
         let boundingRect = text.node().getBoundingClientRect();
         let textSize = [(boundingRect.right - boundingRect.left), (boundingRect.bottom - boundingRect.top)];
-        if (textSize[0] !== 0 && textSize[1] !== 0) {
+        if (!isEqual(textSize, [0, 0])) {
             return textSize;
         }
         text = text.text();
