@@ -138,7 +138,12 @@ export default class Commander {
      */
     addRenderBlockRenderPoint(renderBlock, renderPoint) {
         this.command(
-            () => { renderBlock.addRenderPoint(renderPoint); renderPoint.updateAll(); renderBlock.updateSize(); renderPoint.updatePosition(); },
+            () => {
+                renderBlock.addRenderPoint(renderPoint);
+                renderPoint.updateAll();
+                renderBlock.updateSize();
+                forEach(renderBlock.renderPoints, rp => rp.updatePosition());
+            },
             () => { renderBlock.removeRenderPoint(renderPoint); renderBlock.updateSize(); }
         );
     }
@@ -150,7 +155,12 @@ export default class Commander {
     removeRenderBlockRenderPoint(renderBlock, renderPoint) {
         this.command(
             () => { renderBlock.removeRenderPoint(renderPoint); renderBlock.updateSize(); },
-            () => { renderBlock.addRenderPoint(renderPoint); renderPoint.updateAll(); renderBlock.updateSize(); renderPoint.updatePosition(); }
+            () => {
+                renderBlock.addRenderPoint(renderPoint);
+                renderPoint.updateAll();
+                renderBlock.updateSize();
+                forEach(renderBlock.renderPoints, rp => rp.updatePosition());
+            }
         );
     }
 
