@@ -387,27 +387,28 @@ describe("dude-graph API", () => {
             "pointName": "out",
             "pointValueType": "Number"
         });
-        let inputPoint2 = new Point(false, {
+        let inputPoint1 = new Point(false, {
             "pointName": "in",
             "pointValueType": "Number"
         });
         expect(() => {
-            outputPoint1.connect(inputPoint2); // The points are not bound to blocks
+            outputPoint1.connect(inputPoint1); // The points are not bound to blocks
         }).to.throw();
         block1.addPoint(outputPoint1);
         expect(() => {
-            outputPoint1.connect(inputPoint2); // inputPoint2 is not bound to a block
+            outputPoint1.connect(inputPoint1); // inputPoint2 is not bound to a block
         }).to.throw();
-        block2.addPoint(inputPoint2);
-        let connection = outputPoint1.connect(inputPoint2);
+        block2.addPoint(inputPoint1);
+        let connection = outputPoint1.connect(inputPoint1);
         expect(graph.graphConnections).to.have.lengthOf(1);
         expect(outputPoint1.pointConnections).to.have.lengthOf(1);
-        expect(inputPoint2.pointConnections).to.have.lengthOf(1);
+        expect(inputPoint1.pointConnections).to.have.lengthOf(1);
         expect(graph.graphConnections[0]).to.be.equal(connection);
         expect(outputPoint1.pointConnections[0]).to.be.equal(connection);
-        expect(inputPoint2.pointConnections[0]).to.be.equal(connection);
+        expect(inputPoint1.pointConnections[0]).to.be.equal(connection);
         expect(connection.connectionOutputPoint).to.be.equal(outputPoint1);
-        expect(connection.connectionInputPoint).to.be.equal(inputPoint2);
+        expect(connection.connectionInputPoint).to.be.equal(inputPoint1);
+        expect(graph.connectionForPoints(outputPoint1, inputPoint1)).to.be.equal(connection);
     });
     it("should disconnect points of same type", () => {
         let graph = new Graph();
@@ -419,30 +420,31 @@ describe("dude-graph API", () => {
             "pointName": "out",
             "pointValueType": "Number"
         });
-        let inputPoint2 = new Point(false, {
+        let inputPoint1 = new Point(false, {
             "pointName": "in",
             "pointValueType": "Number"
         });
         expect(() => {
-            outputPoint1.disconnect(inputPoint2); // The points are not bound to blocks
+            outputPoint1.disconnect(inputPoint1); // The points are not bound to blocks
         }).to.throw();
         block1.addPoint(outputPoint1);
         expect(() => {
-            outputPoint1.disconnect(inputPoint2); // inputPoint2 is not bound to a block
+            outputPoint1.disconnect(inputPoint1); // inputPoint2 is not bound to a block
         }).to.throw();
-        block2.addPoint(inputPoint2);
+        block2.addPoint(inputPoint1);
         expect(() => {
-            outputPoint1.disconnect(inputPoint2); // Cannot disconnect non connected points
+            outputPoint1.disconnect(inputPoint1); // Cannot disconnect non connected points
         }).to.throw();
         expect(() => {
-            inputPoint2.disconnect(outputPoint1); // Cannot disconnect non connected points
+            inputPoint1.disconnect(outputPoint1); // Cannot disconnect non connected points
         }).to.throw();
-        outputPoint1.connect(inputPoint2);
+        outputPoint1.connect(inputPoint1);
         expect(graph.graphConnections).to.have.lengthOf(1);
-        outputPoint1.disconnect(inputPoint2);
+        outputPoint1.disconnect(inputPoint1);
         expect(graph.graphConnections).to.have.lengthOf(0);
         expect(outputPoint1.pointConnections).to.have.lengthOf(0);
-        expect(inputPoint2.pointConnections).to.have.lengthOf(0);
+        expect(inputPoint1.pointConnections).to.have.lengthOf(0);
+        expect(graph.connectionForPoints(outputPoint1, inputPoint1)).to.be.equal(null);
     });
     it("should ensure connect/disconnect commutativity", () => {
         let graph = new Graph();

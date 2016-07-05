@@ -313,13 +313,11 @@ export default class Graph extends EventClass {
                     outputPoint.fancyName + "` to `" + inputPoint.fancyName + ": " + connectionError.message);
             }
         }
-        var connectionFound = find(this[_graphConnections], (connection) => {
-                return connection.connectionOutputPoint === outputPoint && connection.connectionInputPoint === inputPoint;
-            }) || null;
+        let connectionFound = this.connectionForPoints(outputPoint, inputPoint);
         if (connectionFound !== null) {
             throw new Error("`" + connectionFound.fancyName + "` already exists");
         }
-        var connection = new Connection(outputPoint, inputPoint);
+        let connection = new Connection(outputPoint, inputPoint);
         if (!outputPoint.pointBlock.acceptConnect(outputPoint, inputPoint)) {
             throw new Error(this[_graphErrno]);
         }
@@ -350,9 +348,7 @@ export default class Graph extends EventClass {
         if (inputPoint.pointBlock === null) {
             throw new Error("`" + inputPoint.fancyName + "` cannot disconnect from another point when not bound to a block");
         }
-        var connectionFound = find(this[_graphConnections], (connection) => {
-                return connection.connectionOutputPoint === outputPoint && connection.connectionInputPoint === inputPoint;
-            }) || null;
+        let connectionFound = this.connectionForPoints(outputPoint, inputPoint);
         if (connectionFound === null) {
             throw new Error("`" + this.fancyName + "` cannot find a connection between `" +
                 outputPoint.fancyName + "` and `" + inputPoint.fancyName + "`");
@@ -367,6 +363,17 @@ export default class Graph extends EventClass {
         this.emit("point-disconnect", outputPoint, connectionFound);
         this.emit("point-disconnect", inputPoint, connectionFound);
         return connectionFound;
+    }
+    /**
+     * Returns the connection between the specified output point and input point or null
+     * @param {Point} outputPoint - specifies the output point
+     * @param {Point} inputPoint - specifies the input point
+     * @returns {Connection|null}
+     */
+    connectionForPoints(outputPoint, inputPoint) {
+        return find(this[_graphConnections], (connection) => {
+                return connection.connectionOutputPoint === outputPoint && connection.connectionInputPoint === inputPoint;
+            }) || null;
     }
     /**
      * Adds the specified connection
