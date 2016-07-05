@@ -6,8 +6,9 @@ import filter from "lodash-es/filter";
 import includes from "lodash-es/includes";
 import EventClass from "event-class-es6";
 
-import config from "./defaults/config";
 import uuid from "../graph/utils/uuid";
+import config from "./defaults/config";
+import RenderConnection from "./nodes/connection";
 
 const _graph = Symbol("graph");
 const _config = Symbol("config");
@@ -173,6 +174,96 @@ export default class Renderer extends EventClass {
     }
 
     /**
+     * Connects the specified output render point to the specified input render point
+     * @param {RenderPoint} outputRenderPoint - specifies the output render point
+     * @param {RenderPoint} inputRenderPoint - specifies the input render point
+     * @returns {RenderConnection}
+     */
+    connect(outputRenderPoint, inputRenderPoint) {
+        if (outputRenderPoint.renderBlock === null) {
+            throw new Error("`" + outputRenderPoint.fancyName + "` cannot connect to another render point when not bound to a render block");
+        }
+        if (inputRenderPoint.renderBlock === null) {
+            throw new Error("`" + inputRenderPoint.fancyName + "` cannot connect to another render point when not bound to a render block");
+        }
+        if (outputRenderPoint.renderBlock.renderer !== this) {
+            throw new Error("`" + outputRenderPoint.fancyName + "` is not in this renderer");
+        }
+        if (inputRenderPoint.renderBlock.renderer !== this) {
+            throw new Error("`" + inputRenderPoint.fancyName + "` is not in this renderer");
+        }
+        if (!outputRenderPoint.point.pointOutput) {
+            throw new Error("`" + outputRenderPoint.fancyName + "` is not an output");
+        }
+        if (inputRenderPoint.point.pointOutput) {
+            throw new Error("`" + inputRenderPoint.fancyName + "` is not an input");
+        }
+        let connection = this[_graph].connectionForPoints(outputRenderPoint.point, inputRenderPoint.point);
+        if (connection === null) {
+            throw new Error("`" + outputRenderPoint.point.fancyName + "` is not connected to `" + inputRenderPoint.point.fancyName  + "`");
+        }
+        let renderConnectionFound = this.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint);
+        if (renderConnectionFound !== null) {
+            throw new Error("Cannot redefine `" + renderConnectionFound.fancyName + "`");
+        }
+        let renderConnection = new RenderConnection(connection, outputRenderPoint, inputRenderPoint);
+        this[_renderConnections].push(renderConnection);
+        outputRenderPoint.addRenderConnection(renderConnection);
+        inputRenderPoint.addRenderConnection(renderConnection);
+        renderConnection.element = this[_d3Connections].append("svg:path");
+        renderConnection.added();
+        this.emit("connect", renderConnection);
+        return renderConnection;
+    }
+    /**
+     * Disconnects the specified output render point from the specified input render point
+     * @param {RenderPoint} outputRenderPoint - specifies the output render point
+     * @param {RenderPoint} inputRenderPoint - specifies the input render point
+     */
+    disconnect(outputRenderPoint, inputRenderPoint) {
+        if (outputRenderPoint.renderBlock === null) {
+            throw new Error("`" + outputRenderPoint.fancyName + "` cannot connect to another render point when not bound to a render block");
+        }
+        if (inputRenderPoint.renderBlock === null) {
+            throw new Error("`" + inputRenderPoint.fancyName + "` cannot connect to another render point when not bound to a render block");
+        }
+        if (outputRenderPoint.renderBlock.renderer !== this) {
+            throw new Error("`" + outputRenderPoint.fancyName + "` is not in this renderer");
+        }
+        if (inputRenderPoint.renderBlock.renderer !== this) {
+            throw new Error("`" + inputRenderPoint.fancyName + "` is not in this renderer");
+        }
+        if (!outputRenderPoint.point.pointOutput) {
+            throw new Error("`" + outputRenderPoint.fancyName + "` is not an output");
+        }
+        if (inputRenderPoint.point.pointOutput) {
+            throw new Error("`" + inputRenderPoint.fancyName + "` is not an input");
+        }
+        let renderConnection = this.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint);
+        if (renderConnection === null) {
+            throw new Error("`" + this.fancyName + "` cannot find a render connection between `" +
+                outputRenderPoint.fancyName + "` and `" + inputRenderPoint.fancyName + "`");
+        }
+        outputRenderPoint.removeRenderConnection(renderConnection);
+        inputRenderPoint.removeRenderConnection(renderConnection);
+        pull(this[_renderConnections], renderConnection);
+        renderConnection.removed();
+        renderConnection.element.remove();
+        this.emit("disconnect", renderConnection);
+    }
+    /**
+     * Returns the render connection between the specified output render point from the specified input render point
+     * @param {RenderPoint} outputRenderPoint - specifies the output render point
+     * @param {RenderPoint} inputRenderPoint - specifies the input render point
+     * @returns {RenderConnection|null}
+     */
+    renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint) {
+        return find(this[_renderConnections], (rc) => {
+                return rc.outputRenderPoint === outputRenderPoint && rc.inputRenderPoint === inputRenderPoint;
+            }) || null;
+    }
+
+    /**
      * Zooms and pans to the specified zoom and pan
      * @param {number} zoom - specifies the zoom
      * @param {Array<number>} pan - specifies the pan
@@ -200,12 +291,5 @@ export default class Renderer extends EventClass {
             this.emit("renderer-zoom-pan", this[_zoom], oldZoom);
         });
     }
-
-    /*
-    // adds the render connection and sets/create its svg:path element
-    addRenderConnection(renderConnection) {}
-    removeRenderConnection(renderConnection) {}
-    renderConnectionByConnection(connection) {}
-    */
 
 }

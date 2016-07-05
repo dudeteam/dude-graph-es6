@@ -191,4 +191,83 @@ describe("dude-renderer API", () => {
         expect(renderBlock.renderPoints).to.have.lengthOf(1);
         expect(renderBlock.element.select(".dude-graph-block-points").node().childElementCount).to.be.equal(1);
     });
+    it("should add render connections", () => {
+        let svg = document.getElementById("svg");
+        let graph = new Graph();
+        let block1 = new Block();
+        let block2 = new Block();
+        let outputPoint = new Point(true, {"pointName": "point", "pointValueType": "String"});
+        let inputPoint = new Point(false, {"pointName": "point", "pointValueType": "String"});
+        let renderer = new Renderer(graph, svg);
+        let renderBlock1 = new RenderBlock(block1);
+        let renderBlock2 = new RenderBlock(block2);
+        let outputRenderPoint = new RenderPoint(outputPoint);
+        let inputRenderPoint = new RenderPoint(inputPoint);
+        graph.addBlock(block1);
+        graph.addBlock(block2);
+        block1.addPoint(outputPoint);
+        block2.addPoint(inputPoint);
+        renderer.addRenderBlock(renderBlock1);
+        renderer.addRenderBlock(renderBlock2);
+        expect(() => {
+            renderer.connect(outputRenderPoint, inputRenderPoint); // the render points are not bound to render blocks
+        }).to.throw();
+        renderBlock1.addRenderPoint(outputRenderPoint);
+        renderBlock2.addRenderPoint(inputRenderPoint);
+        expect(() => {
+            renderer.connect(inputRenderPoint, outputRenderPoint); // 1st parameter must be the output point
+        }).to.throw();
+        expect(() => {
+            renderer.connect(outputRenderPoint, inputRenderPoint); // the points are not connected in the graph
+        }).to.throw();
+        outputPoint.connect(inputPoint);
+        expect(outputRenderPoint.renderConnections).to.have.lengthOf(0);
+        expect(inputRenderPoint.renderConnections).to.have.lengthOf(0);
+        expect(renderer.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint)).to.be.null;
+        let renderConnection = renderer.connect(outputRenderPoint, inputRenderPoint);
+        expect(outputRenderPoint.renderConnections).to.have.lengthOf(1);
+        expect(inputRenderPoint.renderConnections).to.have.lengthOf(1);
+        expect(renderer.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint)).to.be.equal(renderConnection);
+        expect(renderConnection.outputRenderPoint).to.be.equal(outputRenderPoint);
+        expect(renderConnection.inputRenderPoint).to.be.equal(inputRenderPoint);
+        expect(() => {
+            renderer.connect(outputRenderPoint, inputRenderPoint); // already connected
+        }).to.throw();
+    });
+    it("should", () => {
+        let svg = document.getElementById("svg");
+        let graph = new Graph();
+        let block1 = new Block();
+        let block2 = new Block();
+        let outputPoint = new Point(true, {"pointName": "point", "pointValueType": "String"});
+        let inputPoint = new Point(false, {"pointName": "point", "pointValueType": "String"});
+        let renderer = new Renderer(graph, svg);
+        let renderBlock1 = new RenderBlock(block1);
+        let renderBlock2 = new RenderBlock(block2);
+        let outputRenderPoint = new RenderPoint(outputPoint);
+        let inputRenderPoint = new RenderPoint(inputPoint);
+        graph.addBlock(block1);
+        graph.addBlock(block2);
+        block1.addPoint(outputPoint);
+        block2.addPoint(inputPoint);
+        renderer.addRenderBlock(renderBlock1);
+        renderer.addRenderBlock(renderBlock2);
+        renderBlock1.addRenderPoint(outputRenderPoint);
+        renderBlock2.addRenderPoint(inputRenderPoint);
+        outputPoint.connect(inputPoint);
+        expect(() => {
+            renderer.disconnect(outputRenderPoint, inputRenderPoint); // render points not connected
+        }).to.throw();
+        renderer.connect(outputRenderPoint, inputRenderPoint);
+        expect(() => {
+            renderer.disconnect(inputRenderPoint, outputRenderPoint); // 1st parameter must be the output point
+        }).to.throw();
+        expect(renderer.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint)).to.be.not.null;
+        expect(outputRenderPoint.renderConnections).to.have.lengthOf(1);
+        expect(inputRenderPoint.renderConnections).to.have.lengthOf(1);
+        renderer.disconnect(outputRenderPoint, inputRenderPoint);
+        expect(renderer.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint)).to.be.null;
+        expect(outputRenderPoint.renderConnections).to.have.lengthOf(0);
+        expect(inputRenderPoint.renderConnections).to.have.lengthOf(0);
+    });
 });

@@ -58,13 +58,22 @@ export default class RenderConnection {
     get connection() { return this[_connection]; }
     /**
      * Returns this render connection outputRenderPoint
-     * @returns {Connection}
+     * @returns {RenderPoint}
      */
     get outputRenderPoint() { return this[_outputRenderPoint]; }
     /**
      * Returns this render connection inputRenderPoint
-     * @returns {Connection}
+     * @returns {RenderPoint}
      */
     get inputRenderPoint() { return this[_inputRenderPoint]; }
+
+    /**
+     * Called when this render connection is added
+     */
+    added() {}
+    /**
+     * Called when this render connection is removed
+     */
+    removed() {}
 
 }
