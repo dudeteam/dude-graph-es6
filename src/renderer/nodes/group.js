@@ -4,9 +4,9 @@ import includes from "lodash-es/includes";
 import RenderNode from "./node";
 import {sizeRenderGroup, positionRenderGroup} from "../utils/measure";
 
-let _renderBlocks = Symbol("renderBlocks");
-let _svgRect = Symbol("svgRect");
-let _svgName = Symbol("svgName");
+const _renderBlocks = Symbol("renderBlocks");
+const _svgRect = Symbol("svgRect");
+const _svgName = Symbol("svgName");
 
 export default class RenderGroup extends RenderNode {
 

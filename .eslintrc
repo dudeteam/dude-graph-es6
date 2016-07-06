@@ -20,6 +20,7 @@
     "camelcase": 2,
     "no-console": 1,
     "quote-props": 2,
+    "prefer-const": 2,
     "keyword-spacing": 2,
     "space-infix-ops": 2,
     "consistent-return": 2,

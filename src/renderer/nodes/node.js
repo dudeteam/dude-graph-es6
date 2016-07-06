@@ -1,11 +1,11 @@
 import EventClass from "event-class-es6";
 
-let _renderer = Symbol("renderer");
-let _element = Symbol("element");
-let _id = Symbol("id");
-let _name = Symbol("name");
-let _size = Symbol("size");
-let _position = Symbol("position");
+const _renderer = Symbol("renderer");
+const _element = Symbol("element");
+const _id = Symbol("id");
+const _name = Symbol("name");
+const _size = Symbol("size");
+const _position = Symbol("position");
 
 /**
  * Base class which represents any visual node within the renderer.

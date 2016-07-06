@@ -7,14 +7,14 @@ import forEachRight from "lodash-es/forEachRight";
 import PointPolicy from "./policy";
 import defaultValue from "./utils/default";
 
-let _pointOutput = Symbol("pointOutput");
-let _pointName = Symbol("pointName");
-let _pointTemplate = Symbol("pointTemplate");
-let _pointValueType = Symbol("pointValueType");
-let _pointValue = Symbol("pointValue");
-let _pointPolicy = Symbol("pointPolicy");
-let _pointBlock = Symbol("pointBlock");
-let _pointConnections = Symbol("pointConnections");
+const _pointOutput = Symbol("pointOutput");
+const _pointName = Symbol("pointName");
+const _pointTemplate = Symbol("pointTemplate");
+const _pointValueType = Symbol("pointValueType");
+const _pointValue = Symbol("pointValue");
+const _pointPolicy = Symbol("pointPolicy");
+const _pointBlock = Symbol("pointBlock");
+const _pointConnections = Symbol("pointConnections");
 
 export default class Point extends EventClass {
 
@@ -139,8 +139,8 @@ export default class Point extends EventClass {
         if (value !== null && !this.hasPolicy(PointPolicy.VALUE)) {
             throw new Error("`" + this.fancyName + "` cannot change value when the policy `VALUE` is disabled");
         }
-        let oldValue = this[_pointValue];
-        let assignValue = this[_pointBlock].blockGraph.convertValue(this[_pointValueType], value);
+        const oldValue = this[_pointValue];
+        const assignValue = this[_pointBlock].blockGraph.convertValue(this[_pointValueType], value);
         if (typeof assignValue === "undefined") {
             throw new Error("`" + this[_pointBlock].blockGraph.fancyName + "` " + value +
                 "` is not compatible with type `" + this[_pointValueType] + "`");
@@ -167,7 +167,7 @@ export default class Point extends EventClass {
         if (typeof this[_pointBlock].blockGraph.convertValue(pointValueType, this[_pointValue]) === "undefined") {
             throw new Error("`" + this[_pointValue] + "` is not compatible with value type `" + pointValueType + "`");
         }
-        let oldValueType = this[_pointValueType];
+        const oldValueType = this[_pointValueType];
         this[_pointValueType] = pointValueType;
         if (!ignoreEmit) {
             this.emit("value-type-change", pointValueType, oldValueType);
@@ -224,9 +224,8 @@ export default class Point extends EventClass {
      * Disconnects all points from this point
      */
     disconnectAll() {
-        let point = this;
         forEachRight(this[_pointConnections], (connection) => {
-            point.disconnect(connection.other(point));
+            this.disconnect(connection.other(this));
         });
     }
 

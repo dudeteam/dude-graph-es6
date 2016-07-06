@@ -8,13 +8,13 @@ import {event, drag} from "d3";
 import RenderNode from "./node";
 import {sizeRenderBlock} from "../utils/measure";
 
-let _block = Symbol("block");
-let _parent = Symbol("parent");
-let _renderPoints = Symbol("renderPoints");
-let _svgRect = Symbol("svgRect");
-let _svgName = Symbol("svgName");
-let _svgPoints = Symbol("svgPoints");
-let _behaviorDrag = Symbol("behaviorDrag");
+const _block = Symbol("block");
+const _parent = Symbol("parent");
+const _renderPoints = Symbol("renderPoints");
+const _svgRect = Symbol("svgRect");
+const _svgName = Symbol("svgName");
+const _svgPoints = Symbol("svgPoints");
+const _behaviorDrag = Symbol("behaviorDrag");
 
 /**
  * Data used to visually represents a block into the Renderer. They can be several RenderBlock representation
@@ -129,7 +129,7 @@ export default class RenderBlock extends RenderNode {
      * @override
      */
     updateData() {
-        let color = this.renderer.config.blockColors[this.block.blockName] || this.renderer.config.blockColors.default;
+        const color = this.renderer.config.blockColors[this.block.blockName] || this.renderer.config.blockColors.default;
 
         this[_svgRect].attr("fill", color);
         this[_svgName].text(this.name);

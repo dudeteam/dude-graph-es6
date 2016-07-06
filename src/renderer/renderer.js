@@ -9,20 +9,20 @@ import EventClass from "event-class-es6";
 import config from "./defaults/config";
 import uuid from "../graph/utils/uuid";
 
-let _graph = Symbol("graph");
-let _config = Symbol("config");
-let _zoom = Symbol("zoomPan");
-let _renderGroups = Symbol("renderGroups");
-let _renderBlocks = Symbol("renderBlocks");
-let _renderConnections = Symbol("renderConnections");
-let _renderGroupIds = Symbol("renderGroupIds");
-let _renderBlockIds = Symbol("renderBlockIds");
-let _d3Svg = Symbol("d3Svg");
-let _d3Root = Symbol("d3Root");
-let _d3Groups = Symbol("d3Groups");
-let _d3Connections = Symbol("d3Connections");
-let _d3Blocks = Symbol("d3Blocks");
-let _behaviorZoom = Symbol("zoomDrag");
+const _graph = Symbol("graph");
+const _config = Symbol("config");
+const _zoom = Symbol("zoomPan");
+const _renderGroups = Symbol("renderGroups");
+const _renderBlocks = Symbol("renderBlocks");
+const _renderConnections = Symbol("renderConnections");
+const _renderGroupIds = Symbol("renderGroupIds");
+const _renderBlockIds = Symbol("renderBlockIds");
+const _d3Svg = Symbol("d3Svg");
+const _d3Root = Symbol("d3Root");
+const _d3Groups = Symbol("d3Groups");
+const _d3Connections = Symbol("d3Connections");
+const _d3Blocks = Symbol("d3Blocks");
+const _behaviorZoom = Symbol("zoomDrag");
 
 export default class Renderer extends EventClass {
 

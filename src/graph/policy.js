@@ -1,7 +1,7 @@
 import forOwn from "lodash-es/forOwn";
 import forEach from "lodash-es/forEach";
 
-let PolicyLabels = {
+const PolicyLabels = {
     "VALUE": 1,
     "SINGLE_CONNECTION": 2,
     "MULTIPLE_CONNECTIONS": 4,
@@ -41,7 +41,7 @@ export default class PointPolicy {
      * @returns {Array<string>}
      */
     static serialize(policy) {
-        let labels = [];
+        const labels = [];
         forOwn(PolicyLabels, (policyLabelValue, policyLabel) => {
             if ((policyLabelValue & policy) !== 0) {
                 labels.push(policyLabel);
@@ -58,7 +58,7 @@ export default class PointPolicy {
     static deserialize(policyLabels) {
         let policy = 0;
         forEach(policyLabels, (policyLabel) => {
-            let labelPolicyValue = PolicyLabels[policyLabel];
+            const labelPolicyValue = PolicyLabels[policyLabel];
             if (typeof labelPolicyValue === "undefined") {
                 throw new Error("`" + policyLabel + "` is not a valid point policy");
             }

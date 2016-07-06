@@ -3,11 +3,11 @@ import EventClass from "event-class-es6";
 import defaultValue from "./utils/default";
 import VariableBlock from "./blocks/variable";
 
-let _variableName = Symbol("variableName");
-let _variableValueType = Symbol("variableValueType");
-let _variableValue = Symbol("variableValue");
-let _variableBlock = Symbol("variableBlock");
-let _variableGraph = Symbol("variableGraph");
+const _variableName = Symbol("variableName");
+const _variableValueType = Symbol("variableValueType");
+const _variableValue = Symbol("variableValue");
+const _variableBlock = Symbol("variableBlock");
+const _variableGraph = Symbol("variableGraph");
 
 export default class Variable extends EventClass {
 
@@ -88,12 +88,12 @@ export default class Variable extends EventClass {
      * @param {boolean} [ignoreEmit=false] - whether to emit events
      */
     changeVariableValue(value, ignoreEmit) {
-        let assignValue = this[_variableGraph].convertValue(this[_variableValueType], value);
+        const assignValue = this[_variableGraph].convertValue(this[_variableValueType], value);
         if (typeof assignValue === "undefined") {
             throw new Error("`" + this.fancyName + "` " + value +
                 "` is not compatible with type `" + this[_variableValueType] + "`");
         }
-        let oldValue = this[_variableValue];
+        const oldValue = this[_variableValue];
         this[_variableValue] = assignValue;
         if (!ignoreEmit) {
             this.emit("value-change", assignValue, oldValue);

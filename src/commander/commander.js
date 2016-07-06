@@ -7,10 +7,10 @@ import forEachRight from "lodash-es/forEachRight";
 import RenderBlock from "../renderer/nodes/block";
 import RenderGroup from "../renderer/nodes/group";
 
-let _renderer = Symbol("renderer");
-let _transactions = Symbol("transactions");
-let _undo = Symbol("undo");
-let _redo = Symbol("redo");
+const _renderer = Symbol("renderer");
+const _transactions = Symbol("transactions");
+const _undo = Symbol("undo");
+const _redo = Symbol("redo");
 
 /**
  * This class handles add the possible commands on the graph and renderer
@@ -35,12 +35,12 @@ export default class Commander {
      * @param {function} undo - the function to undo the command
      */
     command(redo, undo) {
-        let action = {
+        const action = {
             "undo": undo,
             "redo": redo
         };
         if (this[_transactions].length > 0) {
-            let transaction = this[_transactions].slice(-1)[0];
+            const transaction = this[_transactions].slice(-1)[0];
             transaction.push(action);
         } else {
             this[_undo].splice(0, 0, action);
@@ -52,7 +52,7 @@ export default class Commander {
      * Undoes the last command
      */
     undo() {
-        let undo = this[_undo].shift();
+        const undo = this[_undo].shift();
         if (typeof undo !== "undefined") {
             undo.undo();
             this[_redo].splice(0, 0, undo);
@@ -62,7 +62,7 @@ export default class Commander {
      * Redoes the last undone command
      */
     redo() {
-        let redo = this[_redo].shift();
+        const redo = this[_redo].shift();
         if (typeof redo !== "undefined") {
             redo.redo();
             this[_undo].splice(0, 0, redo);
@@ -82,7 +82,7 @@ export default class Commander {
         if (this[_transactions].length === 0) {
             throw new Error("There is no transaction to commit");
         }
-        let actions = this[_transactions].pop();
+        const actions = this[_transactions].pop();
         if (actions.length > 0) {
             this.command(
                 () => { forEach(actions, transaction => transaction.redo()); },
@@ -250,7 +250,7 @@ export default class Commander {
      * @param {string} name - specifies the name
      */
     changeRenderNodeName(renderNode, name) {
-        let oldName = renderNode.name;
+        const oldName = renderNode.name;
         this.command(
             () => { renderNode.name = name; renderNode.updateAll(); },
             () => { renderNode.name = oldName; renderNode.updateAll(); }

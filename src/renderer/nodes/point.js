@@ -1,13 +1,13 @@
 import {sizeRenderPoint} from "../utils/measure";
 import {positionRenderPoint} from "../utils/measure";
 
-let _point = Symbol("point");
-let _renderBlock = Symbol("renderBlock");
-let _element = Symbol("element");
-let _size = Symbol("size");
-let _position = Symbol("position");
-let _d3Circle = Symbol("d3Circle");
-let _d3Name = Symbol("d3Name");
+const _point = Symbol("point");
+const _renderBlock = Symbol("renderBlock");
+const _element = Symbol("element");
+const _size = Symbol("size");
+const _position = Symbol("position");
+const _d3Circle = Symbol("d3Circle");
+const _d3Name = Symbol("d3Name");
 
 export default class RenderPoint {
 
@@ -78,7 +78,7 @@ export default class RenderPoint {
      * Called when this render point is added
      */
     added() {
-        let r = this.renderBlock.renderer.config.point.radius;
+        const r = this.renderBlock.renderer.config.point.radius;
 
         this[_d3Circle] = this.element.append("svg:path");
         this[_d3Name] = this.element.append("svg:text");
@@ -107,8 +107,8 @@ export default class RenderPoint {
      * Called when this render point data changed and should update its element
      */
     updateData() {
-        let empty = false;
-        let pointColor = this.renderBlock.renderer.config.typeColors[this.point.pointValueType] || this.renderBlock.renderer.config.typeColors.default;
+        const empty = false;
+        const pointColor = this.renderBlock.renderer.config.typeColors[this.point.pointValueType] || this.renderBlock.renderer.config.typeColors.default;
         this[_d3Circle].attr("stroke", pointColor);
         this[_d3Circle].attr("fill", empty ? "transparent" : pointColor);
         this[_d3Name].text(this.point.pointName);

@@ -11,12 +11,12 @@ import PointPolicy from "./policy";
 
 import uuid from "./utils/uuid";
 
-let _graphErrno = Symbol("graphErrno");
-let _graphBlocks = Symbol("graphBlocks");
-let _graphBlockIds = Symbol("graphBlockIds");
-let _graphVariables = Symbol("graphVariables");
-let _graphValueTypes = Symbol("graphValueTypes");
-let _graphConnections = Symbol("graphConnections");
+const _graphErrno = Symbol("graphErrno");
+const _graphBlocks = Symbol("graphBlocks");
+const _graphBlockIds = Symbol("graphBlockIds");
+const _graphVariables = Symbol("graphVariables");
+const _graphValueTypes = Symbol("graphValueTypes");
+const _graphConnections = Symbol("graphConnections");
 
 export default class Graph extends EventClass {
 
@@ -172,7 +172,7 @@ export default class Graph extends EventClass {
         if (value === null) {
             return null;
         }
-        let valueTypeInfo = this.valueTypeByName(valueType);
+        const valueTypeInfo = this.valueTypeByName(valueType);
         if (valueTypeInfo === null) {
             throw new Error("`" + this.fancyName + "` has no valueType `" + valueType + "`");
         }
@@ -188,7 +188,7 @@ export default class Graph extends EventClass {
      * @returns {boolean}
      */
     convertConnection(outputPoint, inputPoint) {
-        let inputValueType = this.valueTypeByName(inputPoint.pointValueType);
+        const inputValueType = this.valueTypeByName(inputPoint.pointValueType);
 
         if (inputValueType === null) {
             throw new Error("`" + this.fancyName + "` cannot find compatible type to convert connection from `" +
@@ -299,7 +299,7 @@ export default class Graph extends EventClass {
             throw new Error("`" + outputPoint.fancyName + "` is not an input");
         }
         if (!this.convertConnection(outputPoint, inputPoint)) {
-            let connectionError = this[_graphErrno] || {};
+            const connectionError = this[_graphErrno] || {};
             if (outputPoint.pointTemplate !== null || inputPoint.pointTemplate !== null) {
                 try {
                     outputPoint.pointBlock.changeTemplate(outputPoint.pointTemplate, inputPoint.pointValueType);
@@ -313,11 +313,11 @@ export default class Graph extends EventClass {
                     outputPoint.fancyName + "` to `" + inputPoint.fancyName + ": " + connectionError.message);
             }
         }
-        let connectionFound = this.connectionForPoints(outputPoint, inputPoint);
+        const connectionFound = this.connectionForPoints(outputPoint, inputPoint);
         if (connectionFound !== null) {
             throw new Error("`" + connectionFound.fancyName + "` already exists");
         }
-        let connection = new Connection(outputPoint, inputPoint);
+        const connection = new Connection(outputPoint, inputPoint);
         if (!outputPoint.pointBlock.acceptConnect(outputPoint, inputPoint)) {
             throw new Error(this[_graphErrno]);
         }
@@ -348,7 +348,7 @@ export default class Graph extends EventClass {
         if (inputPoint.pointBlock === null) {
             throw new Error("`" + inputPoint.fancyName + "` cannot disconnect from another point when not bound to a block");
         }
-        let connectionFound = this.connectionForPoints(outputPoint, inputPoint);
+        const connectionFound = this.connectionForPoints(outputPoint, inputPoint);
         if (connectionFound === null) {
             throw new Error("`" + this.fancyName + "` cannot find a connection between `" +
                 outputPoint.fancyName + "` and `" + inputPoint.fancyName + "`");
@@ -381,8 +381,8 @@ export default class Graph extends EventClass {
      * @private
      */
     _addConnection (connection) {
-        let outputPoint = connection.connectionOutputPoint;
-        let inputPoint = connection.connectionInputPoint;
+        const outputPoint = connection.connectionOutputPoint;
+        const inputPoint = connection.connectionInputPoint;
         if (includes(outputPoint.pointConnections, connection)) {
             throw new Error("`" + outputPoint.fancyName + "` cannot redefine `" + connection.fancyName + "`");
         }
@@ -399,8 +399,8 @@ export default class Graph extends EventClass {
      * @private
      */
     _removeConnection (connection) {
-        let outputPoint = connection.connectionOutputPoint;
-        let inputPoint = connection.connectionInputPoint;
+        const outputPoint = connection.connectionOutputPoint;
+        const inputPoint = connection.connectionInputPoint;
         if (!includes(outputPoint.pointConnections, connection)) {
             throw new Error("`" + outputPoint.fancyName + "` has no connection `" + connection.fancyName + "`");
         }

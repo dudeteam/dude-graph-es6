@@ -10,7 +10,7 @@ import isBoolean from "lodash-es/isBoolean";
  * Graph default value types
  * @type {object}
  */
-let valueTypes = {
+const valueTypes = {
     "Stream": {
         "convert": () => undefined,
         "typeCompatibles": []

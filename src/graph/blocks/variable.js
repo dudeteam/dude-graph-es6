@@ -1,6 +1,6 @@
 import Block from "../block";
 
-let _graphVariable = Symbol("_graphVariable");
+const _graphVariable = Symbol("_graphVariable");
 
 export default class VariableBlock extends Block {
 

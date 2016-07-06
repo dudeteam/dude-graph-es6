@@ -4,7 +4,7 @@
  * @param {*} [defaultValue=value] - the value returned if value is undefined
  * @returns {*}
  */
-let defaultValue = (value, defaultValue) => {
+const defaultValue = (value, defaultValue) => {
     if (typeof value === "undefined") {
         return defaultValue;
     }

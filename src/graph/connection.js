@@ -1,7 +1,7 @@
 import EventClass from "event-class-es6";
 
-let _connectionOutputPoint = Symbol("outputPoint");
-let _connectionInputPoint = Symbol("inputPoint");
+const _connectionOutputPoint = Symbol("outputPoint");
+const _connectionInputPoint = Symbol("inputPoint");
 
 export default class Connection extends EventClass {
 

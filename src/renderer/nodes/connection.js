@@ -1,8 +1,8 @@
-let _renderer = Symbol("renderer");
-let _element = Symbol("element");
-let _connection = Symbol("connection");
-let _outputRenderPoint = Symbol("outputRenderPoint");
-let _inputRenderPoint = Symbol("inputRenderPoint");
+const _renderer = Symbol("renderer");
+const _element = Symbol("element");
+const _connection = Symbol("connection");
+const _outputRenderPoint = Symbol("outputRenderPoint");
+const _inputRenderPoint = Symbol("inputRenderPoint");
 
 export default class RenderConnection {
 

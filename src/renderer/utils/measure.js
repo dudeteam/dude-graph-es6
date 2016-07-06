@@ -9,10 +9,10 @@ import {selection} from "d3";
  * @param {string|selection} text - specifies the text
  * @returns {Array<number>}
  */
-let sizeText = (text) => {
+const sizeText = (text) => {
     if (text instanceof selection) {
-        let boundingRect = text.node().getBoundingClientRect();
-        let textSize = [(boundingRect.right - boundingRect.left), (boundingRect.bottom - boundingRect.top)];
+        const boundingRect = text.node().getBoundingClientRect();
+        const textSize = [(boundingRect.right - boundingRect.left), (boundingRect.bottom - boundingRect.top)];
         if (!isEqual(textSize, [0, 0])) {
             return textSize;
         }
@@ -27,9 +27,9 @@ let sizeText = (text) => {
  * @param {boolean} [nullable=false] - Whether to return null or [[0, 0], [0, 0]]
  * @returns {Array<Array<number>>}
  */
-let sizeRenderNodes = (renderNodes, nullable) => {
-    let topLeft = [Infinity, Infinity];
-    let bottomRight = [-Infinity, -Infinity];
+const sizeRenderNodes = (renderNodes, nullable) => {
+    const topLeft = [Infinity, Infinity];
+    const bottomRight = [-Infinity, -Infinity];
     forEach(renderNodes, (renderNode) => {
         topLeft[0] = Math.min(topLeft[0], renderNode.position[0]);
         topLeft[1] = Math.min(topLeft[1], renderNode.position[1]);
@@ -47,16 +47,16 @@ let sizeRenderNodes = (renderNodes, nullable) => {
  * @param {RenderBlock} renderBlock - specifies the render block
  * @returns {Array<number>}
  */
-let sizeRenderBlock = (renderBlock) => {
-    let widerOutput = maxBy(renderBlock.renderOutputPoints, renderPoint => renderPoint.size[0]);
-    let widerInput = maxBy(renderBlock.renderInputPoints, renderPoint => renderPoint.size[0]);
-    let nameWidth = sizeText(renderBlock.name)[0];
-    let outputWidth = typeof widerOutput === "undefined" ? 0 : widerOutput.size[0];
-    let inputWidth = typeof widerInput === "undefined" ? 0 : widerInput.size[0];
-    let maxPoints = renderBlock.renderOutputPoints.length > renderBlock.renderInputPoints ?
+const sizeRenderBlock = (renderBlock) => {
+    const widerOutput = maxBy(renderBlock.renderOutputPoints, renderPoint => renderPoint.size[0]);
+    const widerInput = maxBy(renderBlock.renderInputPoints, renderPoint => renderPoint.size[0]);
+    const nameWidth = sizeText(renderBlock.name)[0];
+    const outputWidth = typeof widerOutput === "undefined" ? 0 : widerOutput.size[0];
+    const inputWidth = typeof widerInput === "undefined" ? 0 : widerInput.size[0];
+    const maxPoints = renderBlock.renderOutputPoints.length > renderBlock.renderInputPoints ?
         renderBlock.renderOutputPoints : renderBlock.renderInputPoints;
-    let pointsHeight = sumBy(maxPoints, renderPoint => renderPoint.size[1]);
-    let maxWidth = Math.max(
+    const pointsHeight = sumBy(maxPoints, renderPoint => renderPoint.size[1]);
+    const maxWidth = Math.max(
         nameWidth + renderBlock.renderer.config.block.padding * 2,
         outputWidth + inputWidth + renderBlock.renderer.config.block.pointSpacing
     );
@@ -68,9 +68,9 @@ let sizeRenderBlock = (renderBlock) => {
  * @param {RenderGroup} renderGroup - specifies the render group
  * @returns {Array<number>}
  */
-let sizeRenderGroup = (renderGroup) => {
-    let size = [0, 0];
-    let contentBoundingBox = sizeRenderNodes(renderGroup.renderBlocks, true);
+const sizeRenderGroup = (renderGroup) => {
+    const size = [0, 0];
+    const contentBoundingBox = sizeRenderNodes(renderGroup.renderBlocks, true);
     if (contentBoundingBox !== null) {
         size[0] = contentBoundingBox[1][0] - contentBoundingBox[0][0] + renderGroup.renderer.config.group.padding * 2;
         size[1] = contentBoundingBox[1][1] - contentBoundingBox[0][1] + renderGroup.renderer.config.group.padding * 2 + renderGroup.renderer.config.group.header;
@@ -86,8 +86,8 @@ let sizeRenderGroup = (renderGroup) => {
  * @param {RenderPoint} renderPoint - specifies the render group
  * @returns {Array<number>}
  */
-let sizeRenderPoint = (renderPoint) => {
-    let textBoundingBox = sizeText(renderPoint.point.pointName);
+const sizeRenderPoint = (renderPoint) => {
+    const textBoundingBox = sizeText(renderPoint.point.pointName);
     return [
         textBoundingBox[0] + renderPoint.renderBlock.renderer.config.point.padding * 2,
         renderPoint.renderBlock.renderer.config.point.height
@@ -99,8 +99,8 @@ let sizeRenderPoint = (renderPoint) => {
  * @param {RenderGroup} renderGroup - specifies the render group
  * @returns {Array<number>}
  */
-let positionRenderGroup = (renderGroup) => {
-    let contentBoundingBox = sizeRenderNodes(renderGroup.renderBlocks, true);
+const positionRenderGroup = (renderGroup) => {
+    const contentBoundingBox = sizeRenderNodes(renderGroup.renderBlocks, true);
     if (contentBoundingBox !== null) {
         return [
             contentBoundingBox[0][0] - renderGroup.renderer.config.group.padding,
@@ -115,15 +115,15 @@ let positionRenderGroup = (renderGroup) => {
  * @param {RenderPoint} renderPoint - specifies the render point
  * @returns {Array<number>}
  */
-let positionRenderPoint = (renderPoint) => {
+const positionRenderPoint = (renderPoint) => {
     if (renderPoint.point.pointOutput) {
-        let index = renderPoint.renderBlock.renderOutputPoints.indexOf(renderPoint);
+        const index = renderPoint.renderBlock.renderOutputPoints.indexOf(renderPoint);
         return [
             renderPoint.renderBlock.size[0] - renderPoint.renderBlock.renderer.config.point.padding,
             renderPoint.renderBlock.renderer.config.block.header + renderPoint.renderBlock.renderer.config.point.height * index
         ];
     } else {
-        let index = renderPoint.renderBlock.renderInputPoints.indexOf(renderPoint);
+        const index = renderPoint.renderBlock.renderInputPoints.indexOf(renderPoint);
         return [
             renderPoint.renderBlock.renderer.config.point.padding,
             renderPoint.renderBlock.renderer.config.block.header + renderPoint.renderBlock.renderer.config.point.height * index

@@ -2,7 +2,7 @@
  * Renderer default configuration
  * @type {object}
  */
-let rendererConfig = {
+const rendererConfig = {
     "zoom": {
         "margin": [10, 10],
         "scaleExtent": [0.01, 5],

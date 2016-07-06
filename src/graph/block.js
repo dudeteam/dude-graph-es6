@@ -11,12 +11,12 @@ import forEachRight from "lodash-es/forEachRight";
 
 import defaultValue from "./utils/default";
 
-let _blockId = Symbol("blockId");
-let _blockName = Symbol("blockName");
-let _blockInputs = Symbol("blockInputs");
-let _blockOutputs = Symbol("blockOutputs");
-let _blockTemplates = Symbol("blockTemplate");
-let _blockGraph = Symbol("blockGraph");
+const _blockId = Symbol("blockId");
+const _blockName = Symbol("blockName");
+const _blockInputs = Symbol("blockInputs");
+const _blockOutputs = Symbol("blockOutputs");
+const _blockTemplates = Symbol("blockTemplate");
+const _blockGraph = Symbol("blockGraph");
 
 export default class Block extends EventClass {
 
@@ -151,7 +151,7 @@ export default class Block extends EventClass {
         if (this[_blockGraph].valueTypeByName(valueType) === null) {
             throw new Error("`" + this.fancyName + "` has no value type `" + valueType + "`");
         }
-        let template = this.templateByName(templateName);
+        const template = this.templateByName(templateName);
         if (template === null) {
             throw new Error("`" + this.fancyName + "` has no template `" + templateName + "`");
         }
@@ -162,14 +162,14 @@ export default class Block extends EventClass {
         if (template.valueType === valueType) {
             return; // Already the same type
         }
-        let oldValueType = template.valueType;
-        let outputValueSaves = map(this[_blockOutputs], (point) => {
+        const oldValueType = template.valueType;
+        const outputValueSaves = map(this[_blockOutputs], (point) => {
             if (point.pointTemplate === templateName) {
                 return point.pointValue;
             }
             return undefined;
         });
-        let inputValueSaves = map(this[_blockInputs], (point) => {
+        const inputValueSaves = map(this[_blockInputs], (point) => {
             if (point.pointTemplate === templateName) {
                 return point.pointValue;
             }
@@ -241,7 +241,7 @@ export default class Block extends EventClass {
             if (point.pointTemplate === null) {
                 point.changeValueType(point.pointValueType, true);
             } else {
-                let template = this.templateByName(point.pointTemplate);
+                const template = this.templateByName(point.pointTemplate);
                 if (template === null) {
                     //noinspection ExceptionCaughtLocallyJS
                     throw new Error("`" + this.fancyName + "` has no template `" + point.pointTemplate + "`");
@@ -293,7 +293,7 @@ export default class Block extends EventClass {
      * Removes all block points
      */
     removePoints() {
-        let block = this;
+        const block = this;
         forEachRight(this[_blockOutputs], (point) => {
             block.removePoint(point);
         });
