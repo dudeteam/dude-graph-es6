@@ -151,7 +151,7 @@ export default class Block extends EventClass {
         if (this[_blockGraph].valueTypeByName(valueType) === null) {
             throw new Error("`" + this.fancyName + "` has no value type `" + valueType + "`");
         }
-        var template = this.templateByName(templateName);
+        let template = this.templateByName(templateName);
         if (template === null) {
             throw new Error("`" + this.fancyName + "` has no template `" + templateName + "`");
         }
@@ -162,14 +162,14 @@ export default class Block extends EventClass {
         if (template.valueType === valueType) {
             return; // Already the same type
         }
-        var oldValueType = template.valueType;
-        var outputValueSaves = map(this[_blockOutputs], (point) => {
+        let oldValueType = template.valueType;
+        let outputValueSaves = map(this[_blockOutputs], (point) => {
             if (point.pointTemplate === templateName) {
                 return point.pointValue;
             }
             return undefined;
         });
-        var inputValueSaves = map(this[_blockInputs], (point) => {
+        let inputValueSaves = map(this[_blockInputs], (point) => {
             if (point.pointTemplate === templateName) {
                 return point.pointValue;
             }
@@ -241,7 +241,7 @@ export default class Block extends EventClass {
             if (point.pointTemplate === null) {
                 point.changeValueType(point.pointValueType, true);
             } else {
-                var template = this.templateByName(point.pointTemplate);
+                let template = this.templateByName(point.pointTemplate);
                 if (template === null) {
                     //noinspection ExceptionCaughtLocallyJS
                     throw new Error("`" + this.fancyName + "` has no template `" + point.pointTemplate + "`");

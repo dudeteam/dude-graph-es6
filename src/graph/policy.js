@@ -41,7 +41,7 @@ export default class PointPolicy {
      * @returns {Array<string>}
      */
     static serialize(policy) {
-        var labels = [];
+        let labels = [];
         forOwn(PolicyLabels, (policyLabelValue, policyLabel) => {
             if ((policyLabelValue & policy) !== 0) {
                 labels.push(policyLabel);
@@ -56,9 +56,9 @@ export default class PointPolicy {
      * @returns {number}
      */
     static deserialize(policyLabels) {
-        var policy = 0;
+        let policy = 0;
         forEach(policyLabels, (policyLabel) => {
-            var labelPolicyValue = PolicyLabels[policyLabel];
+            let labelPolicyValue = PolicyLabels[policyLabel];
             if (typeof labelPolicyValue === "undefined") {
                 throw new Error("`" + policyLabel + "` is not a valid point policy");
             }

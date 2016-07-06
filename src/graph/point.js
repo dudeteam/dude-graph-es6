@@ -139,8 +139,8 @@ export default class Point extends EventClass {
         if (value !== null && !this.hasPolicy(PointPolicy.VALUE)) {
             throw new Error("`" + this.fancyName + "` cannot change value when the policy `VALUE` is disabled");
         }
-        var oldValue = this[_pointValue];
-        var assignValue = this[_pointBlock].blockGraph.convertValue(this[_pointValueType], value);
+        let oldValue = this[_pointValue];
+        let assignValue = this[_pointBlock].blockGraph.convertValue(this[_pointValueType], value);
         if (typeof assignValue === "undefined") {
             throw new Error("`" + this[_pointBlock].blockGraph.fancyName + "` " + value +
                 "` is not compatible with type `" + this[_pointValueType] + "`");
@@ -167,7 +167,7 @@ export default class Point extends EventClass {
         if (typeof this[_pointBlock].blockGraph.convertValue(pointValueType, this[_pointValue]) === "undefined") {
             throw new Error("`" + this[_pointValue] + "` is not compatible with value type `" + pointValueType + "`");
         }
-        var oldValueType = this[_pointValueType];
+        let oldValueType = this[_pointValueType];
         this[_pointValueType] = pointValueType;
         if (!ignoreEmit) {
             this.emit("value-type-change", pointValueType, oldValueType);
@@ -224,7 +224,7 @@ export default class Point extends EventClass {
      * Disconnects all points from this point
      */
     disconnectAll() {
-        var point = this;
+        let point = this;
         forEachRight(this[_pointConnections], (connection) => {
             point.disconnect(connection.other(point));
         });

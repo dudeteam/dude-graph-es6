@@ -28,8 +28,8 @@ let sizeText = (text) => {
  * @returns {Array<Array<number>>}
  */
 let sizeRenderNodes = (renderNodes, nullable) => {
-    var topLeft = [Infinity, Infinity];
-    var bottomRight = [-Infinity, -Infinity];
+    let topLeft = [Infinity, Infinity];
+    let bottomRight = [-Infinity, -Infinity];
     forEach(renderNodes, (renderNode) => {
         topLeft[0] = Math.min(topLeft[0], renderNode.position[0]);
         topLeft[1] = Math.min(topLeft[1], renderNode.position[1]);

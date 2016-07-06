@@ -88,12 +88,12 @@ export default class Variable extends EventClass {
      * @param {boolean} [ignoreEmit=false] - whether to emit events
      */
     changeVariableValue(value, ignoreEmit) {
-        var assignValue = this[_variableGraph].convertValue(this[_variableValueType], value);
+        let assignValue = this[_variableGraph].convertValue(this[_variableValueType], value);
         if (typeof assignValue === "undefined") {
             throw new Error("`" + this.fancyName + "` " + value +
                 "` is not compatible with type `" + this[_variableValueType] + "`");
         }
-        var oldValue = this[_variableValue];
+        let oldValue = this[_variableValue];
         this[_variableValue] = assignValue;
         if (!ignoreEmit) {
             this.emit("value-change", assignValue, oldValue);

@@ -172,7 +172,7 @@ export default class Graph extends EventClass {
         if (value === null) {
             return null;
         }
-        var valueTypeInfo = this.valueTypeByName(valueType);
+        let valueTypeInfo = this.valueTypeByName(valueType);
         if (valueTypeInfo === null) {
             throw new Error("`" + this.fancyName + "` has no valueType `" + valueType + "`");
         }
@@ -188,7 +188,7 @@ export default class Graph extends EventClass {
      * @returns {boolean}
      */
     convertConnection(outputPoint, inputPoint) {
-        var inputValueType = this.valueTypeByName(inputPoint.pointValueType);
+        let inputValueType = this.valueTypeByName(inputPoint.pointValueType);
 
         if (inputValueType === null) {
             throw new Error("`" + this.fancyName + "` cannot find compatible type to convert connection from `" +
@@ -250,7 +250,7 @@ export default class Graph extends EventClass {
             return false;
         }
 
-        var previousErrno = this[_graphErrno];
+        let previousErrno = this[_graphErrno];
         if (typeof outputPoint.acceptConnect !== "undefined" && !outputPoint.acceptConnect(inputPoint)) {
             if (this[_graphErrno] !== null && this[_graphErrno] !== previousErrno) {
                 this.errno(new Error("`" + outputPoint.fancyName +
@@ -299,7 +299,7 @@ export default class Graph extends EventClass {
             throw new Error("`" + outputPoint.fancyName + "` is not an input");
         }
         if (!this.convertConnection(outputPoint, inputPoint)) {
-            var connectionError = this[_graphErrno] || {};
+            let connectionError = this[_graphErrno] || {};
             if (outputPoint.pointTemplate !== null || inputPoint.pointTemplate !== null) {
                 try {
                     outputPoint.pointBlock.changeTemplate(outputPoint.pointTemplate, inputPoint.pointValueType);
