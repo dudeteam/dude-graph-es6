@@ -7,9 +7,9 @@ describe("dude-commander API", () => {
         new Commander(null);
     });
     it("should add an command and undo/redo it", () => {
-        let commander = new Commander(null);
-        let redoSpy = sinon.spy();
-        let undoSpy = sinon.spy();
+        const commander = new Commander(null);
+        const redoSpy = sinon.spy();
+        const undoSpy = sinon.spy();
         commander.command(redoSpy, undoSpy);
         sinon.assert.calledOnce(redoSpy);
         sinon.assert.notCalled(undoSpy);
@@ -30,13 +30,13 @@ describe("dude-commander API", () => {
         sinon.assert.calledTwice(undoSpy);
     });
     it("should add 3 actions and undo/redo them", () => {
-        let commander = new Commander(null);
-        let redoSpy1 = sinon.spy();
-        let redoSpy2 = sinon.spy();
-        let redoSpy3 = sinon.spy();
-        let undoSpy1 = sinon.spy();
-        let undoSpy2 = sinon.spy();
-        let undoSpy3 = sinon.spy();
+        const commander = new Commander(null);
+        const redoSpy1 = sinon.spy();
+        const redoSpy2 = sinon.spy();
+        const redoSpy3 = sinon.spy();
+        const undoSpy1 = sinon.spy();
+        const undoSpy2 = sinon.spy();
+        const undoSpy3 = sinon.spy();
         commander.command(redoSpy1, undoSpy1);
         sinon.assert.calledOnce(redoSpy1);
         sinon.assert.notCalled(redoSpy2);
@@ -75,9 +75,9 @@ describe("dude-commander API", () => {
         sinon.assert.calledOnce(undoSpy1);
     });
     it("should clear redo stack if a new command is pushed after an undo", () => {
-        let commander = new Commander(null);
-        let redoSpy = sinon.spy();
-        let undoSpy = sinon.spy();
+        const commander = new Commander(null);
+        const redoSpy = sinon.spy();
+        const undoSpy = sinon.spy();
         commander.command(redoSpy, undoSpy); // [action1], []
         commander.command(() => {}, () => {}); // [action2, action1], []
         commander.undo(); // [action1], [action2]
@@ -98,11 +98,11 @@ describe("dude-commander API", () => {
         sinon.assert.calledTwice(undoSpy);
     });
     it("should create a transaction", () => {
-        let commander = new Commander(null);
-        let redoSpy1 = sinon.spy();
-        let redoSpy2 = sinon.spy();
-        let undoSpy1 = sinon.spy();
-        let undoSpy2 = sinon.spy();
+        const commander = new Commander(null);
+        const redoSpy1 = sinon.spy();
+        const redoSpy2 = sinon.spy();
+        const undoSpy1 = sinon.spy();
+        const undoSpy2 = sinon.spy();
         commander.transaction();
         commander.command(redoSpy1, undoSpy1);
         commander.command(redoSpy2, undoSpy2);
@@ -134,13 +134,13 @@ describe("dude-commander API", () => {
         sinon.assert.calledOnce(undoSpy2);
     });
     it("should create nested transactions", () => {
-        let commander = new Commander(null);
-        let redoSpy1 = sinon.spy();
-        let redoSpy2 = sinon.spy();
-        let redoSpy3 = sinon.spy();
-        let undoSpy1 = sinon.spy();
-        let undoSpy2 = sinon.spy();
-        let undoSpy3 = sinon.spy();
+        const commander = new Commander(null);
+        const redoSpy1 = sinon.spy();
+        const redoSpy2 = sinon.spy();
+        const redoSpy3 = sinon.spy();
+        const undoSpy1 = sinon.spy();
+        const undoSpy2 = sinon.spy();
+        const undoSpy3 = sinon.spy();
         commander.transaction();
         commander.command(redoSpy1, undoSpy1);
         commander.transaction();
