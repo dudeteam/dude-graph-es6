@@ -21,9 +21,7 @@ export default class RenderGroup extends RenderNode {
      * Returns this group render blocks
      * @returns {Array<RenderBlock>}
      */
-    get renderBlocks() {
-        return this[_renderBlocks];
-    }
+    get renderBlocks() { return this[_renderBlocks]; }
 
     /**
      * Adds the specified render block to this render group

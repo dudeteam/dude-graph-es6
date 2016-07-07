@@ -69,6 +69,21 @@ export default class Renderer extends EventClass {
      */
     set config(config) { this[_config] = config; }
     /**
+     * Returns this renderer render groups
+     * @returns {Array<RenderGroup>}
+     */
+    get renderGroups() { return this[_renderGroups]; }
+    /**
+     * Returns this renderer render blocks
+     * @returns {Array<RenderBlock>}
+     */
+    get renderBlocks() { return this[_renderBlocks]; }
+    /**
+     * Returns this renderer render groups
+     * @returns {Array<RenderConnection>}
+     */
+    get renderConnections() { return this[_renderConnections]; }
+    /**
      * Returns this renderer current zoom and pan
      * @returns {{zoom: number, pan: Array<number>}}
      */
