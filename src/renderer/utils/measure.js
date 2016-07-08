@@ -9,7 +9,7 @@ import {selection} from "d3";
  * @param {string|selection} text - specifies the text
  * @returns {Array<number>}
  */
-const sizeText = (text) => {
+const textBoundingBox = (text) => {
     if (text instanceof selection) {
         const boundingRect = text.node().getBoundingClientRect();
         const textSize = [(boundingRect.right - boundingRect.left), (boundingRect.bottom - boundingRect.top)];
@@ -27,7 +27,7 @@ const sizeText = (text) => {
  * @param {boolean} [nullable=false] - Whether to return null or [[0, 0], [0, 0]]
  * @returns {Array<Array<number>>}
  */
-const sizeRenderNodes = (renderNodes, nullable) => {
+const renderNodesBoundingBox = (renderNodes, nullable) => {
     const topLeft = [Infinity, Infinity];
     const bottomRight = [-Infinity, -Infinity];
     forEach(renderNodes, (renderNode) => {
@@ -47,10 +47,10 @@ const sizeRenderNodes = (renderNodes, nullable) => {
  * @param {RenderBlock} renderBlock - specifies the render block
  * @returns {Array<number>}
  */
-const sizeRenderBlock = (renderBlock) => {
+const renderBlockPreferredSize = (renderBlock) => {
     const widerOutput = maxBy(renderBlock.renderOutputPoints, renderPoint => renderPoint.size[0]);
     const widerInput = maxBy(renderBlock.renderInputPoints, renderPoint => renderPoint.size[0]);
-    const nameWidth = sizeText(renderBlock.name)[0];
+    const nameWidth = textBoundingBox(renderBlock.name)[0];
     const outputWidth = typeof widerOutput === "undefined" ? 0 : widerOutput.size[0];
     const inputWidth = typeof widerInput === "undefined" ? 0 : widerInput.size[0];
     const maxPoints = renderBlock.renderOutputPoints.length > renderBlock.renderInputPoints ?
@@ -68,16 +68,16 @@ const sizeRenderBlock = (renderBlock) => {
  * @param {RenderGroup} renderGroup - specifies the render group
  * @returns {Array<number>}
  */
-const sizeRenderGroup = (renderGroup) => {
+const renderGroupPreferredSize = (renderGroup) => {
     const size = [0, 0];
-    const contentBoundingBox = sizeRenderNodes(renderGroup.renderBlocks, true);
+    const contentBoundingBox = renderNodesBoundingBox(renderGroup.renderBlocks, true);
     if (contentBoundingBox !== null) {
         size[0] = contentBoundingBox[1][0] - contentBoundingBox[0][0] + renderGroup.renderer.config.group.padding * 2;
         size[1] = contentBoundingBox[1][1] - contentBoundingBox[0][1] + renderGroup.renderer.config.group.padding * 2 + renderGroup.renderer.config.group.header;
     }
     size[0] = Math.max(size[0], renderGroup.renderer.config.group.minSize[0] + renderGroup.renderer.config.group.padding * 2);
     size[1] = Math.max(size[1], renderGroup.renderer.config.group.minSize[1] + renderGroup.renderer.config.group.padding * 2 + renderGroup.renderer.config.group.header);
-    size[0] = Math.max(size[0], sizeText(renderGroup.name)[0] + renderGroup.renderer.config.group.padding * 2);
+    size[0] = Math.max(size[0], textBoundingBox(renderGroup.name)[0] + renderGroup.renderer.config.group.padding * 2);
     return size;
 };
 
@@ -86,10 +86,10 @@ const sizeRenderGroup = (renderGroup) => {
  * @param {RenderPoint} renderPoint - specifies the render group
  * @returns {Array<number>}
  */
-const sizeRenderPoint = (renderPoint) => {
-    const textBoundingBox = sizeText(renderPoint.point.pointName);
+const renderPointPreferredSize = (renderPoint) => {
+    const pointNameBoundingBox = textBoundingBox(renderPoint.point.pointName);
     return [
-        textBoundingBox[0] + renderPoint.renderBlock.renderer.config.point.padding * 2,
+        pointNameBoundingBox[0] + renderPoint.renderBlock.renderer.config.point.padding * 2,
         renderPoint.renderBlock.renderer.config.point.height
     ];
 };
@@ -99,8 +99,8 @@ const sizeRenderPoint = (renderPoint) => {
  * @param {RenderGroup} renderGroup - specifies the render group
  * @returns {Array<number>}
  */
-const positionRenderGroup = (renderGroup) => {
-    const contentBoundingBox = sizeRenderNodes(renderGroup.renderBlocks, true);
+const renderGroupPreferredPosition = (renderGroup) => {
+    const contentBoundingBox = renderNodesBoundingBox(renderGroup.renderBlocks, true);
     if (contentBoundingBox !== null) {
         return [
             contentBoundingBox[0][0] - renderGroup.renderer.config.group.padding,
@@ -111,11 +111,11 @@ const positionRenderGroup = (renderGroup) => {
 };
 
 /**
- * Returns the preferred size of the specified render point
+ * Returns the preferred position of the specified render point
  * @param {RenderPoint} renderPoint - specifies the render point
  * @returns {Array<number>}
  */
-const positionRenderPoint = (renderPoint) => {
+const renderPointPreferredPosition = (renderPoint) => {
     if (renderPoint.point.pointOutput) {
         const index = renderPoint.renderBlock.renderOutputPoints.indexOf(renderPoint);
         return [
@@ -131,6 +131,37 @@ const positionRenderPoint = (renderPoint) => {
     }
 };
 
-export {sizeText, sizeRenderNodes};
-export {sizeRenderBlock, sizeRenderGroup, sizeRenderPoint};
-export {positionRenderGroup, positionRenderPoint};
+/**
+ * Returns the preferred path of the specified render connection for the specified d3 line
+ * @param {RenderConnection} renderConnection - specifies the render connection
+ * @param {function} line - specifies the d3 line
+ * @returns {string}
+ */
+const renderConnectionPreferredPath = (renderConnection, line) => {
+    const outputRenderPoint = renderConnection.outputRenderPoint;
+    const inputRenderPoint = renderConnection.inputRenderPoint;
+    let step = renderConnection.renderer.config.connection.step;
+    if (outputRenderPoint.absolutePosition[0] > inputRenderPoint.absolutePosition[0]) {
+        step += Math.max(
+            -renderConnection.renderer.config.connection.step,
+            Math.min(
+                outputRenderPoint.absolutePosition[0] - inputRenderPoint.absolutePosition[0],
+                renderConnection.renderer.config.connection.step
+            )
+        );
+    }
+    const outputRenderPointPosition = outputRenderPoint.absolutePosition;
+    const inputRenderPointPosition = inputRenderPoint.absolutePosition;
+    const connectionPoints = [
+        [outputRenderPointPosition[0], outputRenderPointPosition[1]],
+        [outputRenderPointPosition[0] + step, outputRenderPointPosition[1]],
+        [inputRenderPointPosition[0] - step, inputRenderPointPosition[1]],
+        [inputRenderPointPosition[0], inputRenderPointPosition[1]]
+    ];
+    return line(connectionPoints);
+};
+
+export {textBoundingBox, renderNodesBoundingBox};
+export {renderBlockPreferredSize, renderGroupPreferredSize, renderPointPreferredSize};
+export {renderGroupPreferredPosition, renderPointPreferredPosition};
+export {renderConnectionPreferredPath};

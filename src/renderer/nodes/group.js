@@ -2,7 +2,7 @@ import pull from "lodash-es/pull";
 import includes from "lodash-es/includes";
 
 import RenderNode from "./node";
-import {sizeRenderGroup, positionRenderGroup} from "../utils/measure";
+import {renderGroupPreferredSize, renderGroupPreferredPosition} from "../utils/measure";
 
 const _renderBlocks = Symbol("renderBlocks");
 const _svgRect = Symbol("svgRect");
@@ -82,7 +82,7 @@ export default class RenderGroup extends RenderNode {
      * @override
      */
     updateSize() {
-        this.size = sizeRenderGroup(this);
+        this.size = renderGroupPreferredSize(this);
 
         this[_svgRect].attr("width", this.size[0]);
         this[_svgRect].attr("height", this.size[1]);
@@ -95,7 +95,7 @@ export default class RenderGroup extends RenderNode {
      * @override
      */
     updatePosition() {
-        this.position = positionRenderGroup(this);
+        this.position = renderGroupPreferredPosition(this);
 
         this.element.attr("transform", "translate(" + this.position + ")");
     }

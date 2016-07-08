@@ -2,11 +2,12 @@ import pull from "lodash-es/pull";
 import some from "lodash-es/some";
 import clone from "lodash-es/clone";
 import filter from "lodash-es/filter";
+import forEach from "lodash-es/forEach";
 import includes from "lodash-es/includes";
 import {event, drag} from "d3";
 
 import RenderNode from "./node";
-import {sizeRenderBlock} from "../utils/measure";
+import {renderBlockPreferredSize} from "../utils/measure";
 
 const _block = Symbol("block");
 const _parent = Symbol("parent");
@@ -144,7 +145,7 @@ export default class RenderBlock extends RenderNode {
      * @override
      */
     updateSize() {
-        this.size = sizeRenderBlock(this);
+        this.size = renderBlockPreferredSize(this);
 
         this[_svgRect].attr("width", this.size[0]);
         this[_svgRect].attr("height", this.size[1]);
@@ -170,6 +171,11 @@ export default class RenderBlock extends RenderNode {
                 this.parent.updateSize();
                 this.parent.updatePosition();
             }
+            forEach(this.renderPoints,
+                rp => forEach(rp.renderConnections,
+                    rc => rc.updatePosition()
+                )
+            );
         });
         this[_behaviorDrag].on("end", () => {
             // TODO: check is a render group can accept this render block

@@ -128,8 +128,46 @@ export default class Commander {
         this.commit();
     }
 
-    addRenderConnection(renderOutputPoint, renderInputPoint) {}
-    removeRenderConnection(renderConnection) {}
+    /**
+     * @see {Renderer.connect}
+     * @param {RenderPoint} outputRenderPoint - @see {Renderer.connect}
+     * @param {RenderPoint} inputRenderPoint - @see {Renderer.connect}
+     */
+    connectRenderPoints(outputRenderPoint, inputRenderPoint) {
+        this.command(
+            () => {
+                let renderConnection = this[_renderer].connect(outputRenderPoint, inputRenderPoint);
+                outputRenderPoint.updateData();
+                inputRenderPoint.updateData();
+                renderConnection.updatePosition();
+            },
+            () => {
+                this[_renderer].disconnect(outputRenderPoint, inputRenderPoint);
+                outputRenderPoint.updateData();
+                inputRenderPoint.updateData();
+            }
+        );
+    }
+    /**
+     * @see {Renderer.disconnect}
+     * @param {RenderPoint} outputRenderPoint - @see {Renderer.disconnect}
+     * @param {RenderPoint} inputRenderPoint - @see {Renderer.disconnect}
+     */
+    disconnectRenderPoints(outputRenderPoint, inputRenderPoint) {
+        this.command(
+            () => {
+                this[_renderer].disconnect(outputRenderPoint, inputRenderPoint);
+                outputRenderPoint.updateData();
+                inputRenderPoint.updateData();
+            },
+            () => {
+                let renderConnection = this[_renderer].connect(outputRenderPoint, inputRenderPoint);
+                outputRenderPoint.updateData();
+                inputRenderPoint.updateData();
+                renderConnection.updatePosition();
+            }
+        );
+    }
 
     /**
      * @see {RenderBlock.addRenderPoint}

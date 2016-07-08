@@ -1,8 +1,13 @@
+import {line as Line, curveBasis as lineCurve} from "d3";
+
+import {renderConnectionPreferredPath} from "../utils/measure";
+
 const _renderer = Symbol("renderer");
 const _element = Symbol("element");
 const _connection = Symbol("connection");
 const _outputRenderPoint = Symbol("outputRenderPoint");
 const _inputRenderPoint = Symbol("inputRenderPoint");
+const _d3Line = Symbol("d3Line");
 
 export default class RenderConnection {
 
@@ -18,6 +23,7 @@ export default class RenderConnection {
         this[_connection] = connection;
         this[_outputRenderPoint] = outputRenderPoint;
         this[_inputRenderPoint] = inputRenderPoint;
+        this[_d3Line] = new Line().curve(lineCurve);
         if (connection.connectionOutputPoint !== outputRenderPoint.point) {
             throw new Error("`" + connection.fancyName + "` is not connected to `" + outputRenderPoint.point.fancyName + "`");
         }
@@ -75,5 +81,15 @@ export default class RenderConnection {
      * Called when this render connection is removed
      */
     removed() {}
+
+    /**
+     * Called when this render connection position changed and should update its element
+     */
+    updatePosition() {
+        var inputColor = this.renderer.config.typeColors[this.inputRenderPoint.point.pointValueType];
+        var outputColor = this.renderer.config.typeColors[this.outputRenderPoint.point.pointValueType];
+        this.element.attr("d", renderConnectionPreferredPath(this, this[_d3Line]));
+        this.element.attr("stroke", inputColor || outputColor || this.renderer.config.typeColors.default);
+    }
 
 }

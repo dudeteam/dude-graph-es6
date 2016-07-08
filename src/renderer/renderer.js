@@ -18,11 +18,11 @@ const _renderBlocks = Symbol("renderBlocks");
 const _renderConnections = Symbol("renderConnections");
 const _renderGroupIds = Symbol("renderGroupIds");
 const _renderBlockIds = Symbol("renderBlockIds");
-const _d3Svg = Symbol("d3Svg");
-const _d3Root = Symbol("d3Root");
-const _d3Groups = Symbol("d3Groups");
-const _d3Connections = Symbol("d3Connections");
-const _d3Blocks = Symbol("d3Blocks");
+const _svg = Symbol("d3Svg");
+const _svgRoot = Symbol("d3Root");
+const _svgGroups = Symbol("d3Groups");
+const _svgConnections = Symbol("d3Connections");
+const _svgBlocks = Symbol("d3Blocks");
 const _behaviorZoom = Symbol("zoomDrag");
 
 export default class Renderer extends EventClass {
@@ -43,11 +43,11 @@ export default class Renderer extends EventClass {
         this[_renderConnections] = [];
         this[_renderGroupIds] = {};
         this[_renderBlockIds] = {};
-        this[_d3Svg] = select(svg);
-        this[_d3Root] = this[_d3Svg].append("svg:g");
-        this[_d3Groups] = this[_d3Root].append("svg:g").classed("dude-graph-groups", true);
-        this[_d3Connections] = this[_d3Root].append("svg:g").classed("dude-graph-connections", true);
-        this[_d3Blocks] = this[_d3Root].append("svg:g").classed("dude-graph-blocks", true);
+        this[_svg] = select(svg);
+        this[_svgRoot] = this[_svg].append("svg:g");
+        this[_svgGroups] = this[_svgRoot].append("svg:g").classed("dude-graph-groups", true);
+        this[_svgConnections] = this[_svgRoot].append("svg:g").classed("dude-graph-connections", true);
+        this[_svgBlocks] = this[_svgRoot].append("svg:g").classed("dude-graph-blocks", true);
         this[_behaviorZoom] = zoom();
         this._behaviorZoom();
     }
@@ -91,7 +91,7 @@ export default class Renderer extends EventClass {
         this[_renderBlocks].push(renderBlock);
         this[_renderBlockIds][renderBlock.id] = renderBlock;
         renderBlock.renderer = this;
-        renderBlock.element = this[_d3Blocks].append("svg:g").datum(renderBlock);
+        renderBlock.element = this[_svgBlocks].append("svg:g").datum(renderBlock);
         renderBlock.element.attr("id", "bid-" + renderBlock.id);
         renderBlock.element.attr("class", "dude-graph-block");
         renderBlock.added();
@@ -143,7 +143,7 @@ export default class Renderer extends EventClass {
         renderGroup.renderer = this;
         this[_renderGroups].push(renderGroup);
         this[_renderGroupIds][renderGroup.id] = renderGroup;
-        renderGroup.element = this[_d3Groups].append("svg:g").datum(renderGroup);
+        renderGroup.element = this[_svgGroups].append("svg:g").datum(renderGroup);
         renderGroup.element.attr("id", "gid-" + renderGroup.id);
         renderGroup.element.attr("class", "dude-graph-group");
         renderGroup.added();
@@ -181,10 +181,12 @@ export default class Renderer extends EventClass {
      */
     connect(outputRenderPoint, inputRenderPoint) {
         if (outputRenderPoint.renderBlock === null) {
-            throw new Error("`" + outputRenderPoint.fancyName + "` cannot connect to another render point when not bound to a render block");
+            throw new Error("`" + outputRenderPoint.fancyName +
+                "` cannot connect to another render point when not bound to a render block");
         }
         if (inputRenderPoint.renderBlock === null) {
-            throw new Error("`" + inputRenderPoint.fancyName + "` cannot connect to another render point when not bound to a render block");
+            throw new Error("`" + inputRenderPoint.fancyName +
+                "` cannot connect to another render point when not bound to a render block");
         }
         if (outputRenderPoint.renderBlock.renderer !== this) {
             throw new Error("`" + outputRenderPoint.fancyName + "` is not in this renderer");
@@ -200,7 +202,8 @@ export default class Renderer extends EventClass {
         }
         let connection = this[_graph].connectionForPoints(outputRenderPoint.point, inputRenderPoint.point);
         if (connection === null) {
-            throw new Error("`" + outputRenderPoint.point.fancyName + "` is not connected to `" + inputRenderPoint.point.fancyName  + "`");
+            throw new Error("`" + outputRenderPoint.point.fancyName +
+                "` is not connected to `" + inputRenderPoint.point.fancyName  + "`");
         }
         let renderConnectionFound = this.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint);
         if (renderConnectionFound !== null) {
@@ -210,7 +213,8 @@ export default class Renderer extends EventClass {
         this[_renderConnections].push(renderConnection);
         outputRenderPoint.addRenderConnection(renderConnection);
         inputRenderPoint.addRenderConnection(renderConnection);
-        renderConnection.element = this[_d3Connections].append("svg:path");
+        renderConnection.renderer = this;
+        renderConnection.element = this[_svgConnections].append("svg:path").attr("class", "dude-graph-connection");
         renderConnection.added();
         this.emit("connect", renderConnection);
         return renderConnection;
@@ -222,10 +226,12 @@ export default class Renderer extends EventClass {
      */
     disconnect(outputRenderPoint, inputRenderPoint) {
         if (outputRenderPoint.renderBlock === null) {
-            throw new Error("`" + outputRenderPoint.fancyName + "` cannot connect to another render point when not bound to a render block");
+            throw new Error("`" + outputRenderPoint.fancyName +
+                "` cannot connect to another render point when not bound to a render block");
         }
         if (inputRenderPoint.renderBlock === null) {
-            throw new Error("`" + inputRenderPoint.fancyName + "` cannot connect to another render point when not bound to a render block");
+            throw new Error("`" + inputRenderPoint.fancyName +
+                "` cannot connect to another render point when not bound to a render block");
         }
         if (outputRenderPoint.renderBlock.renderer !== this) {
             throw new Error("`" + outputRenderPoint.fancyName + "` is not in this renderer");
@@ -249,6 +255,7 @@ export default class Renderer extends EventClass {
         pull(this[_renderConnections], renderConnection);
         renderConnection.removed();
         renderConnection.element.remove();
+        renderConnection.renderer = null;
         this.emit("disconnect", renderConnection);
     }
     /**
@@ -271,7 +278,7 @@ export default class Renderer extends EventClass {
     zoom(zoom, pan) {
         this[_zoom].zoom = zoom;
         this[_zoom].pan = pan;
-        this[_d3Root].attr("transform", "translate(" + pan + ")scale(" + zoom + ")");
+        this[_svgRoot].attr("transform", "translate(" + pan + ")scale(" + zoom + ")");
     }
     /**
      * Handles the renderer zoom
@@ -279,7 +286,7 @@ export default class Renderer extends EventClass {
      */
     _behaviorZoom() {
         let oldZoom = {"zoom": 1, "pan": [0, 0]};
-        this[_d3Svg].call(this[_behaviorZoom]);
+        this[_svg].call(this[_behaviorZoom]);
         this[_behaviorZoom].scaleExtent(this[_config].zoom.scaleExtent);
         this[_behaviorZoom].on("start", () => {
             oldZoom = clone(this[_zoom]);

@@ -1,7 +1,7 @@
 import pull from "lodash-es/pull";
 
-import {sizeRenderPoint} from "../utils/measure";
-import {positionRenderPoint} from "../utils/measure";
+import {renderPointPreferredSize} from "../utils/measure";
+import {renderPointPreferredPosition} from "../utils/measure";
 
 let _point = Symbol("point");
 let _renderBlock = Symbol("renderBlock");
@@ -83,6 +83,16 @@ export default class RenderPoint {
      */
     set position(position) { this[_position] = position; }
     /**
+     * Returns this render point absolute position
+     * @returns {Array<number>}
+     */
+    get absolutePosition() {
+        return [
+            this.renderBlock.position[0] + this.position[0],
+            this.renderBlock.position[1] + this.position[1]
+        ];
+    }
+    /**
      * Returns whether this render point is empty
      * @returns {boolean}
      */
@@ -145,7 +155,7 @@ export default class RenderPoint {
      * Called when this render point position changed and should update its element
      */
     updatePosition() {
-        this.position = positionRenderPoint(this);
+        this.position = renderPointPreferredPosition(this);
 
         this.element.attr("transform", "translate(" + this.position + ")");
     }
@@ -153,7 +163,7 @@ export default class RenderPoint {
      * Called when this render point size changed and should update its element
      */
     updateSize() {
-        this.size = sizeRenderPoint(this);
+        this.size = renderPointPreferredSize(this);
     }
 
     /**
