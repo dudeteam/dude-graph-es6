@@ -107,7 +107,7 @@ const renderGroupPreferredPosition = (renderGroup) => {
             contentBoundingBox[0][1] - renderGroup.renderer.config.group.padding - renderGroup.renderer.config.group.header
         ];
     }
-    return [0, 0];
+    return renderGroup.position;
 };
 
 /**

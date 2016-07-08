@@ -8,6 +8,7 @@ import EventClass from "event-class-es6";
 
 import uuid from "../graph/utils/uuid";
 import config from "./defaults/config";
+import RenderNodeFinder from "./nodes/finder";
 import RenderConnection from "./nodes/connection";
 
 const _graph = Symbol("graph");
@@ -18,6 +19,7 @@ const _renderBlocks = Symbol("renderBlocks");
 const _renderConnections = Symbol("renderConnections");
 const _renderGroupIds = Symbol("renderGroupIds");
 const _renderBlockIds = Symbol("renderBlockIds");
+const _renderNodeFinder = Symbol("renderNodeFinder");
 const _svg = Symbol("d3Svg");
 const _svgRoot = Symbol("d3Root");
 const _svgGroups = Symbol("d3Groups");
@@ -43,6 +45,7 @@ export default class Renderer extends EventClass {
         this[_renderConnections] = [];
         this[_renderGroupIds] = {};
         this[_renderBlockIds] = {};
+        this[_renderNodeFinder] = new RenderNodeFinder(this);
         this[_svg] = select(svg);
         this[_svgRoot] = this[_svg].append("svg:g");
         this[_svgGroups] = this[_svgRoot].append("svg:g").classed("dude-graph-groups", true);
@@ -83,6 +86,11 @@ export default class Renderer extends EventClass {
      * @returns {Array<RenderConnection>}
      */
     get renderConnections() { return this[_renderConnections]; }
+    /**
+     * Returns this renderer render node finder
+     * @returns {RenderNodeFinder}
+     */
+    get renderNodeFinder() { return this[_renderNodeFinder]; }
     /**
      * Returns this renderer current zoom and pan
      * @returns {{zoom: number, pan: Array<number>}}
@@ -215,16 +223,16 @@ export default class Renderer extends EventClass {
         if (inputRenderPoint.point.pointOutput) {
             throw new Error("`" + inputRenderPoint.fancyName + "` is not an input");
         }
-        let connection = this[_graph].connectionForPoints(outputRenderPoint.point, inputRenderPoint.point);
+        const connection = this[_graph].connectionForPoints(outputRenderPoint.point, inputRenderPoint.point);
         if (connection === null) {
             throw new Error("`" + outputRenderPoint.point.fancyName +
                 "` is not connected to `" + inputRenderPoint.point.fancyName  + "`");
         }
-        let renderConnectionFound = this.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint);
+        const renderConnectionFound = this.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint);
         if (renderConnectionFound !== null) {
             throw new Error("Cannot redefine `" + renderConnectionFound.fancyName + "`");
         }
-        let renderConnection = new RenderConnection(connection, outputRenderPoint, inputRenderPoint);
+        const renderConnection = new RenderConnection(connection, outputRenderPoint, inputRenderPoint);
         this[_renderConnections].push(renderConnection);
         outputRenderPoint.addRenderConnection(renderConnection);
         inputRenderPoint.addRenderConnection(renderConnection);
@@ -260,7 +268,7 @@ export default class Renderer extends EventClass {
         if (inputRenderPoint.point.pointOutput) {
             throw new Error("`" + inputRenderPoint.fancyName + "` is not an input");
         }
-        let renderConnection = this.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint);
+        const renderConnection = this.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint);
         if (renderConnection === null) {
             throw new Error("`" + this.fancyName + "` cannot find a render connection between `" +
                 outputRenderPoint.fancyName + "` and `" + inputRenderPoint.fancyName + "`");

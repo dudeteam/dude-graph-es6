@@ -136,7 +136,7 @@ export default class Commander {
     connectRenderPoints(outputRenderPoint, inputRenderPoint) {
         this.command(
             () => {
-                let renderConnection = this[_renderer].connect(outputRenderPoint, inputRenderPoint);
+                const renderConnection = this[_renderer].connect(outputRenderPoint, inputRenderPoint);
                 outputRenderPoint.updateData();
                 inputRenderPoint.updateData();
                 renderConnection.updatePosition();
@@ -161,7 +161,7 @@ export default class Commander {
                 inputRenderPoint.updateData();
             },
             () => {
-                let renderConnection = this[_renderer].connect(outputRenderPoint, inputRenderPoint);
+                const renderConnection = this[_renderer].connect(outputRenderPoint, inputRenderPoint);
                 outputRenderPoint.updateData();
                 inputRenderPoint.updateData();
                 renderConnection.updatePosition();

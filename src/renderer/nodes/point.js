@@ -3,14 +3,14 @@ import pull from "lodash-es/pull";
 import {renderPointPreferredSize} from "../utils/measure";
 import {renderPointPreferredPosition} from "../utils/measure";
 
-let _point = Symbol("point");
-let _renderBlock = Symbol("renderBlock");
-let _renderConnections = Symbol("renderConnections");
-let _element = Symbol("element");
-let _size = Symbol("size");
-let _position = Symbol("position");
-let _svgCircle = Symbol("svgCircle");
-let _svgName = Symbol("svgName");
+const _point = Symbol("point");
+const _renderBlock = Symbol("renderBlock");
+const _renderConnections = Symbol("renderConnections");
+const _element = Symbol("element");
+const _size = Symbol("size");
+const _position = Symbol("position");
+const _svgCircle = Symbol("svgCircle");
+const _svgName = Symbol("svgName");
 
 export default class RenderPoint {
 
@@ -146,7 +146,7 @@ export default class RenderPoint {
      * Called when this render point data changed and should update its element
      */
     updateData() {
-        let pointColor = this.renderBlock.renderer.config.typeColors[this.point.pointValueType] || this.renderBlock.renderer.config.typeColors.default;
+        const pointColor = this.renderBlock.renderer.config.typeColors[this.point.pointValueType] || this.renderBlock.renderer.config.typeColors.default;
         this[_svgCircle].attr("stroke", pointColor);
         this[_svgCircle].attr("fill", this.empty ? "transparent" : pointColor);
         this[_svgName].text(this.point.pointName);
