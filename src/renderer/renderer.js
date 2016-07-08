@@ -92,6 +92,26 @@ export default class Renderer extends EventClass {
      */
     get renderNodeFinder() { return this[_renderNodeFinder]; }
     /**
+     * Returns this renderer connections layer
+     * @returns {select}
+     */
+    get svgRoot() {return this[_svgRoot]; }
+    /**
+     * Returns this renderer connections layer
+     * @returns {select}
+     */
+    get svgGroups() {return this[_svgGroups]; }
+    /**
+     * Returns this renderer connections layer
+     * @returns {select}
+     */
+    get svgBlocks() {return this[_svgBlocks]; }
+    /**
+     * Returns this renderer connections layer
+     * @returns {select}
+     */
+    get svgConnections() {return this[_svgConnections]; }
+    /**
      * Returns this renderer current zoom and pan
      * @returns {{zoom: number, pan: Array<number>}}
      */

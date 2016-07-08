@@ -3,6 +3,9 @@ import sumBy from "lodash-es/sumBy";
 import isEqual from "lodash-es/isEqual";
 import forEach from "lodash-es/forEach";
 import {selection} from "d3";
+import {line as Line, curveBasis as lineCurve} from "d3";
+
+const renderConnectionLine = new Line().curve(lineCurve);
 
 /**
  * Returns the bounding box of the specified text
@@ -132,33 +135,25 @@ const renderPointPreferredPosition = (renderPoint) => {
 };
 
 /**
- * Returns the preferred path of the specified render connection for the specified d3 line
- * @param {RenderConnection} renderConnection - specifies the render connection
- * @param {function} line - specifies the d3 line
+ * Returns the preferred path between the specified output position and the specified input position
+ * @param {Renderer} renderer - specifies the renderer
+ * @param {Array<number>} outputPosition - specifies the output position
+ * @param {Array<number>} inputPosition - specifies the input position
  * @returns {string}
  */
-const renderConnectionPreferredPath = (renderConnection, line) => {
-    const outputRenderPoint = renderConnection.outputRenderPoint;
-    const inputRenderPoint = renderConnection.inputRenderPoint;
-    let step = renderConnection.renderer.config.connection.step;
-    if (outputRenderPoint.absolutePosition[0] > inputRenderPoint.absolutePosition[0]) {
-        step += Math.max(
-            -renderConnection.renderer.config.connection.step,
-            Math.min(
-                outputRenderPoint.absolutePosition[0] - inputRenderPoint.absolutePosition[0],
-                renderConnection.renderer.config.connection.step
-            )
-        );
+const renderConnectionPreferredPath = (renderer, outputPosition, inputPosition) => {
+    let step = renderer.config.connection.step;
+    if (outputPosition[0] > inputPosition[0]) {
+        step += Math.max(-renderer.config.connection.step,
+            Math.min(outputPosition[0] - inputPosition[0], renderer.config.connection.step));
     }
-    const outputRenderPointPosition = outputRenderPoint.absolutePosition;
-    const inputRenderPointPosition = inputRenderPoint.absolutePosition;
     const connectionPoints = [
-        [outputRenderPointPosition[0], outputRenderPointPosition[1]],
-        [outputRenderPointPosition[0] + step, outputRenderPointPosition[1]],
-        [inputRenderPointPosition[0] - step, inputRenderPointPosition[1]],
-        [inputRenderPointPosition[0], inputRenderPointPosition[1]]
+        [outputPosition[0], outputPosition[1]],
+        [outputPosition[0] + step, outputPosition[1]],
+        [inputPosition[0] - step, inputPosition[1]],
+        [inputPosition[0], inputPosition[1]]
     ];
-    return line(connectionPoints);
+    return renderConnectionLine(connectionPoints);
 };
 
 export {textBoundingBox, renderNodesBoundingBox};

@@ -122,7 +122,7 @@ export default class RenderBlock extends RenderNode {
         this[_svgName].attr("text-anchor", "middle");
         this[_svgName].attr("dominant-baseline", "text-before-edge");
 
-        this.handleDrag();
+        this._handleDrag();
     }
 
     /**
@@ -156,8 +156,9 @@ export default class RenderBlock extends RenderNode {
 
     /**
      * Handles drag
+     * @private
      */
-    handleDrag() {
+    _handleDrag() {
         let oldPosition = [0, 0];
         this.element.call(this[_behaviorDrag]);
         this[_behaviorDrag].on("start", () => {

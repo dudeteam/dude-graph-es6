@@ -1,7 +1,9 @@
 import pull from "lodash-es/pull";
+import {drag, mouse} from "d3";
 
 import {renderPointPreferredSize} from "../utils/measure";
 import {renderPointPreferredPosition} from "../utils/measure";
+import {renderConnectionPreferredPath} from "../utils/measure";
 
 const _point = Symbol("point");
 const _renderBlock = Symbol("renderBlock");
@@ -11,6 +13,7 @@ const _size = Symbol("size");
 const _position = Symbol("position");
 const _svgCircle = Symbol("svgCircle");
 const _svgName = Symbol("svgName");
+const _behaviorDrag = Symbol("behaviorDrag");
 
 export default class RenderPoint {
 
@@ -25,6 +28,7 @@ export default class RenderPoint {
         this[_element] = null;
         this[_size] = [0, 0];
         this[_position] = [0, 0];
+        this[_behaviorDrag] = drag();
     }
 
     /**
@@ -128,6 +132,8 @@ export default class RenderPoint {
         this[_svgName].attr("text-anchor", this.point.pointOutput ? "end" : "start");
         this[_svgName].attr("dominant-baseline", "middle");
         this[_svgName].attr("x", (this.point.pointOutput ? -1 : 1) * this.renderBlock.renderer.config.point.padding);
+
+        this._handleDrag();
     }
     /**
      * Called when this render point is removed
@@ -176,5 +182,33 @@ export default class RenderPoint {
      * @abstract
      */
     disconnected() {}
+
+    /**
+     * Handles drag
+     * @private
+     */
+    _handleDrag() {
+        this.element.call(this[_behaviorDrag]);
+        let path = null;
+        this[_behaviorDrag].on("start", () => {
+            const color = this[_renderBlock].renderer.config.typeColors[this[_point].pointValueType];
+            path = this[_renderBlock].renderer.svgConnections.append("svg:path").attr("class", "dude-graph-connection dude-graph-connection-drag");
+            path.attr("stroke", color || this[_renderBlock].renderer.config.typeColors.default);
+            path.attr("stroke-linecap", "round");
+            path.attr("stroke-dasharray", "5,5");
+        });
+        this[_behaviorDrag].on("drag", () => {
+            const position = mouse(this[_renderBlock].renderer.svgRoot.node());
+            if (this[_point].pointOutput) {
+                path.attr("d", renderConnectionPreferredPath(this[_renderBlock].renderer, this.absolutePosition, position));
+            } else {
+                path.attr("d", renderConnectionPreferredPath(this[_renderBlock].renderer, position, this.absolutePosition));
+            }
+        });
+        this[_behaviorDrag].on("end", () => {
+            path.remove();
+            path = null;
+        });
+    }
 
 }
