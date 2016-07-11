@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/dudeteam/dude-graph-es6#readme",
   "dependencies": {
-    "d3": "^4.1.1",
+    "d3": "^4.0.0",
     "event-class-es6": "^1.0.3",
     "lodash-es": "^4.13.1"
   },
@@ -42,13 +42,13 @@
     "gulp-notify": "^2.2.0",
     "gulp-plumber": "^1.1.0",
     "gulp-rename": "^1.2.2",
-    "gulp-rollup": "^2.2.0",
+    "gulp-rollup": "^1.9.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-uglify": "^1.5.4",
-    "jsdom": "^9.4.1",
+    "jsdom": "^9.2.1",
     "jsdom-global": "^2.0.0",
     "mocha": "^2.5.3",
-    "rollup": "^0.34.1",
+    "rollup": "^0.31.2",
     "rollup-plugin-babel": "^2.5.1",
     "rollup-plugin-node-resolve": "^1.7.0",
     "sinon": "^1.17.4"
