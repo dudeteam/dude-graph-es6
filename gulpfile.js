@@ -1,10 +1,11 @@
 const gulp = require("gulp");
+const babel = require("rollup-plugin-babel");
 const rollup = require("gulp-rollup");
 const eslint = require("gulp-eslint");
+const uglify = require("gulp-uglify");
 const notify = require("gulp-notify");
 const plumber = require("gulp-plumber");
 const sourcemaps = require("gulp-sourcemaps");
-const babel = require("rollup-plugin-babel");
 const nodeResolve = require("rollup-plugin-node-resolve");
 
 const sources = ["src/*.js", "src/**/*.js"];
@@ -44,6 +45,7 @@ gulp.task("build", ["lint"], () => {
                 "allowReserved": true
             }
         }))
+        .pipe(uglify())
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest("dist/"));
 });
