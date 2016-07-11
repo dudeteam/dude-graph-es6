@@ -1,9 +1,11 @@
+import {quadtree} from "d3";
+
 const _renderer = Symbol("renderer");
 
 export default class RenderNodeFinder {
 
     /**
-     * Creates an optimized finder of nodes in the specified renderer
+     * Creates an optimized finder of nodes for the specified renderer
      * @param {Renderer} renderer - specifies the renderer
      */
     constructor(renderer) {
@@ -11,12 +13,17 @@ export default class RenderNodeFinder {
     }
 
     /**
-     * Returns the best renderGroup capable of containing the specified renderBlock
-     * @param {RenderBlock} renderBlock - specifies the render block
-     * @returns {RenderGroup|null}
+     * Returns the nearest render point of the specified position
+     * @param {Array<number>} position - specifies the position
+     * @returns {RenderPoint|null}
      */
-    nearestRenderGroup(renderBlock) {
-        return this && renderBlock ? null : null;
+    nearestRenderPoint(position) {
+        const tree = quadtree(this[_renderer].renderPoints, rp => rp.absolutePosition[0], rp => rp.absolutePosition[1]);
+        const renderPoint = tree.find(position[0], position[1], this[_renderer].config.point.height);
+        if (typeof renderPoint !== "undefined") {
+            return renderPoint;
+        }
+        return null;
     }
 
 }

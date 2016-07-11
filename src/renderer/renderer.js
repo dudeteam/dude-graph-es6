@@ -3,6 +3,7 @@ import pull from "lodash-es/pull";
 import find from "lodash-es/find";
 import clone from "lodash-es/clone";
 import filter from "lodash-es/filter";
+import forEach from "lodash-es/forEach";
 import includes from "lodash-es/includes";
 import EventClass from "event-class-es6";
 
@@ -76,6 +77,15 @@ export default class Renderer extends EventClass {
      * @returns {Array<RenderGroup>}
      */
     get renderGroups() { return this[_renderGroups]; }
+    /**
+     * Returns this renderer render points
+     * @returns {Array<RenderPoint>}
+     */
+    get renderPoints() {
+        const renderPoints = [];
+        forEach(this[_renderBlocks], rb => forEach(rb.renderPoints, rp => renderPoints.push(rp)));
+        return renderPoints;
+    }
     /**
      * Returns this renderer render blocks
      * @returns {Array<RenderBlock>}

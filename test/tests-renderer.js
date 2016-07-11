@@ -234,7 +234,7 @@ describe("dude-renderer API", () => {
             renderer.connect(outputRenderPoint, inputRenderPoint); // already connected
         }).to.throw();
     });
-    it("should", () => {
+    it("should remove a render connections", () => {
         let svg = document.getElementById("svg");
         let graph = new Graph();
         let block1 = new Block();

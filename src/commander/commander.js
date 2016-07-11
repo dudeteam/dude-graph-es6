@@ -305,4 +305,20 @@ export default class Commander {
             }
         });
     }
+
+    /**
+     * Registers render block drag and drop undo/redo
+     */
+    registerRenderConnectionDrag() {
+        this[_renderer].on("render-connection-drop", (renderPoint, position) => {
+            const otherRenderPoint = this[_renderer].renderNodeFinder.nearestRenderPoint(position);
+            if (otherRenderPoint !== null) {
+                if (renderPoint.point.pointOutput) {
+                    this.connectRenderPoints(renderPoint, otherRenderPoint);
+                } else {
+                    this.connectRenderPoints(otherRenderPoint, renderPoint);
+                }
+            }
+        });
+    }
 }

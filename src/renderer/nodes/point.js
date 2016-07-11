@@ -206,8 +206,10 @@ export default class RenderPoint {
             }
         });
         this[_behaviorDrag].on("end", () => {
+            const position = mouse(this[_renderBlock].renderer.svgRoot.node());
             path.remove();
             path = null;
+            this[_renderBlock].renderer.emit("render-connection-drop", this, position);
         });
     }
 
