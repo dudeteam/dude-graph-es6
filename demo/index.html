@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>dude-graph</title>
+</head>
+<style>
+    html, body, svg {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    /*noinspection CssUnusedSymbol*/
+    .dude-graph-connection {
+        stroke-width: 2px;
+        fill: transparent;
+    }
+</style>
+<body>
+<svg id="renderer"></svg>
+<script src="../dist/dude-graph.js"></script>
+<script>
+    var graph = new dudeGraph.Graph();
+    var renderer = new dudeGraph.Renderer(graph, document.getElementById("renderer"));
+    var commander = new dudeGraph.Commander(renderer);
+
+    var block1 = new dudeGraph.Block();
+    var block2 = new dudeGraph.Block();
+    var output1 = new dudeGraph.Point(true, {"pointName": "out", "pointValueType": "String"});
+    var output2 = new dudeGraph.Point(true, {"pointName": "out", "pointValueType": "String"});
+    var input1 = new dudeGraph.Point(false, {"pointName": "in", "pointValueType": "String"});
+    var input2 = new dudeGraph.Point(false, {"pointName": "in", "pointValueType": "String"});
+
+    graph.addBlock(block1);
+    graph.addBlock(block2);
+    block1.addPoint(output1);
+    block1.addPoint(input1);
+    block2.addPoint(output2);
+    block2.addPoint(input2);
+
+    output1.connect(input2);
+    output2.connect(input1);
+
+    var renderBlock1 = new dudeGraph.RenderBlock(block1);
+    var outputRender1 = new dudeGraph.RenderPoint(output1);
+    var inputRender1 = new dudeGraph.RenderPoint(input1);
+    var renderBlock2 = new dudeGraph.RenderBlock(block2);
+    var outputRender2 = new dudeGraph.RenderPoint(output2);
+    var inputRender2 = new dudeGraph.RenderPoint(input2);
+    var renderGroup = new dudeGraph.RenderGroup();
+
+    renderBlock1.position = [32, 32];
+    renderBlock2.position = [256, 128];
+    renderGroup.position = [320, 320];
+
+    commander.transaction();
+    commander.addRenderBlock(renderBlock1);
+    commander.addRenderBlock(renderBlock2);
+    commander.addRenderBlockRenderPoint(renderBlock1, outputRender1);
+    commander.addRenderBlockRenderPoint(renderBlock1, inputRender1);
+    commander.addRenderBlockRenderPoint(renderBlock2, outputRender2);
+    commander.addRenderBlockRenderPoint(renderBlock2, inputRender2);
+    commander.commit();
+
+    commander.transaction();
+    commander.addRenderGroup(renderGroup);
+    commander.addRenderGroupRenderBlock(renderGroup, renderBlock1);
+    commander.addRenderGroupRenderBlock(renderGroup, renderBlock2);
+    commander.commit();
+
+    commander.transaction();
+    commander.connectRenderPoints(outputRender1, inputRender2);
+    commander.commit();
+
+    commander.registerRenderBlockDrag();
+    commander.registerRenderGroupDrag();
+    commander.registerRenderConnectionDrag();
+</script>
+</body>
+</html>

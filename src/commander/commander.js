@@ -307,6 +307,17 @@ export default class Commander {
     }
 
     /**
+     * Registers render group drag and drop undo/redo
+     */
+    registerRenderGroupDrag() {
+        this[_renderer].on("render-block-drop", (renderGroup, position, oldPosition) => {
+            if (!isEqual(position, oldPosition)) {
+                this.changeRenderNodePosition(renderGroup, position, oldPosition);
+            }
+        });
+    }
+
+    /**
      * Registers render block drag and drop undo/redo
      */
     registerRenderConnectionDrag() {

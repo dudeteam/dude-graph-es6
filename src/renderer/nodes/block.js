@@ -139,7 +139,11 @@ export default class RenderBlock extends RenderNode {
      * Called when this render block position changed and should update its element
      * @override
      */
-    updatePosition() { this.element.attr("transform", "translate(" + this.position + ")"); }
+    updatePosition() {
+        this.element.attr("transform", "translate(" + this.position + ")");
+
+        forEach(this.renderPoints, rp => forEach(rp.renderConnections, rc => rc.updatePosition()));
+    }
     /**
      * Called when this render block size changed and should update its element
      * @override
@@ -172,11 +176,6 @@ export default class RenderBlock extends RenderNode {
                 this.parent.updateSize();
                 this.parent.updatePosition();
             }
-            forEach(this.renderPoints,
-                rp => forEach(rp.renderConnections,
-                    rc => rc.updatePosition()
-                )
-            );
         });
         this[_behaviorDrag].on("end", () => {
             // TODO: check is a render group can accept this render block
