@@ -1,13 +1,12 @@
-import {event, select, zoom} from "d3";
 import pull from "lodash-es/pull";
 import find from "lodash-es/find";
-import clone from "lodash-es/clone";
 import filter from "lodash-es/filter";
 import forEach from "lodash-es/forEach";
 import includes from "lodash-es/includes";
 import EventClass from "event-class-es6";
 
 import uuid from "../graph/utils/uuid";
+import htmlw from "./utils/htmlw";
 import config from "./defaults/config";
 import RenderNodeFinder from "./nodes/finder";
 import RenderConnection from "./nodes/connection";
@@ -21,12 +20,11 @@ const _renderConnections = Symbol("renderConnections");
 const _renderGroupIds = Symbol("renderGroupIds");
 const _renderBlockIds = Symbol("renderBlockIds");
 const _renderNodeFinder = Symbol("renderNodeFinder");
-const _svg = Symbol("d3Svg");
-const _svgRoot = Symbol("d3Root");
-const _svgGroups = Symbol("d3Groups");
-const _svgConnections = Symbol("d3Connections");
-const _svgBlocks = Symbol("d3Blocks");
-const _behaviorZoom = Symbol("zoomDrag");
+const _svg = Symbol("svg");
+const _svgRoot = Symbol("svgRoot");
+const _svgGroups = Symbol("svgGroups");
+const _svgConnections = Symbol("svgConnections");
+const _svgBlocks = Symbol("svgBlocks");
 
 export default class Renderer extends EventClass {
 
@@ -47,13 +45,11 @@ export default class Renderer extends EventClass {
         this[_renderGroupIds] = {};
         this[_renderBlockIds] = {};
         this[_renderNodeFinder] = new RenderNodeFinder(this);
-        this[_svg] = select(svg);
+        this[_svg] = new htmlw(svg);
         this[_svgRoot] = this[_svg].append("svg:g");
-        this[_svgGroups] = this[_svgRoot].append("svg:g").classed("dude-graph-groups", true);
-        this[_svgConnections] = this[_svgRoot].append("svg:g").classed("dude-graph-connections", true);
-        this[_svgBlocks] = this[_svgRoot].append("svg:g").classed("dude-graph-blocks", true);
-        this[_behaviorZoom] = zoom();
-        this._behaviorZoom();
+        this[_svgGroups] = this[_svgRoot].append("svg:g").classed("dude-graph-groups");
+        this[_svgConnections] = this[_svgRoot].append("svg:g").classed("dude-graph-connections");
+        this[_svgBlocks] = this[_svgRoot].append("svg:g").classed("dude-graph-blocks");
     }
 
     /**
@@ -144,7 +140,7 @@ export default class Renderer extends EventClass {
         this[_renderBlocks].push(renderBlock);
         this[_renderBlockIds][renderBlock.id] = renderBlock;
         renderBlock.renderer = this;
-        renderBlock.element = this[_svgBlocks].append("svg:g").datum(renderBlock);
+        renderBlock.element = this[_svgBlocks].append("svg:g");
         renderBlock.element.attr("id", "bid-" + renderBlock.id);
         renderBlock.element.attr("class", "dude-graph-block");
         renderBlock.added();
@@ -196,7 +192,7 @@ export default class Renderer extends EventClass {
         renderGroup.renderer = this;
         this[_renderGroups].push(renderGroup);
         this[_renderGroupIds][renderGroup.id] = renderGroup;
-        renderGroup.element = this[_svgGroups].append("svg:g").datum(renderGroup);
+        renderGroup.element = this[_svgGroups].append("svg:g");
         renderGroup.element.attr("id", "gid-" + renderGroup.id);
         renderGroup.element.attr("class", "dude-graph-group");
         renderGroup.added();
@@ -337,19 +333,5 @@ export default class Renderer extends EventClass {
      * Handles the renderer zoom
      * @private
      */
-    _behaviorZoom() {
-        let oldZoom = {"zoom": 1, "pan": [0, 0]};
-        this[_svg].call(this[_behaviorZoom]);
-        this[_behaviorZoom].scaleExtent(this[_config].zoom.scaleExtent);
-        this[_behaviorZoom].on("start", () => {
-            oldZoom = clone(this[_zoom]);
-        });
-        this[_behaviorZoom].on("zoom", () => {
-            this.zoom(event.transform.k, [event.transform.x, event.transform.y]);
-        });
-        this[_behaviorZoom].on("end", () => {
-            this.emit("renderer-zoom-pan", this[_zoom], oldZoom);
-        });
-    }
 
 }

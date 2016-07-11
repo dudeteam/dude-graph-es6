@@ -91,8 +91,6 @@ export default class RenderGroup extends RenderNode {
 
         this[_svgName].attr("x", this.size[0] / 2);
         this[_svgName].attr("y", this.renderer.config.group.padding);
-
-        this._handleDrag();
     }
     /**
      * Called when this render group position changed and should update its element
@@ -102,29 +100,6 @@ export default class RenderGroup extends RenderNode {
         this.position = renderGroupPreferredPosition(this);
 
         this.element.attr("transform", "translate(" + this.position + ")");
-    }
-
-    /**
-     * Handles drag
-     * @private
-     */
-    _handleDrag() {
-        let oldPosition = [0, 0];
-        this.element.call(this[_behaviorDrag]);
-        this[_behaviorDrag].on("start", () => {
-            oldPosition = clone(this.position);
-        });
-        this[_behaviorDrag].on("drag", () => {
-            this[_renderBlocks].forEach((rb) => {
-                rb.position[0] += event.dx;
-                rb.position[1] += event.dy;
-                rb.updatePosition();
-            });
-            this.updatePosition();
-        });
-        this[_behaviorDrag].on("end", () => {
-            this.renderer.emit("render-group-drop", this, this.position, oldPosition);
-        });
     }
 
 }

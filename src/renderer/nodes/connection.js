@@ -45,12 +45,12 @@ export default class RenderConnection {
     set renderer(renderer) { this[_renderer] = renderer; }
     /**
      * Returns this render connection d3 element
-     * @returns {select}
+     * @returns {HTMLWrapper}
      */
     get element() { return this[_element]; }
     /**
      * Sets this render connection element to the specified d3 element
-     * @param {select} element - specifies the d3 element
+     * @param {HTMLWrapper} element - specifies the d3 element
      */
     set element(element) { this[_element] = element; }
     /**

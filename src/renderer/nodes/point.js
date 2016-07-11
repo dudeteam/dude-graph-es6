@@ -58,12 +58,12 @@ export default class RenderPoint {
     get renderConnections() { return this[_renderConnections]; }
     /**
      * Returns this render point d3 element
-     * @returns {select}
+     * @returns {HTMLWrapper}
      */
     get element() { return this[_element]; }
     /**
      * Sets this render point element to the specified d3 element
-     * @param {select} element - specifies the d3 element
+     * @param {HTMLWrapper} element - specifies the d3 element
      */
     set element(element) { this[_element] = element; }
     /**
@@ -132,8 +132,6 @@ export default class RenderPoint {
         this[_svgName].attr("text-anchor", this.point.pointOutput ? "end" : "start");
         this[_svgName].attr("dominant-baseline", "middle");
         this[_svgName].attr("x", (this.point.pointOutput ? -1 : 1) * this.renderBlock.renderer.config.point.padding);
-
-        this._handleDrag();
     }
     /**
      * Called when this render point is removed
@@ -182,35 +180,5 @@ export default class RenderPoint {
      * @abstract
      */
     disconnected() {}
-
-    /**
-     * Handles drag
-     * @private
-     */
-    _handleDrag() {
-        this.element.call(this[_behaviorDrag]);
-        let path = null;
-        this[_behaviorDrag].on("start", () => {
-            const color = this[_renderBlock].renderer.config.typeColors[this[_point].pointValueType];
-            path = this[_renderBlock].renderer.svgConnections.append("svg:path").attr("class", "dude-graph-connection dude-graph-connection-drag");
-            path.attr("stroke", color || this[_renderBlock].renderer.config.typeColors.default);
-            path.attr("stroke-linecap", "round");
-            path.attr("stroke-dasharray", "5,5");
-        });
-        this[_behaviorDrag].on("drag", () => {
-            const position = mouse(this[_renderBlock].renderer.svgRoot.node());
-            if (this[_point].pointOutput) {
-                path.attr("d", renderConnectionPreferredPath(this[_renderBlock].renderer, this.absolutePosition, position));
-            } else {
-                path.attr("d", renderConnectionPreferredPath(this[_renderBlock].renderer, position, this.absolutePosition));
-            }
-        });
-        this[_behaviorDrag].on("end", () => {
-            const position = mouse(this[_renderBlock].renderer.svgRoot.node());
-            path.remove();
-            path = null;
-            this[_renderBlock].renderer.emit("render-connection-drop", this, position);
-        });
-    }
 
 }
