@@ -30,7 +30,7 @@ export default class Commander {
     }
 
     /**
-     * Adds an command in the commander
+     * Adds a command in the commander
      * @param {function} redo - the function to make/redo the command
      * @param {function} undo - the function to undo the command
      */
@@ -54,8 +54,8 @@ export default class Commander {
     undo() {
         const undo = this[_undo].shift();
         if (typeof undo !== "undefined") {
-            undo.undo();
             this[_redo].splice(0, 0, undo);
+            undo.undo();
         }
     }
     /**
@@ -64,8 +64,8 @@ export default class Commander {
     redo() {
         const redo = this[_redo].shift();
         if (typeof redo !== "undefined") {
-            redo.redo();
             this[_undo].splice(0, 0, redo);
+            redo.redo();
         }
     }
 
