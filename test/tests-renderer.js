@@ -42,8 +42,8 @@ describe("dude-renderer API", () => {
         }).to.throw();
         expect(renderer.renderBlocksByBlock(block)).to.have.lengthOf(1);
         expect(svg.getElementsByClassName("dude-graph-blocks")[0].childElementCount).to.be.equal(1);
-        expect(svg.getElementsByClassName("dude-graph-blocks")[0].children[0]).to.be.equal(renderBlock.element.node());
-        expect(renderBlock.element.node().childElementCount).to.be.equal(3);
+        expect(svg.getElementsByClassName("dude-graph-blocks")[0].children[0]).to.be.equal(renderBlock.element.element);
+        expect(renderBlock.element.element.childElementCount).to.be.equal(3);
         expect(renderer.renderBlockById(renderBlock.id)).to.be.equal(renderBlock);
     });
     it("should remove render blocks", () => {
@@ -61,7 +61,7 @@ describe("dude-renderer API", () => {
         renderer.removeRenderBlock(renderBlock);
         expect(renderer.renderBlocksByBlock(block)).to.have.lengthOf(1);
         expect(svg.getElementsByClassName("dude-graph-blocks")[0].childElementCount).to.be.equal(1);
-        expect(svg.getElementsByClassName("dude-graph-blocks")[0].children[0]).to.be.equal(renderBlock2.element.node());
+        expect(svg.getElementsByClassName("dude-graph-blocks")[0].children[0]).to.be.equal(renderBlock2.element.element);
         expect(() => {
             renderer.removeRenderBlock(renderBlock); // cannot remove the same renderBlock twice
         }).to.throw();
@@ -85,7 +85,7 @@ describe("dude-renderer API", () => {
         expect(svg.getElementsByClassName("dude-graph-groups")[0].childElementCount).to.be.equal(0);
         renderer.addRenderGroup(renderGroup);
         expect(svg.getElementsByClassName("dude-graph-groups")[0].childElementCount).to.be.equal(1);
-        expect(renderGroup.element.node().childElementCount).to.be.equal(2);
+        expect(renderGroup.element.element.childElementCount).to.be.equal(2);
         expect(() => {
             renderer.addRenderGroup(renderGroup); // cannot add the same render group twice
         }).to.throw();
@@ -186,10 +186,10 @@ describe("dude-renderer API", () => {
         block.addPoint(point);
         renderer.addRenderBlock(renderBlock);
         expect(renderBlock.renderPoints).to.have.lengthOf(0);
-        expect(renderBlock.element.select(".dude-graph-block-points").node().childElementCount).to.be.equal(0);
+        expect(renderBlock.element.select(".dude-graph-block-points").element.childElementCount).to.be.equal(0);
         renderBlock.addRenderPoint(renderPoint);
         expect(renderBlock.renderPoints).to.have.lengthOf(1);
-        expect(renderBlock.element.select(".dude-graph-block-points").node().childElementCount).to.be.equal(1);
+        expect(renderBlock.element.select(".dude-graph-block-points").element.childElementCount).to.be.equal(1);
     });
     it("should add render connections", () => {
         let svg = document.getElementById("svg");

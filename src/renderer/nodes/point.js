@@ -1,9 +1,7 @@
 import pull from "lodash-es/pull";
-import {drag, mouse} from "d3";
 
 import {renderPointPreferredSize} from "../utils/measure";
 import {renderPointPreferredPosition} from "../utils/measure";
-import {renderConnectionPreferredPath} from "../utils/measure";
 
 const _point = Symbol("point");
 const _renderBlock = Symbol("renderBlock");
@@ -13,7 +11,6 @@ const _size = Symbol("size");
 const _position = Symbol("position");
 const _svgCircle = Symbol("svgCircle");
 const _svgName = Symbol("svgName");
-const _behaviorDrag = Symbol("behaviorDrag");
 
 export default class RenderPoint {
 
@@ -28,7 +25,6 @@ export default class RenderPoint {
         this[_element] = null;
         this[_size] = [0, 0];
         this[_position] = [0, 0];
-        this[_behaviorDrag] = drag();
     }
 
     /**

@@ -31,7 +31,7 @@ export default class Renderer extends EventClass {
     /**
      * Creates a renderer for the specified graph and svg element
      * @param {Graph} graph - specifies the graph
-     * @param {HTMLElement} svg - specifies the svg element
+     * @param {Element} svg - specifies the svg element
      */
     constructor(graph, svg) {
         super();

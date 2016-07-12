@@ -19,7 +19,7 @@ export default class HTMLWrapper {
 
     /**
      * Creates an HTML wrapper for the specified element
-     * @param {HTMLElement} element - specifies the element
+     * @param {Element} element - specifies the element
      */
     constructor(element) {
         this[_element] = element;
@@ -27,9 +27,36 @@ export default class HTMLWrapper {
 
     /**
      * Returns this wrapped HTML element
-     * @returns {HTMLElement}
+     * @returns {Element}
      */
     get element() { return this[_element]; }
+
+    /**
+     * Returns the child element corresponding to the specified selector
+     * @param {string} selector - specifies the selector
+     * @returns {HTMLWrapper|undefined}
+     */
+    select(selector) {
+        const element = this[_element].querySelector(selector);
+        if (typeof element !== "undefined") {
+            return new HTMLWrapper(element);
+        }
+        return undefined;
+    }
+
+    /**
+     * Returns the children elements corresponding to the specified selector
+     * @param {string} selector - specifies the selector
+     * @returns {Array<HTMLWrapper>}
+     */
+    selectAll(selector) {
+        const wrappedElements = [];
+        const elements = this[_element].querySelectorAll(selector);
+        for (const element of elements) {
+            wrappedElements.push(new HTMLWrapper(element));
+        }
+        return wrappedElements;
+    }
 
     /**
      * Appends an html element of the specified qualified name into this element
@@ -56,10 +83,10 @@ export default class HTMLWrapper {
 
     /**
      * Sets this element textContent to the specified text
-     * @param {string} text - specifies the text
+     * @param {string|Function} text - specifies the text
      */
     text(text) {
-        this[_element].textContent = text;
+        this[_element].textContent = typeof text === "function" ? text() : text;
     }
 
     /**

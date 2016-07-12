@@ -88,4 +88,15 @@ export default class RenderConnection {
         this.element.attr("stroke", inputColor || outputColor || this.renderer.config.typeColors.default);
     }
 
+    /**
+     * Returns the preferred path between the specified output position and the specified input position
+     * @param {Renderer} renderer - specifies the renderer
+     * @param {Array<number>} from - specifies the output position
+     * @param {Array<number>} to - specifies the input position
+     * @returns {string}
+     */
+    static connectionPath(renderer, from, to) {
+        return renderConnectionPreferredPath(renderer, from, to);
+    }
+
 }

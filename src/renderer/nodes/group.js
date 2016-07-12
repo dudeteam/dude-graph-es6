@@ -1,7 +1,5 @@
 import pull from "lodash-es/pull";
-import clone from "lodash-es/clone";
 import includes from "lodash-es/includes";
-import {event, drag} from "d3";
 
 import RenderNode from "./node";
 import {renderGroupPreferredSize, renderGroupPreferredPosition} from "../utils/measure";
@@ -9,7 +7,6 @@ import {renderGroupPreferredSize, renderGroupPreferredPosition} from "../utils/m
 const _renderBlocks = Symbol("renderBlocks");
 const _svgRect = Symbol("svgRect");
 const _svgName = Symbol("svgName");
-const _behaviorDrag = Symbol("behaviorDrag");
 
 export default class RenderGroup extends RenderNode {
 
@@ -17,7 +14,6 @@ export default class RenderGroup extends RenderNode {
         super();
 
         this[_renderBlocks] = [];
-        this[_behaviorDrag] = drag();
         this.name = "";
     }
 

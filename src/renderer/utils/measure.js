@@ -135,23 +135,20 @@ const renderPointPreferredPosition = (renderPoint) => {
 };
 
 /**
- * Returns the preferred path between the specified output position and the specified input position
+ * Returns the preferred path between the specified from position and the specified to position
  * @param {Renderer} renderer - specifies the renderer
- * @param {Array<number>} outputPosition - specifies the output position
- * @param {Array<number>} inputPosition - specifies the input position
+ * @param {Array<number>} from - specifies the from position
+ * @param {Array<number>} to - specifies the to position
  * @returns {string}
  */
-const renderConnectionPreferredPath = (renderer, outputPosition, inputPosition) => {
+const renderConnectionPreferredPath = (renderer, from, to) => {
     let step = renderer.config.connection.step;
-    if (outputPosition[0] > inputPosition[0]) {
-        step += Math.max(-renderer.config.connection.step,
-            Math.min(outputPosition[0] - inputPosition[0], renderer.config.connection.step));
+    if (from[0] > to[0]) {
+        step += Math.max(-renderer.config.connection.step, Math.min(from[0] - to[0], renderer.config.connection.step));
     }
     const connectionPoints = [
-        [outputPosition[0], outputPosition[1]],
-        [outputPosition[0] + step, outputPosition[1]],
-        [inputPosition[0] - step, inputPosition[1]],
-        [inputPosition[0], inputPosition[1]]
+        [from[0], from[1]], [from[0] + step, from[1]],
+        [to[0] - step, to[1]], [to[0], to[1]]
     ];
     return renderConnectionLine(connectionPoints);
 };
