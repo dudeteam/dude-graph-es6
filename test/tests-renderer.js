@@ -1,3 +1,4 @@
+import sinon from "sinon";
 import gjsdom from "jsdom-global";
 import {expect} from "chai";
 
@@ -269,5 +270,98 @@ describe("dude-renderer API", () => {
         expect(renderer.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint)).to.be.null;
         expect(outputRenderPoint.renderConnections).to.have.lengthOf(0);
         expect(inputRenderPoint.renderConnections).to.have.lengthOf(0);
+    });
+});
+describe("dude-renderer events", () => {
+    beforeEach(function () {
+        this.jsdom = gjsdom(`<html><body><svg id="svg"></svg></body></html>`);
+    });
+    afterEach(function () {
+        this.jsdom();
+    });
+    it("should test render-block-add", () => {
+        const spy = sinon.spy();
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const block = new Block();
+        const renderBlock = new RenderBlock(block);
+        graph.addBlock(block);
+        renderer.on("render-block-add", spy);
+        sinon.assert.notCalled(spy);
+        renderer.addRenderBlock(renderBlock);
+        sinon.assert.calledWith(spy, renderBlock);
+    });
+    it("should test render-group-add", () => {
+        const spy = sinon.spy();
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const renderGroup = new RenderGroup();
+        renderer.on("render-group-add", spy);
+        sinon.assert.notCalled(spy);
+        renderer.addRenderGroup(renderGroup);
+        sinon.assert.calledWith(spy, renderGroup);
+    });
+    it("should test render-point-add", () => {
+        const spy = sinon.spy();
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const block = new Block();
+        const point = new Point(false, {"pointName": "in", "pointValueType": "String"});
+        const renderBlock = new RenderBlock(block);
+        const renderPoint = new RenderPoint(point);
+        graph.addBlock(block);
+        block.addPoint(point);
+        renderer.addRenderBlock(renderBlock);
+        renderer.on("render-point-add", spy);
+        sinon.assert.notCalled(spy);
+        renderBlock.addRenderPoint(renderPoint);
+        sinon.assert.calledWith(spy, renderBlock, renderPoint);
+    });
+    it("should test render-block-remove", () => {
+        const spy = sinon.spy();
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const block = new Block();
+        const renderBlock = new RenderBlock(block);
+        graph.addBlock(block);
+        renderer.addRenderBlock(renderBlock);
+        sinon.assert.notCalled(spy);
+        renderer.on("render-block-remove", spy);
+        renderer.removeRenderBlock(renderBlock);
+        sinon.assert.calledWith(spy, renderBlock);
+    });
+    it("should test render-group-remove", () => {
+        const spy = sinon.spy();
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const renderGroup = new RenderGroup();
+        renderer.addRenderGroup(renderGroup);
+        sinon.assert.notCalled(spy);
+        renderer.on("render-group-remove", spy);
+        renderer.removeRenderGroup(renderGroup);
+        sinon.assert.calledWith(spy, renderGroup);
+    });
+    it("should test render-point-add", () => {
+        const spy = sinon.spy();
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const block = new Block();
+        const point = new Point(false, {"pointName": "in", "pointValueType": "String"});
+        const renderBlock = new RenderBlock(block);
+        const renderPoint = new RenderPoint(point);
+        graph.addBlock(block);
+        block.addPoint(point);
+        renderer.addRenderBlock(renderBlock);
+        renderBlock.addRenderPoint(renderPoint);
+        renderer.on("render-point-remove", spy);
+        sinon.assert.notCalled(spy);
+        renderBlock.removeRenderPoint(renderPoint);
+        sinon.assert.calledWith(spy, renderBlock, renderPoint);
     });
 });

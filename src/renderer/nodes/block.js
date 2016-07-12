@@ -84,6 +84,7 @@ export default class RenderBlock extends RenderNode {
         renderPoint.renderBlock = this;
         renderPoint.element = this[_svgPoints].append("svg:g").classed("dude-graph-point", true);
         renderPoint.added();
+        this.renderer.emit("render-point-add", this, renderPoint);
     }
     /**
      * Removes the specified render point from this render block
@@ -101,6 +102,7 @@ export default class RenderBlock extends RenderNode {
         renderPoint.element.remove();
         renderPoint.element = null;
         renderPoint.renderBlock = null;
+        this.renderer.emit("render-point-remove", this, renderPoint);
     }
 
     /**

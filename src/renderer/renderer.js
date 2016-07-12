@@ -144,6 +144,7 @@ export default class Renderer extends EventClass {
         renderBlock.element.attr("id", "bid-" + renderBlock.id);
         renderBlock.element.attr("class", "dude-graph-block");
         renderBlock.added();
+        this.emit("render-block-add", renderBlock);
     }
     /**
      * Removes the specified render block from this renderer
@@ -160,6 +161,7 @@ export default class Renderer extends EventClass {
         renderBlock.element.remove();
         this[_renderBlockIds][renderBlock.id] = undefined;
         pull(this[_renderBlocks], renderBlock);
+        this.emit("render-block-remove", renderBlock);
     }
     /**
      * Returns the corresponding render block for the specified render block id
@@ -196,6 +198,7 @@ export default class Renderer extends EventClass {
         renderGroup.element.attr("id", "gid-" + renderGroup.id);
         renderGroup.element.attr("class", "dude-graph-group");
         renderGroup.added();
+        this.emit("render-group-add", renderGroup);
     }
     /**
      * Removes the specified render group from this renderer
@@ -212,6 +215,7 @@ export default class Renderer extends EventClass {
         renderGroup.element.remove();
         this[_renderGroupIds][renderGroup.id] = undefined;
         pull(this[_renderGroups], renderGroup);
+        this.emit("render-group-remove", renderGroup);
     }
     /**
      * Returns the corresponding render group for the specified render group id
