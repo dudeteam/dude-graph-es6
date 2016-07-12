@@ -10,5 +10,6 @@ export {default as Renderer} from "./renderer/renderer";
 export {default as RenderBlock} from "./renderer/nodes/block";
 export {default as RenderGroup} from "./renderer/nodes/group";
 export {default as RenderPoint} from "./renderer/nodes/point";
+export {default as RenderConnection} from "./renderer/nodes/connection";
 
 export {default as Commander} from "./commander/commander";

@@ -295,41 +295,4 @@ export default class Commander {
         );
     }
 
-    /**
-     * Registers render block drag and drop undo/redo
-     */
-    registerRenderBlockDrag() {
-        this[_renderer].on("render-block-drop", (renderBlock, position, oldPosition) => {
-            if (!isEqual(position, oldPosition)) {
-                this.changeRenderNodePosition(renderBlock, position, oldPosition);
-            }
-        });
-    }
-
-    /**
-     * Registers render group drag and drop undo/redo
-     */
-    registerRenderGroupDrag() {
-        this[_renderer].on("render-block-drop", (renderGroup, position, oldPosition) => {
-            if (!isEqual(position, oldPosition)) {
-                this.changeRenderNodePosition(renderGroup, position, oldPosition);
-            }
-        });
-    }
-
-    /**
-     * Registers render block drag and drop undo/redo
-     */
-    registerRenderConnectionDrag() {
-        this[_renderer].on("render-connection-drop", (renderPoint, position) => {
-            const otherRenderPoint = this[_renderer].renderNodeFinder.nearestRenderPoint(position);
-            if (otherRenderPoint !== null) {
-                if (renderPoint.point.pointOutput) {
-                    this.connectRenderPoints(renderPoint, otherRenderPoint);
-                } else {
-                    this.connectRenderPoints(otherRenderPoint, renderPoint);
-                }
-            }
-        });
-    }
 }
