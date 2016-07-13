@@ -1,8 +1,5 @@
 import maxBy from "lodash-es/maxBy";
 import sumBy from "lodash-es/sumBy";
-import {line as Line, curveBasis as lineCurve} from "d3";
-
-const renderConnectionLine = new Line().curve(lineCurve);
 
 /**
  * Returns the bounding box of the specified text
@@ -135,11 +132,7 @@ const renderConnectionPreferredPath = (renderer, from, to) => {
     if (from[0] > to[0]) {
         step += Math.max(-renderer.config.connection.step, Math.min(from[0] - to[0], renderer.config.connection.step));
     }
-    const connectionPoints = [
-        [from[0], from[1]], [from[0] + step, from[1]],
-        [to[0] - step, to[1]], [to[0], to[1]]
-    ];
-    return renderConnectionLine(connectionPoints);
+    return `M${from[0]},${from[1]}C${from[0] + step},${from[1]} ${to[0] - step},${to[1]} ${to[0]},${to[1]}`;
 };
 
 export {textBoundingBox, renderNodesBoundingBox};
