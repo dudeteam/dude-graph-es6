@@ -1,26 +1,16 @@
 import maxBy from "lodash-es/maxBy";
 import sumBy from "lodash-es/sumBy";
-import isEqual from "lodash-es/isEqual";
 import forEach from "lodash-es/forEach";
-import {selection} from "d3";
 import {line as Line, curveBasis as lineCurve} from "d3";
 
 const renderConnectionLine = new Line().curve(lineCurve);
 
 /**
  * Returns the bounding box of the specified text
- * @param {string|selection} text - specifies the text
+ * @param {string} text - specifies the text
  * @returns {Array<number>}
  */
 const textBoundingBox = (text) => {
-    if (text instanceof selection) {
-        const boundingRect = text.node().getBoundingClientRect();
-        const textSize = [(boundingRect.right - boundingRect.left), (boundingRect.bottom - boundingRect.top)];
-        if (!isEqual(textSize, [0, 0])) {
-            return textSize;
-        }
-        text = text.text();
-    }
     return [text.length * 8, 17]; // Inconsolata font prediction
 };
 

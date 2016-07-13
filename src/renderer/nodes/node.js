@@ -39,13 +39,13 @@ export default class RenderNode extends EventClass {
      */
     set renderer(renderer) { this[_renderer] = renderer; }
     /**
-     * Returns this render node d3 element
+     * Returns this render node wrapped element
      * @returns {HTMLWrapper}
      */
     get element() { return this[_element]; }
     /**
-     * Sets this render node element to the specified d3 element
-     * @param {HTMLWrapper} element - specifies the d3 element
+     * Sets this render node element to the specified wrapped element
+     * @param {HTMLWrapper} element - specifies the wrapped element
      */
     set element(element) { this[_element] = element; }
     /**

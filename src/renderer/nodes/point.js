@@ -53,13 +53,13 @@ export default class RenderPoint {
      */
     get renderConnections() { return this[_renderConnections]; }
     /**
-     * Returns this render point d3 element
+     * Returns this render point wrapped element
      * @returns {HTMLWrapper}
      */
     get element() { return this[_element]; }
     /**
-     * Sets this render point element to the specified d3 element
-     * @param {HTMLWrapper} element - specifies the d3 element
+     * Sets this render point element to the specified wrapped element
+     * @param {HTMLWrapper} element - specifies the wrapped element
      */
     set element(element) { this[_element] = element; }
     /**
