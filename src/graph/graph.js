@@ -1,6 +1,6 @@
 import EventClass from "event-class-es6";
 
-import valueTypes from "./defaults/valueTypes";
+import valueTypes from "./utils/valueTypes";
 import Connection from "./connection";
 import PointPolicy from "./policy";
 

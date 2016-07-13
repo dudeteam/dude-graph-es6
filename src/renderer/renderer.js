@@ -2,8 +2,8 @@ import EventClass from "event-class-es6";
 
 import uuid from "../graph/utils/uuid";
 import htmlw from "./utils/htmlw";
-import config from "./defaults/config";
-import RenderNodeFinder from "./nodes/finder";
+import config from "./utils/config";
+import RenderNodeFinder from "./utils/finder";
 import RenderConnection from "./nodes/connection";
 
 const _graph = Symbol("graph");

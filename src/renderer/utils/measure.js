@@ -6,7 +6,7 @@ import sumBy from "lodash-es/sumBy";
  * @param {string} text - specifies the text
  * @returns {Array<number>}
  */
-const textBoundingBox = (text) => {
+export const textBoundingBox = (text) => {
     return [text.length * 8, 17]; // Inconsolata font prediction
 };
 
@@ -16,7 +16,7 @@ const textBoundingBox = (text) => {
  * @param {boolean} [nullable=false] - Whether to return null or [[0, 0], [0, 0]]
  * @returns {Array<Array<number>>}
  */
-const renderNodesBoundingBox = (renderNodes, nullable) => {
+export const renderNodesBoundingBox = (renderNodes, nullable) => {
     const topLeft = [Infinity, Infinity];
     const bottomRight = [-Infinity, -Infinity];
     for (const renderNode of renderNodes) {
@@ -36,7 +36,7 @@ const renderNodesBoundingBox = (renderNodes, nullable) => {
  * @param {RenderBlock} renderBlock - specifies the render block
  * @returns {Array<number>}
  */
-const renderBlockPreferredSize = (renderBlock) => {
+export const renderBlockPreferredSize = (renderBlock) => {
     const widerOutput = maxBy(renderBlock.renderOutputPoints, renderPoint => renderPoint.size[0]);
     const widerInput = maxBy(renderBlock.renderInputPoints, renderPoint => renderPoint.size[0]);
     const nameWidth = textBoundingBox(renderBlock.name)[0];
@@ -57,7 +57,7 @@ const renderBlockPreferredSize = (renderBlock) => {
  * @param {RenderGroup} renderGroup - specifies the render group
  * @returns {Array<number>}
  */
-const renderGroupPreferredSize = (renderGroup) => {
+export const renderGroupPreferredSize = (renderGroup) => {
     const size = [0, 0];
     const contentBoundingBox = renderNodesBoundingBox(renderGroup.renderBlocks, true);
     if (contentBoundingBox !== null) {
@@ -75,7 +75,7 @@ const renderGroupPreferredSize = (renderGroup) => {
  * @param {RenderPoint} renderPoint - specifies the render group
  * @returns {Array<number>}
  */
-const renderPointPreferredSize = (renderPoint) => {
+export const renderPointPreferredSize = (renderPoint) => {
     const pointNameBoundingBox = textBoundingBox(renderPoint.point.pointName);
     return [
         pointNameBoundingBox[0] + renderPoint.renderBlock.renderer.config.point.padding * 2,
@@ -88,7 +88,7 @@ const renderPointPreferredSize = (renderPoint) => {
  * @param {RenderGroup} renderGroup - specifies the render group
  * @returns {Array<number>}
  */
-const renderGroupPreferredPosition = (renderGroup) => {
+export const renderGroupPreferredPosition = (renderGroup) => {
     const contentBoundingBox = renderNodesBoundingBox(renderGroup.renderBlocks, true);
     if (contentBoundingBox !== null) {
         return [
@@ -104,7 +104,7 @@ const renderGroupPreferredPosition = (renderGroup) => {
  * @param {RenderPoint} renderPoint - specifies the render point
  * @returns {Array<number>}
  */
-const renderPointPreferredPosition = (renderPoint) => {
+export const renderPointPreferredPosition = (renderPoint) => {
     if (renderPoint.point.pointOutput) {
         const index = renderPoint.renderBlock.renderOutputPoints.indexOf(renderPoint);
         return [
@@ -127,15 +127,10 @@ const renderPointPreferredPosition = (renderPoint) => {
  * @param {Array<number>} to - specifies the to position
  * @returns {string}
  */
-const renderConnectionPreferredPath = (renderer, from, to) => {
+export const renderConnectionPreferredPath = (renderer, from, to) => {
     let step = renderer.config.connection.step;
     if (from[0] > to[0]) {
         step += Math.max(-renderer.config.connection.step, Math.min(from[0] - to[0], renderer.config.connection.step));
     }
     return `M${from[0]},${from[1]}C${from[0] + step},${from[1]} ${to[0] - step},${to[1]} ${to[0]},${to[1]}`;
 };
-
-export {textBoundingBox, renderNodesBoundingBox};
-export {renderBlockPreferredSize, renderGroupPreferredSize, renderPointPreferredSize};
-export {renderGroupPreferredPosition, renderPointPreferredPosition};
-export {renderConnectionPreferredPath};
