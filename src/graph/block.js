@@ -1,11 +1,6 @@
 /*eslint no-unused-vars: "off"*/
 
-import map from "lodash-es/map";
-import pull from "lodash-es/pull";
-import find from "lodash-es/find";
 import forEach from "lodash-es/forEach";
-import includes from "lodash-es/includes";
-import isString from "lodash-es/isString";
 import EventClass from "event-class-es6";
 import forEachRight from "lodash-es/forEachRight";
 
@@ -36,10 +31,10 @@ export default class Block extends EventClass {
         this[_blockInputs] = [];
         this[_blockTemplates] = defaultValue(blockData.blockTemplates, {});
         this[_blockGraph] = null;
-        if (this[_blockId] !== null && !isString(this[_blockId])) {
+        if (this[_blockId] !== null && typeof this[_blockId] !== "string") {
             throw new Error("`" + this.fancyName + "` must have a null or valid string `blockId`");
         }
-        if (!isString(this[_blockName])) {
+        if (typeof this[_blockName] !== "string") {
             throw new Error("`" + this.fancyName + "` must have a non-null `blockName`");
         }
     }
@@ -155,7 +150,7 @@ export default class Block extends EventClass {
         if (template === null) {
             throw new Error("`" + this.fancyName + "` has no template `" + templateName + "`");
         }
-        if (!includes(template.templates, valueType)) {
+        if (!template.templates.includes(valueType)) {
             throw new Error("`" + this.fancyName + "` has no value type `" + valueType +
                 "` is its templates: ` " + template.templates.join(", ") + "`");
         }
@@ -163,29 +158,29 @@ export default class Block extends EventClass {
             return; // Already the same type
         }
         const oldValueType = template.valueType;
-        const outputValueSaves = map(this[_blockOutputs], (point) => {
+        const outputValueSaves = this[_blockOutputs].map((point) => {
             if (point.pointTemplate === templateName) {
                 return point.pointValue;
             }
             return undefined;
         });
-        const inputValueSaves = map(this[_blockInputs], (point) => {
+        const inputValueSaves = this[_blockInputs].map((point) => {
             if (point.pointTemplate === templateName) {
                 return point.pointValue;
             }
             return undefined;
         });
         try {
-            forEach(this[_blockOutputs], (point) => {
+            for (const point of this[_blockOutputs]) {
                 if (point.pointTemplate === templateName) {
                     point.changeValueType(valueType, ignoreEmit);
                 }
-            });
-            forEach(this[_blockInputs], (point) => {
+            }
+            for (const point of this[_blockInputs]) {
                 if (point.pointTemplate === templateName) {
                     point.changeValueType(valueType, ignoreEmit);
                 }
-            });
+            }
         } catch (exception) {
             forEach(this[_blockOutputs], (point, i) => {
                 if (point.pointTemplate === templateName) {
@@ -282,9 +277,9 @@ export default class Block extends EventClass {
         point.removed();
         point.pointBlock = null;
         if (point.pointOutput) {
-            pull(this[_blockOutputs], point);
+            this[_blockOutputs].splice(this[_blockOutputs].indexOf(point), 1);
         } else {
-            pull(this[_blockInputs], point);
+            this[_blockInputs].splice(this[_blockOutputs].indexOf(point), 1);
         }
         this.emit("point-remove", point);
         this[_blockGraph].emit("block-point-remove", this, point);
@@ -307,7 +302,7 @@ export default class Block extends EventClass {
      * @returns {Point}
      */
     outputByName(pointName) {
-        return find(this[_blockOutputs], point => point.pointName === pointName) || null;
+        return this[_blockOutputs].find(point => point.pointName === pointName) || null;
     }
     /**
      * Returns the corresponding input point for the specified point name
@@ -315,7 +310,7 @@ export default class Block extends EventClass {
      * @returns {Point}
      */
     inputByName(pointName) {
-        return find(this[_blockInputs], point => point.pointName === pointName) || null;
+        return this[_blockInputs].find(point => point.pointName === pointName) || null;
     }
 
     /**

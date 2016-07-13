@@ -1,6 +1,5 @@
 /*eslint no-unused-vars: "off"*/
 
-import isString from "lodash-es/isString";
 import EventClass from "event-class-es6";
 import forEachRight from "lodash-es/forEachRight";
 
@@ -38,10 +37,10 @@ export default class Point extends EventClass {
         } else {
             this[_pointPolicy] = PointPolicy.DEFAULT;
         }
-        if (!isString(this[_pointName])) {
+        if (typeof this[_pointName] !== "string") {
             throw new Error("`" + this.fancyName + "` must have a non-null `pointName`");
         }
-        if (this[_pointTemplate] === null && !isString(this[_pointValueType])) {
+        if (this[_pointTemplate] === null && typeof this[_pointValueType] !== "string") {
             throw new Error("`" + this.fancyName + "` " +
                 "`pointValueType` must be a non-null String if no `pointTemplate` is provided");
         }

@@ -1,4 +1,3 @@
-import isString from "lodash-es/isString";
 import EventClass from "event-class-es6";
 import defaultValue from "./utils/default";
 import VariableBlock from "./blocks/variable";
@@ -22,10 +21,10 @@ export default class Variable extends EventClass {
         this[_variableValue] = defaultValue(variableData.variableValue);
         this[_variableBlock] = defaultValue(variableData.variableBlock, null);
         this[_variableGraph] = null;
-        if (!isString(this[_variableName])) {
+        if (typeof this[_variableName] !== "string") {
             throw new Error("`" + this.fancyName + "` `variableName` must be a non-null String");
         }
-        if (!isString(this[_variableValueType])) {
+        if (typeof this[_variableValueType] !== "string") {
             throw new Error("`" + this.fancyName + "` `_variableValueType` must be a non-null String");
         }
         if (this[_variableBlock] !== null && !(this[_variableBlock] instanceof VariableBlock)) {

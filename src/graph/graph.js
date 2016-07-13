@@ -1,8 +1,3 @@
-import pull from "lodash-es/pull";
-import find from "lodash-es/find";
-import filter from "lodash-es/filter";
-import forOwn from "lodash-es/forOwn";
-import includes from "lodash-es/includes";
 import EventClass from "event-class-es6";
 
 import valueTypes from "./defaults/valueTypes";
@@ -67,9 +62,12 @@ export default class Graph extends EventClass {
         if (block.blockId === null) {
             block.blockId = this.nextBlockId();
         }
-        forOwn(block.blockTemplates, (template, templateId) => {
-            block.changeTemplate(templateId, template.valueType, true);
-        });
+        for (const templateId in block.blockTemplates) {
+            // for(const [template, templateId] of Object.entries(block.blockTemplates))
+            if (block.blockTemplates.hasOwnProperty(templateId)) {
+                block.changeTemplate(templateId, block.blockTemplates[templateId].valueType, true);
+            }
+        }
         this[_graphBlocks].push(block);
         this[_graphBlockIds][block.blockId] = block;
         this.emit("block-add", block);
@@ -80,11 +78,11 @@ export default class Graph extends EventClass {
      * @param {Block} block - the block to remove
      */
     removeBlock(block) {
-        if (block.blockGraph !== this || !includes(this[_graphBlocks], block)) {
+        if (block.blockGraph !== this || !this[_graphBlocks].includes(block)) {
             throw new Error("`" + this.fancyName + "` has no block `" + block.fancyName + "`");
         }
         block.removePoints();
-        pull(this[_graphBlocks], block);
+        this[_graphBlocks].splice(this[_graphBlocks].indexOf(block), 1);
         this[_graphBlockIds][block.blockId] = undefined;
         this.emit("block-remove", block);
         block.removed();
@@ -112,7 +110,7 @@ export default class Graph extends EventClass {
      * @returns {Array<Block>}
      */
     blocksByName(blockName) {
-        return filter(this[_graphBlocks], block => block.blockName === blockName);
+        return this[_graphBlocks].filter(block => block.blockName === blockName);
     }
     /**
      * Returns the blocks corresponding to the specified block type
@@ -120,7 +118,7 @@ export default class Graph extends EventClass {
      * @returns {Array<Block>}
      */
     blocksByType(blockType) {
-        return filter(this[_graphBlocks], block => block.blockType === blockType || block instanceof blockType);
+        return this[_graphBlocks].filter(block => block.blockType === blockType || block instanceof blockType);
     }
 
     /**
@@ -150,7 +148,7 @@ export default class Graph extends EventClass {
         if (variable.variableBlock !== null) {
             this.removeBlock(variable.variableBlock);
         }
-        pull(this[_graphVariables], variable);
+        this[_graphVariables].splice(this[_graphVariables].indexOf(variable), 1);
         this.emit("variable-remove", variable);
     }
     /**
@@ -159,7 +157,7 @@ export default class Graph extends EventClass {
      * @returns {Variable|null}
      */
     variableByName(variableName) {
-        return find(this[_graphVariables], variable => variable.variableName === variableName) || null;
+        return this[_graphVariables].find(variable => variable.variableName === variableName) || null;
     }
 
     /**
@@ -244,7 +242,7 @@ export default class Graph extends EventClass {
             return false;
         }
 
-        if (!includes(inputValueType.typeCompatibles, outputPoint.pointValueType)) {
+        if (!inputValueType.typeCompatibles.includes(outputPoint.pointValueType)) {
             this.errno(new Error("`" + inputPoint.pointValueType + "` is not compatible with `" +
                 outputPoint.pointValueType + "`"));
             return false;
@@ -371,7 +369,7 @@ export default class Graph extends EventClass {
      * @returns {Connection|null}
      */
     connectionForPoints(outputPoint, inputPoint) {
-        return find(this[_graphConnections], (connection) => {
+        return this[_graphConnections].find((connection) => {
                 return connection.connectionOutputPoint === outputPoint && connection.connectionInputPoint === inputPoint;
             }) || null;
     }
@@ -383,10 +381,10 @@ export default class Graph extends EventClass {
     _addConnection (connection) {
         const outputPoint = connection.connectionOutputPoint;
         const inputPoint = connection.connectionInputPoint;
-        if (includes(outputPoint.pointConnections, connection)) {
+        if (outputPoint.pointConnections.includes(connection)) {
             throw new Error("`" + outputPoint.fancyName + "` cannot redefine `" + connection.fancyName + "`");
         }
-        if (includes(inputPoint.pointConnections, connection)) {
+        if (inputPoint.pointConnections.includes(connection)) {
             throw new Error("`" + inputPoint.fancyName + "` cannot redefine `" + connection.fancyName + "`");
         }
         outputPoint.pointConnections.push(connection);
@@ -401,15 +399,15 @@ export default class Graph extends EventClass {
     _removeConnection (connection) {
         const outputPoint = connection.connectionOutputPoint;
         const inputPoint = connection.connectionInputPoint;
-        if (!includes(outputPoint.pointConnections, connection)) {
+        if (!outputPoint.pointConnections.includes(connection)) {
             throw new Error("`" + outputPoint.fancyName + "` has no connection `" + connection.fancyName + "`");
         }
-        if (!includes(inputPoint.pointConnections, connection)) {
+        if (!inputPoint.pointConnections.includes(connection)) {
             throw new Error("`" + inputPoint.fancyName + "` has no connection `" + connection.fancyName + "`");
         }
-        pull(connection.connectionOutputPoint.pointConnections, connection);
-        pull(connection.connectionInputPoint.pointConnections, connection);
-        pull(this[_graphConnections], connection);
+        connection.connectionOutputPoint.pointConnections.splice(connection.connectionOutputPoint.pointConnections.indexOf(connection), 1);
+        connection.connectionInputPoint.pointConnections.splice(connection.connectionInputPoint.pointConnections.indexOf(connection), 1);
+        this[_graphConnections].splice(this[_graphConnections].indexOf(connection), 1);
     }
 
     /**
