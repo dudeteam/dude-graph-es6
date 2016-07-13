@@ -1,5 +1,3 @@
-import pull from "lodash-es/pull";
-
 import {renderPointPreferredSize} from "../utils/measure";
 import {renderPointPreferredPosition} from "../utils/measure";
 
@@ -110,7 +108,7 @@ export default class RenderPoint {
      * @param {RenderConnection} renderConnection - specifies the render connection
      */
     removeRenderConnection(renderConnection) {
-        pull(this[_renderConnections], renderConnection);
+        this[_renderConnections].splice(this[_renderConnections].indexOf(renderConnection), 1);
     }
 
     /**

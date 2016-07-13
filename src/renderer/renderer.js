@@ -1,8 +1,3 @@
-import pull from "lodash-es/pull";
-import find from "lodash-es/find";
-import filter from "lodash-es/filter";
-import forEach from "lodash-es/forEach";
-import includes from "lodash-es/includes";
 import EventClass from "event-class-es6";
 
 import uuid from "../graph/utils/uuid";
@@ -79,7 +74,7 @@ export default class Renderer extends EventClass {
      */
     get renderPoints() {
         const renderPoints = [];
-        forEach(this[_renderBlocks], rb => forEach(rb.renderPoints, rp => renderPoints.push(rp)));
+        this[_renderBlocks].forEach(rb => rb.renderPoints.forEach(rp => renderPoints.push(rp)));
         return renderPoints;
     }
     /**
@@ -151,7 +146,7 @@ export default class Renderer extends EventClass {
      * @param {RenderBlock} renderBlock - specifies the render block
      */
     removeRenderBlock(renderBlock) {
-        if (renderBlock.renderer !== this || !includes(this[_renderBlocks], renderBlock)) {
+        if (renderBlock.renderer !== this || !this[_renderBlocks].includes(renderBlock)) {
             throw new Error("`" + this.fancyName + "` has no render block `" + renderBlock.fancyName + "`");
         }
         if (renderBlock.parent !== null) {
@@ -160,7 +155,7 @@ export default class Renderer extends EventClass {
         renderBlock.removed();
         renderBlock.element.remove();
         this[_renderBlockIds][renderBlock.id] = undefined;
-        pull(this[_renderBlocks], renderBlock);
+        this[_renderBlocks].splice(this[_renderBlocks].indexOf(renderBlock), 1);
         this.emit("render-block-remove", renderBlock);
     }
     /**
@@ -169,7 +164,7 @@ export default class Renderer extends EventClass {
      * @returns {RenderBlock|null}
      */
     renderBlockById(renderBlockId) {
-        return find(this[_renderBlocks], renderBlock => renderBlock.id === renderBlockId) || null;
+        return this[_renderBlocks].find(renderBlock => renderBlock.id === renderBlockId) || null;
     }
     /**
      * Returns the corresponding render blocks for the specified block
@@ -177,7 +172,7 @@ export default class Renderer extends EventClass {
      * @returns {Array<RenderBlock>}
      */
     renderBlocksByBlock(block) {
-        return filter(this[_renderBlocks], renderBlock => renderBlock.block === block);
+        return this[_renderBlocks].filter(renderBlock => renderBlock.block === block);
     }
 
     /**
@@ -205,7 +200,7 @@ export default class Renderer extends EventClass {
      * @param {RenderGroup} renderGroup - specifies the render group
      */
     removeRenderGroup(renderGroup) {
-        if (renderGroup.renderer !== this || !includes(this[_renderGroups], renderGroup)) {
+        if (renderGroup.renderer !== this || !this[_renderGroups].includes(renderGroup)) {
             throw new Error("`" + this.fancyName + "` has no render block `" + renderGroup.fancyName + "`");
         }
         if (renderGroup.renderBlocks.length > 0) {
@@ -214,7 +209,7 @@ export default class Renderer extends EventClass {
         renderGroup.removed();
         renderGroup.element.remove();
         this[_renderGroupIds][renderGroup.id] = undefined;
-        pull(this[_renderGroups], renderGroup);
+        this[_renderGroups].splice(this[_renderGroups].indexOf(renderGroup), 1);
         this.emit("render-group-remove", renderGroup);
     }
     /**
@@ -223,7 +218,7 @@ export default class Renderer extends EventClass {
      * @returns {RenderGroup|null}
      */
     renderGroupById(renderGroupId) {
-        return find(this[_renderGroups], renderGroup => renderGroup.id === renderGroupId) || null;
+        return this[_renderGroups].find(renderGroup => renderGroup.id === renderGroupId) || null;
     }
 
     /**
@@ -305,7 +300,7 @@ export default class Renderer extends EventClass {
         }
         outputRenderPoint.removeRenderConnection(renderConnection);
         inputRenderPoint.removeRenderConnection(renderConnection);
-        pull(this[_renderConnections], renderConnection);
+        this[_renderConnections].splice(this[_renderConnections].indexOf(renderConnection), 1);
         renderConnection.removed();
         renderConnection.element.remove();
         renderConnection.renderer = null;
@@ -318,7 +313,7 @@ export default class Renderer extends EventClass {
      * @returns {RenderConnection|null}
      */
     renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint) {
-        return find(this[_renderConnections], (rc) => {
+        return this[_renderConnections].find((rc) => {
                 return rc.outputRenderPoint === outputRenderPoint && rc.inputRenderPoint === inputRenderPoint;
             }) || null;
     }

@@ -1,6 +1,4 @@
 /*eslint no-unused-vars: "off"*/
-import clone from "lodash-es/clone";
-import isEqual from "lodash-es/isEqual";
 import forEach from "lodash-es/forEach";
 import forEachRight from "lodash-es/forEachRight";
 
@@ -261,11 +259,11 @@ export default class Commander {
      */
     changeRenderNodePosition(renderNode, position, oldPosition) {
         if (typeof oldPosition === "undefined") {
-            oldPosition = clone(renderNode.position);
+            oldPosition = renderNode.position.slice(0);
         }
         this.command(
             () => {
-                renderNode.position = clone(position);
+                renderNode.position = position.slice(0);
                 renderNode.updatePosition();
                 if (renderNode instanceof RenderBlock && renderNode.parent !== null) {
                     renderNode.parent.updatePosition();
@@ -273,7 +271,7 @@ export default class Commander {
                 }
             },
             () => {
-                renderNode.position = clone(oldPosition);
+                renderNode.position = oldPosition.slice(0);
                 renderNode.updatePosition();
                 if (renderNode instanceof RenderBlock && renderNode.parent !== null) {
                     renderNode.parent.updatePosition();

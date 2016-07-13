@@ -1,6 +1,3 @@
-import pull from "lodash-es/pull";
-import includes from "lodash-es/includes";
-
 import RenderNode from "./node";
 import {renderGroupPreferredSize, renderGroupPreferredPosition} from "../utils/measure";
 
@@ -48,10 +45,10 @@ export default class RenderGroup extends RenderNode {
         if (this.renderer === null) {
             throw new Error("`" + this.fancyName + "` cannot remove renderBlock when not bound to a renderer");
         }
-        if (renderBlock.parent !== this || !includes(this[_renderBlocks], renderBlock)) {
+        if (renderBlock.parent !== this || !this[_renderBlocks].includes(renderBlock)) {
             throw new Error("`" + this.fancyName + "` has no `" + renderBlock.fancyName + "`");
         }
-        pull(this[_renderBlocks], renderBlock);
+        this[_renderBlocks].splice(this[_renderBlocks].indexOf(renderBlock), 1);
         renderBlock.parent = null;
     }
 

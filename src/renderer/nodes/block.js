@@ -1,9 +1,3 @@
-import pull from "lodash-es/pull";
-import some from "lodash-es/some";
-import filter from "lodash-es/filter";
-import forEach from "lodash-es/forEach";
-import includes from "lodash-es/includes";
-
 import RenderNode from "./node";
 import {renderBlockPreferredSize} from "../utils/measure";
 
@@ -62,12 +56,12 @@ export default class RenderBlock extends RenderNode {
      * Returns this render block output render points
      * @returns {Array<RenderPoint>}
      */
-    get renderOutputPoints() { return filter(this[_renderPoints], renderPoint => renderPoint.point.pointOutput); }
+    get renderOutputPoints() { return this[_renderPoints].filter(renderPoint => renderPoint.point.pointOutput); }
     /**
      * Returns this render block input render points
      * @returns {Array<RenderPoint>}
      */
-    get renderInputPoints() { return filter(this[_renderPoints], renderPoint => !renderPoint.point.pointOutput); }
+    get renderInputPoints() { return this[_renderPoints].filter(renderPoint => !renderPoint.point.pointOutput); }
 
     /**
      * Adds the specified render point to this render block
@@ -77,7 +71,7 @@ export default class RenderBlock extends RenderNode {
         if (this.renderer === null) {
             throw new Error("`" + this.fancyName + "` cannot add renderPoint when not bound to a renderer");
         }
-        if (renderPoint.element !== null || some(this[_renderPoints], rp => rp.point === renderPoint.point)) {
+        if (renderPoint.element !== null || this[_renderPoints].some(rp => rp.point === renderPoint.point)) {
             throw new Error("`" + this.fancyName + "` cannot redefine render point `" + renderPoint.fancyName + "`");
         }
         this[_renderPoints].push(renderPoint);
@@ -94,10 +88,10 @@ export default class RenderBlock extends RenderNode {
         if (this.renderer === null) {
             throw new Error("`" + this.fancyName + "` cannot remove renderPoint when not bound to a renderer");
         }
-        if (renderPoint.element === null || !includes(this[_renderPoints], renderPoint)) {
+        if (renderPoint.element === null || !this[_renderPoints].includes(renderPoint)) {
             throw new Error("`" + this.fancyName + "` cannot redefine render point `" + renderPoint.fancyName + "`");
         }
-        pull(this[_renderPoints], renderPoint);
+        this[_renderPoints].splice(this[_renderPoints].indexOf(renderPoint), 1);
         renderPoint.removed();
         renderPoint.element.remove();
         renderPoint.element = null;
@@ -138,7 +132,7 @@ export default class RenderBlock extends RenderNode {
     updatePosition() {
         this.element.attr("transform", "translate(" + this.position + ")");
 
-        forEach(this.renderPoints, rp => forEach(rp.renderConnections, rc => rc.updatePosition()));
+        this.renderPoints.forEach(rp => rp.renderConnections.forEach(rc => rc.updatePosition()));
     }
     /**
      * Called when this render block size changed and should update its element
