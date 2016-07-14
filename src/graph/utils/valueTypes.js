@@ -1,22 +1,4 @@
 /**
- * Returns the specified value as a number
- * @param {*} value - specifies the value
- * @returns {number}
- */
-const toNumber = (value) => {
-    return parseFloat(value);
-};
-
-/**
- * Returns the specified value as a string
- * @param {*} value - specifies the value
- * @returns {string}
- */
-const toString = (value) => {
-    return "" + value;
-};
-
-/**
  * Graph default value types
  * @type {object}
  */
@@ -31,7 +13,7 @@ export default {
                 return value;
             }
             if (typeof value === "number" || typeof value === "boolean") {
-                return toString(value);
+                return "" + value;
             }
             return undefined;
         },
@@ -43,7 +25,7 @@ export default {
                 return value;
             }
             if (typeof value === "number" || typeof value === "boolean") {
-                return toString(value);
+                return "" + value;
             }
             return undefined;
         },
@@ -55,7 +37,7 @@ export default {
                 return value;
             }
             if (/^[-+]?[0-9]+(\.[0-9]+)?$/.test(value)) {
-                return toNumber(value);
+                return parseFloat(value);
             }
             if (value === "true" || value === true) {
                 return 1;
