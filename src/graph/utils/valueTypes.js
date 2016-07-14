@@ -1,26 +1,36 @@
-import isArray from "lodash-es/isArray";
-import toNumber from "lodash-es/toNumber";
-import toString from "lodash-es/toString";
-import isString from "lodash-es/isString";
-import isNumber from "lodash-es/isNumber";
-import isObject from "lodash-es/isObject";
-import isBoolean from "lodash-es/isBoolean";
+/**
+ * Returns the specified value as a number
+ * @param {*} value - specifies the value
+ * @returns {number}
+ */
+const toNumber = (value) => {
+    return parseFloat(value);
+};
+
+/**
+ * Returns the specified value as a string
+ * @param {*} value - specifies the value
+ * @returns {string}
+ */
+const toString = (value) => {
+    return "" + value;
+};
 
 /**
  * Graph default value types
  * @type {object}
  */
-const valueTypes = {
+export default {
     "Stream": {
         "convert": () => undefined,
         "typeCompatibles": []
     },
     "String": {
         "typeConvert": (value) => {
-            if (isString(value)) {
+            if (typeof value === "string") {
                 return value;
             }
-            if (isNumber(value) || isBoolean(value)) {
+            if (typeof value === "number" || typeof value === "boolean") {
                 return toString(value);
             }
             return undefined;
@@ -29,10 +39,10 @@ const valueTypes = {
     },
     "Text": {
         "typeConvert": (value) => {
-            if (isString(value)) {
+            if (typeof value === "string") {
                 return value;
             }
-            if (isNumber(value) || isBoolean(value)) {
+            if (typeof value === "number" || typeof value === "boolean") {
                 return toString(value);
             }
             return undefined;
@@ -41,7 +51,7 @@ const valueTypes = {
     },
     "Number": {
         "typeConvert": (value) => {
-            if (isNumber(value)) {
+            if (typeof value === "number") {
                 return value;
             }
             if (/^[-+]?[0-9]+(\.[0-9]+)?$/.test(value)) {
@@ -59,7 +69,7 @@ const valueTypes = {
     },
     "Boolean": {
         "typeConvert": (value) => {
-            if (isBoolean(value)) {
+            if (typeof value === "boolean") {
                 return value;
             }
             if (value === 1 || value === "true") {
@@ -74,7 +84,7 @@ const valueTypes = {
     },
     "Object": {
         "typeConvert": (value) => {
-            if (isObject(value)) {
+            if (typeof value === "object") {
                 return value;
             }
             return undefined;
@@ -83,7 +93,7 @@ const valueTypes = {
     },
     "Array": {
         "typeConvert": (value) => {
-            if (isArray(value)) {
+            if (Array.isArray(value)) {
                 return value;
             }
             return undefined;
@@ -92,7 +102,7 @@ const valueTypes = {
     },
     "Resource": {
         "typeConvert": (value) => {
-            if (isObject(value)) {
+            if (typeof value === "object") {
                 return value;
             }
             return undefined;
@@ -100,5 +110,3 @@ const valueTypes = {
         "typeCompatibles": []
     }
 };
-
-export default valueTypes;

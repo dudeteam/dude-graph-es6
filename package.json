@@ -27,8 +27,7 @@
   },
   "homepage": "https://github.com/dudeteam/dude-graph-es6#readme",
   "dependencies": {
-    "event-class-es6": "^1.0.3",
-    "lodash-es": "^4.13.1"
+    "event-class-es6": "^1.0.3"
   },
   "devDependencies": {
     "babel-core": "^6.9.1",
@@ -57,11 +56,6 @@
     "format": "esm",
     "directories": {
       "lib": "src"
-    },
-    "overrides": {
-      "lodash-es": {
-        "format": "esm"
-      }
     },
     "registry": "npm"
   }
