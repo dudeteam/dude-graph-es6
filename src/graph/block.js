@@ -1,8 +1,5 @@
 /*eslint no-unused-vars: "off"*/
-
-import forEach from "lodash-es/forEach";
 import EventClass from "event-class-es6";
-import forEachRight from "lodash-es/forEachRight";
 
 import defaultValue from "./utils/default";
 
@@ -182,20 +179,22 @@ export default class Block extends EventClass {
                 }
             }
         } catch (exception) {
-            forEach(this[_blockOutputs], (point, i) => {
+            for (let i = 0; i < this[_blockOutputs].length; i++) {
+                const point = this[_blockOutputs][i];
                 if (point.pointTemplate === templateName) {
                     point.changeVariableValue(null);
                     point.changeValueType(oldValueType, true);
                     point.changeVariableValue(outputValueSaves[i]);
                 }
-            });
-            forEach(this[_blockInputs], (point, i) => {
+            }
+            for (let i = 0; i < this[_blockInputs].length; i++) {
+                const point = this[_blockInputs][i];
                 if (point.pointTemplate === templateName) {
                     point.changeVariableValue(null);
                     point.changeValueType(oldValueType, true);
                     point.changeVariableValue(inputValueSaves[i]);
                 }
-            });
+            }
             throw exception;
         }
         template.valueType = valueType;
@@ -289,12 +288,12 @@ export default class Block extends EventClass {
      */
     removePoints() {
         const block = this;
-        forEachRight(this[_blockOutputs], (point) => {
-            block.removePoint(point);
-        });
-        forEachRight(this[_blockInputs], (point) => {
-            block.removePoint(point);
-        });
+        for (let i = this[_blockOutputs].length - 1; i >= 0; i--) {
+            block.removePoint(this[_blockOutputs][i]);
+        }
+        for (let i = this[_blockInputs].length - 1; i >= 0; i--) {
+            block.removePoint(this[_blockInputs][i]);
+        }
     }
     /**
      * Returns the corresponding output point for the specified point name

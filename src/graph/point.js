@@ -1,7 +1,5 @@
 /*eslint no-unused-vars: "off"*/
-
 import EventClass from "event-class-es6";
-import forEachRight from "lodash-es/forEachRight";
 
 import PointPolicy from "./policy";
 import defaultValue from "./utils/default";
@@ -223,9 +221,9 @@ export default class Point extends EventClass {
      * Disconnects all points from this point
      */
     disconnectAll() {
-        forEachRight(this[_pointConnections], (connection) => {
-            this.disconnect(connection.other(this));
-        });
+        for (let i = this[_pointConnections].length - 1; i >= 0; i--) {
+            this.disconnect(this[_pointConnections][i].other(this));
+        }
     }
 
     /**

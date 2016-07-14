@@ -1,6 +1,3 @@
-import maxBy from "lodash-es/maxBy";
-import sumBy from "lodash-es/sumBy";
-
 /**
  * Returns the bounding box of the specified text
  * @param {string} text - specifies the text
@@ -37,14 +34,35 @@ export const renderNodesBoundingBox = (renderNodes, nullable) => {
  * @returns {Array<number>}
  */
 export const renderBlockPreferredSize = (renderBlock) => {
-    const widerOutput = maxBy(renderBlock.renderOutputPoints, renderPoint => renderPoint.size[0]);
-    const widerInput = maxBy(renderBlock.renderInputPoints, renderPoint => renderPoint.size[0]);
+    let widerOutput = null;
+    let widerInput = null;
+    let pointsHeight = 0;
+    for (const renderPoint of renderBlock.renderOutputPoints) {
+        if (widerOutput === null) {
+            widerOutput = renderPoint;
+        } else {
+            if (renderPoint.size[0] > widerOutput[0]) {
+                widerOutput = renderPoint;
+            }
+        }
+    }
+    for (const renderPoint of renderBlock.renderInputPoints) {
+        if (widerInput === null) {
+            widerInput = renderPoint;
+        } else {
+            if (renderPoint.size[0] > widerInput[0]) {
+                widerInput = renderPoint;
+            }
+        }
+    }
     const nameWidth = textBoundingBox(renderBlock.name)[0];
-    const outputWidth = typeof widerOutput === "undefined" ? 0 : widerOutput.size[0];
-    const inputWidth = typeof widerInput === "undefined" ? 0 : widerInput.size[0];
-    const maxPoints = renderBlock.renderOutputPoints.length > renderBlock.renderInputPoints ?
+    const outputWidth = widerOutput === null ? 0 : widerOutput.size[0];
+    const inputWidth = widerInput === null ? 0 : widerInput.size[0];
+    const tallerRenderPoints = renderBlock.renderOutputPoints.length > renderBlock.renderInputPoints ?
         renderBlock.renderOutputPoints : renderBlock.renderInputPoints;
-    const pointsHeight = sumBy(maxPoints, renderPoint => renderPoint.size[1]);
+    for (const renderPoint of tallerRenderPoints) {
+        pointsHeight += renderPoint.size[1];
+    }
     const maxWidth = Math.max(
         nameWidth + renderBlock.renderer.config.block.padding * 2,
         outputWidth + inputWidth + renderBlock.renderer.config.block.pointSpacing

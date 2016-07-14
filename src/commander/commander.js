@@ -1,9 +1,4 @@
-/*eslint no-unused-vars: "off"*/
-import forEach from "lodash-es/forEach";
-import forEachRight from "lodash-es/forEachRight";
-
 import RenderBlock from "../renderer/nodes/block";
-import RenderGroup from "../renderer/nodes/group";
 
 const _renderer = Symbol("renderer");
 const _transactions = Symbol("transactions");
@@ -83,8 +78,16 @@ export default class Commander {
         const actions = this[_transactions].pop();
         if (actions.length > 0) {
             this.command(
-                () => { forEach(actions, transaction => transaction.redo()); },
-                () => { forEachRight(actions, transaction => transaction.undo()); }
+                () => {
+                    for (const transaction of actions) {
+                        transaction.redo();
+                    }
+                },
+                () => {
+                    for (let i = actions.length - 1; i >= 0; i--) {
+                        actions[i].undo();
+                    }
+                }
             );
         }
     }
@@ -178,7 +181,9 @@ export default class Commander {
                 renderBlock.addRenderPoint(renderPoint);
                 renderPoint.updateAll();
                 renderBlock.updateSize();
-                forEach(renderBlock.renderPoints, rp => rp.updatePosition());
+                for (renderPoint of renderBlock.renderPoints) {
+                    renderPoint.updatePosition();
+                }
             },
             () => { renderBlock.removeRenderPoint(renderPoint); renderBlock.updateSize(); }
         );
@@ -195,7 +200,9 @@ export default class Commander {
                 renderBlock.addRenderPoint(renderPoint);
                 renderPoint.updateAll();
                 renderBlock.updateSize();
-                forEach(renderBlock.renderPoints, rp => rp.updatePosition());
+                for (renderPoint of renderBlock.renderPoints) {
+                    renderPoint.updatePosition();
+                }
             }
         );
     }
@@ -218,9 +225,9 @@ export default class Commander {
     removeRenderGroup(renderGroup) {
         this.transaction();
         {
-            forEachRight(renderGroup.renderBlocks, (renderBlock) => {
-                this.removeRenderGroupRenderBlock(renderGroup, renderBlock);
-            });
+            for (let i = renderGroup.renderBlocks.length - 1; i >= 0; i--) {
+                this.removeRenderGroupRenderBlock(renderGroup, renderGroup.renderBlocks[i]);
+            }
             this.command(
                 () => { this[_renderer].removeRenderGroup(renderGroup); },
                 () => { this[_renderer].addRenderGroup(renderGroup); renderGroup.updateAll(); }

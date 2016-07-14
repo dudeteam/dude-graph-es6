@@ -59,6 +59,9 @@
     commander.transaction();
     commander.addRenderBlock(renderBlock1);
     commander.addRenderBlock(renderBlock2);
+    commander.commit();
+
+    commander.transaction();
     commander.addRenderBlockRenderPoint(renderBlock1, outputRender1);
     commander.addRenderBlockRenderPoint(renderBlock1, inputRender1);
     commander.addRenderBlockRenderPoint(renderBlock2, outputRender2);
