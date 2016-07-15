@@ -11,15 +11,42 @@
         height: 100%;
     }
 
-    /*noinspection CssUnusedSymbol*/
+    .dude-graph-block {
+        fill: white;
+    }
+
+    .dude-graph-block-name {
+        fill: black;
+    }
+
+    .dude-graph-group {
+        fill: grey;
+    }
+
+    .dude-graph-group-name {
+        fill: black;
+    }
+
+    .dude-graph-type-String {
+        fill: green;
+    }
+
+    .dude-graph-point-name {
+        fill: black;
+    }
+
     .dude-graph-connection {
         stroke-width: 2px;
         fill: transparent;
     }
+
+    .dude-graph-connection.dude-graph-type-String {
+        stroke: green;
+    }
 </style>
 <body>
 <svg id="renderer"></svg>
-<script src="../dist/dude-graph.js"></script>
+<script src="dist/dude-graph.js"></script>
 <script>
     var graph = new dudeGraph.Graph();
     var renderer = new dudeGraph.Renderer(graph, document.getElementById("renderer"));

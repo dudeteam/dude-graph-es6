@@ -117,8 +117,8 @@ export default class RenderPoint {
     added() {
         const r = this.renderBlock.renderer.config.point.radius;
 
-        this[_svgCircle] = this.element.append("svg:path");
-        this[_svgName] = this.element.append("svg:text");
+        this[_svgCircle] = this.element.append("svg:path").classed("dude-graph-point-circle");
+        this[_svgName] = this.element.append("svg:text").classed("dude-graph-point-name");
 
         this[_svgCircle].attr("d", () => {
             return "M 0,0m " + -r + ", 0a " + [r, r] + " 0 1,0 " + r * 2 + ",0a " + [r, r] + " 0 1,0 " + -(r * 2) + ",0";
@@ -144,9 +144,7 @@ export default class RenderPoint {
      * Called when this render point data changed and should update its element
      */
     updateData() {
-        const pointColor = this.renderBlock.renderer.config.typeColors[this.point.pointValueType] || this.renderBlock.renderer.config.typeColors.default;
-        this[_svgCircle].attr("stroke", pointColor);
-        this[_svgCircle].attr("fill", this.empty ? "transparent" : pointColor);
+        this.element.attr("class", "dude-graph-point dude-graph-type-" + this.point.pointValueType);
         this[_svgName].text(this.point.pointName);
     }
     /**

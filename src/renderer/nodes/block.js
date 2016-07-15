@@ -104,13 +104,12 @@ export default class RenderBlock extends RenderNode {
      * @override
      */
     added() {
-        this[_svgRect] = this.element.append("svg:rect").classed("dude-graph-block-background", true);
-        this[_svgName] = this.element.append("svg:text").classed("dude-graph-block-name", true);
-        this[_svgPoints] = this.element.append("svg:g").classed("dude-graph-block-points", true);
+        this[_svgRect] = this.element.append("svg:rect").classed("dude-graph-block-background");
+        this[_svgName] = this.element.append("svg:text").classed("dude-graph-block-name");
+        this[_svgPoints] = this.element.append("svg:g").classed("dude-graph-block-points");
 
         this[_svgRect].attr("rx", this.renderer.config.block.borderRadius);
         this[_svgRect].attr("ry", this.renderer.config.block.borderRadius);
-
         this[_svgName].attr("text-anchor", "middle");
         this[_svgName].attr("dominant-baseline", "text-before-edge");
     }
@@ -120,9 +119,7 @@ export default class RenderBlock extends RenderNode {
      * @override
      */
     updateData() {
-        const color = this.renderer.config.blockColors[this.block.blockName] || this.renderer.config.blockColors.default;
-
-        this[_svgRect].attr("fill", color);
+        this.element.attr("class", "dude-graph-block dude-graph-block-name-" + this[_block].blockName);
         this[_svgName].text(this.name);
     }
     /**
@@ -131,7 +128,6 @@ export default class RenderBlock extends RenderNode {
      */
     updatePosition() {
         this.element.attr("transform", "translate(" + this.position + ")");
-
         this.renderPoints.forEach(rp => rp.renderConnections.forEach(rc => rc.updatePosition()));
     }
     /**
@@ -140,10 +136,8 @@ export default class RenderBlock extends RenderNode {
      */
     updateSize() {
         this.size = renderBlockPreferredSize(this);
-
         this[_svgRect].attr("width", this.size[0]);
         this[_svgRect].attr("height", this.size[1]);
-
         this[_svgName].attr("x", this.size[0] / 2);
         this[_svgName].attr("y", this.renderer.config.block.padding);
     }

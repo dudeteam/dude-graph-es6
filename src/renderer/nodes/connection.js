@@ -79,13 +79,25 @@ export default class RenderConnection {
     removed() {}
 
     /**
+     * Called when this render connection should be updated
+     */
+    updateAll() {
+        this.updateData();
+        this.updatePosition();
+    }
+
+    /**
+     * Called when this render connection data changed and should update its element
+     */
+    updateData() {
+        this.element.attr("class", "dude-graph-connection dude-graph-type-" + this.outputRenderPoint.point.pointValueType);
+    }
+
+    /**
      * Called when this render connection position changed and should update its element
      */
     updatePosition() {
-        var inputColor = this.renderer.config.typeColors[this.inputRenderPoint.point.pointValueType];
-        var outputColor = this.renderer.config.typeColors[this.outputRenderPoint.point.pointValueType];
         this.element.attr("d", renderConnectionPreferredPath(this[_renderer], this[_outputRenderPoint].absolutePosition, this[_inputRenderPoint].absolutePosition));
-        this.element.attr("stroke", inputColor || outputColor || this.renderer.config.typeColors.default);
     }
 
     /**

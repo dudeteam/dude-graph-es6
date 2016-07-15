@@ -140,7 +140,7 @@ export default class Commander {
                 const renderConnection = this[_renderer].connect(outputRenderPoint, inputRenderPoint);
                 outputRenderPoint.updateData();
                 inputRenderPoint.updateData();
-                renderConnection.updatePosition();
+                renderConnection.updateAll();
             },
             () => {
                 this[_renderer].disconnect(outputRenderPoint, inputRenderPoint);
@@ -165,7 +165,7 @@ export default class Commander {
                 const renderConnection = this[_renderer].connect(outputRenderPoint, inputRenderPoint);
                 outputRenderPoint.updateData();
                 inputRenderPoint.updateData();
-                renderConnection.updatePosition();
+                renderConnection.updateAll();
             }
         );
     }
