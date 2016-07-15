@@ -44,7 +44,7 @@ describe("dude-renderer API", () => {
         expect(renderer.renderBlocksByBlock(block)).to.have.lengthOf(1);
         expect(svg.getElementsByClassName("dude-graph-blocks")[0].childElementCount).to.be.equal(1);
         expect(svg.getElementsByClassName("dude-graph-blocks")[0].children[0]).to.be.equal(renderBlock.element.element);
-        expect(renderBlock.element.element.childElementCount).to.be.equal(3);
+        expect(renderBlock.element.element.childElementCount).to.be.equal(4);
         expect(renderer.renderBlockById(renderBlock.id)).to.be.equal(renderBlock);
     });
     it("should remove render blocks", () => {

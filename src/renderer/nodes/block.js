@@ -4,7 +4,8 @@ import {renderBlockPreferredSize} from "../utils/measure";
 const _block = Symbol("block");
 const _parent = Symbol("parent");
 const _renderPoints = Symbol("renderPoints");
-const _svgRect = Symbol("svgRect");
+const _svgBackground = Symbol("svgRect1");
+const _svgContent = Symbol("svgRect2");
 const _svgName = Symbol("svgName");
 const _svgPoints = Symbol("svgPoints");
 
@@ -104,12 +105,13 @@ export default class RenderBlock extends RenderNode {
      * @override
      */
     added() {
-        this[_svgRect] = this.element.append("svg:rect").classed("dude-graph-block-background");
+        this[_svgBackground] = this.element.append("svg:rect").classed("dude-graph-block-background");
+        this[_svgContent] = this.element.append("svg:rect").classed("dude-graph-block-content");
         this[_svgName] = this.element.append("svg:text").classed("dude-graph-block-name");
         this[_svgPoints] = this.element.append("svg:g").classed("dude-graph-block-points");
 
-        this[_svgRect].attr("rx", this.renderer.config.block.borderRadius);
-        this[_svgRect].attr("ry", this.renderer.config.block.borderRadius);
+        this[_svgBackground].attr("rx", this.renderer.config.block.borderRadius);
+        this[_svgBackground].attr("ry", this.renderer.config.block.borderRadius);
         this[_svgName].attr("text-anchor", "middle");
         this[_svgName].attr("dominant-baseline", "text-before-edge");
     }
@@ -136,8 +138,13 @@ export default class RenderBlock extends RenderNode {
      */
     updateSize() {
         this.size = renderBlockPreferredSize(this);
-        this[_svgRect].attr("width", this.size[0]);
-        this[_svgRect].attr("height", this.size[1]);
+
+        this[_svgBackground].attr("x", -2);
+        this[_svgBackground].attr("width", this.size[0] + 4);
+        this[_svgBackground].attr("height", this.size[1] + 2);
+        this[_svgContent].attr("y", this.renderer.config.block.header - 16);
+        this[_svgContent].attr("width", this.size[0]);
+        this[_svgContent].attr("height", this.size[1] - this.renderer.config.block.header + 16);
         this[_svgName].attr("x", this.size[0] / 2);
         this[_svgName].attr("y", this.renderer.config.block.padding);
     }
