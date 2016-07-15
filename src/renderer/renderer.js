@@ -124,10 +124,10 @@ export default class Renderer extends EventClass {
      */
     addRenderBlock(renderBlock) {
         if (renderBlock.block.blockGraph !== this[_graph]) {
-            throw new Error("`" + this.fancyName + "` cannot add a renderBlock bound to another graph");
+            throw new Error(this.fancyName + " cannot add a renderBlock bound to another graph");
         }
         if (renderBlock.id !== null && typeof this[_renderBlockIds][renderBlock.id] !== "undefined") {
-            throw new Error("`" + this.fancyName + "` cannot redefine id `" + renderBlock.id + "`");
+            throw new Error(this.fancyName + " cannot redefine id " + renderBlock.id);
         }
         if (renderBlock.id === null) {
             renderBlock.id = renderBlock.block.blockId + "#" + uuid();
@@ -147,10 +147,10 @@ export default class Renderer extends EventClass {
      */
     removeRenderBlock(renderBlock) {
         if (renderBlock.renderer !== this || !this[_renderBlocks].includes(renderBlock)) {
-            throw new Error("`" + this.fancyName + "` has no render block `" + renderBlock.fancyName + "`");
+            throw new Error(this.fancyName + " has no render block " + renderBlock.fancyName);
         }
         if (renderBlock.parent !== null) {
-            throw new Error("`" + this.fancyName + "` cannot remove render block with a parent");
+            throw new Error(this.fancyName + " cannot remove render block with a parent");
         }
         renderBlock.removed();
         renderBlock.element.remove();
@@ -181,7 +181,7 @@ export default class Renderer extends EventClass {
      */
     addRenderGroup(renderGroup) {
         if (renderGroup.id !== null && typeof this[_renderGroupIds][renderGroup.id] !== "undefined") {
-            throw new Error("`" + this.fancyName + "` cannot redefine id `" + renderGroup.id + "`");
+            throw new Error(this.fancyName + " cannot redefine id " + renderGroup.id);
         }
         if (renderGroup.id === null) {
             renderGroup.id = uuid();
@@ -201,10 +201,10 @@ export default class Renderer extends EventClass {
      */
     removeRenderGroup(renderGroup) {
         if (renderGroup.renderer !== this || !this[_renderGroups].includes(renderGroup)) {
-            throw new Error("`" + this.fancyName + "` has no render block `" + renderGroup.fancyName + "`");
+            throw new Error(this.fancyName + " has no render block " + renderGroup.fancyName);
         }
         if (renderGroup.renderBlocks.length > 0) {
-            throw new Error("`" + this.fancyName + "` cannot remove render group with render blocks");
+            throw new Error(this.fancyName + " cannot remove render group with render blocks");
         }
         renderGroup.removed();
         renderGroup.element.remove();
@@ -229,33 +229,33 @@ export default class Renderer extends EventClass {
      */
     connect(outputRenderPoint, inputRenderPoint) {
         if (outputRenderPoint.renderBlock === null) {
-            throw new Error("`" + outputRenderPoint.fancyName +
-                "` cannot connect to another render point when not bound to a render block");
+            throw new Error(outputRenderPoint.fancyName +
+                " cannot connect to another render point when not bound to a render block");
         }
         if (inputRenderPoint.renderBlock === null) {
-            throw new Error("`" + inputRenderPoint.fancyName +
-                "` cannot connect to another render point when not bound to a render block");
+            throw new Error(inputRenderPoint.fancyName +
+                " cannot connect to another render point when not bound to a render block");
         }
         if (outputRenderPoint.renderBlock.renderer !== this) {
-            throw new Error("`" + outputRenderPoint.fancyName + "` is not in this renderer");
+            throw new Error(outputRenderPoint.fancyName + " is not in this renderer");
         }
         if (inputRenderPoint.renderBlock.renderer !== this) {
-            throw new Error("`" + inputRenderPoint.fancyName + "` is not in this renderer");
+            throw new Error(inputRenderPoint.fancyName + " is not in this renderer");
         }
         if (!outputRenderPoint.point.pointOutput) {
-            throw new Error("`" + outputRenderPoint.fancyName + "` is not an output");
+            throw new Error(outputRenderPoint.fancyName + " is not an output");
         }
         if (inputRenderPoint.point.pointOutput) {
-            throw new Error("`" + inputRenderPoint.fancyName + "` is not an input");
+            throw new Error(inputRenderPoint.fancyName + " is not an input");
         }
         const connection = this[_graph].connectionForPoints(outputRenderPoint.point, inputRenderPoint.point);
         if (connection === null) {
-            throw new Error("`" + outputRenderPoint.point.fancyName +
-                "` is not connected to `" + inputRenderPoint.point.fancyName  + "`");
+            throw new Error(outputRenderPoint.point.fancyName +
+                " is not connected to " + inputRenderPoint.point.fancyName);
         }
         const renderConnectionFound = this.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint);
         if (renderConnectionFound !== null) {
-            throw new Error("Cannot redefine `" + renderConnectionFound.fancyName + "`");
+            throw new Error(this.fancyName + " cannot redefine " + renderConnectionFound.fancyName);
         }
         const renderConnection = new RenderConnection(connection, outputRenderPoint, inputRenderPoint);
         this[_renderConnections].push(renderConnection);
@@ -274,29 +274,29 @@ export default class Renderer extends EventClass {
      */
     disconnect(outputRenderPoint, inputRenderPoint) {
         if (outputRenderPoint.renderBlock === null) {
-            throw new Error("`" + outputRenderPoint.fancyName +
-                "` cannot connect to another render point when not bound to a render block");
+            throw new Error(outputRenderPoint.fancyName +
+                " cannot connect to another render point when not bound to a render block");
         }
         if (inputRenderPoint.renderBlock === null) {
-            throw new Error("`" + inputRenderPoint.fancyName +
-                "` cannot connect to another render point when not bound to a render block");
+            throw new Error(inputRenderPoint.fancyName +
+                " cannot connect to another render point when not bound to a render block");
         }
         if (outputRenderPoint.renderBlock.renderer !== this) {
-            throw new Error("`" + outputRenderPoint.fancyName + "` is not in this renderer");
+            throw new Error(outputRenderPoint.fancyName + " is not in this renderer");
         }
         if (inputRenderPoint.renderBlock.renderer !== this) {
-            throw new Error("`" + inputRenderPoint.fancyName + "` is not in this renderer");
+            throw new Error(inputRenderPoint.fancyName + " is not in this renderer");
         }
         if (!outputRenderPoint.point.pointOutput) {
-            throw new Error("`" + outputRenderPoint.fancyName + "` is not an output");
+            throw new Error(outputRenderPoint.fancyName + " is not an output");
         }
         if (inputRenderPoint.point.pointOutput) {
-            throw new Error("`" + inputRenderPoint.fancyName + "` is not an input");
+            throw new Error(inputRenderPoint.fancyName + " is not an input");
         }
         const renderConnection = this.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint);
         if (renderConnection === null) {
-            throw new Error("`" + this.fancyName + "` cannot find a render connection between `" +
-                outputRenderPoint.fancyName + "` and `" + inputRenderPoint.fancyName + "`");
+            throw new Error(this.fancyName + " cannot find a render connection between " +
+                outputRenderPoint.fancyName + " and " + inputRenderPoint.fancyName);
         }
         outputRenderPoint.removeRenderConnection(renderConnection);
         inputRenderPoint.removeRenderConnection(renderConnection);

@@ -53,10 +53,10 @@ export default class Graph extends EventClass {
      */
     addBlock(block) {
         if (block.blockGraph !== null) {
-            throw new Error("`" + block.fancyName + "` cannot redefine `blockGraph`");
+            throw new Error(block.fancyName + " cannot redefine blockGraph");
         }
         if (block.blockId !== null && typeof this[_graphBlockIds][block.blockId] !== "undefined") {
-            throw new Error("`" + this.fancyName + "` cannot redefine id `" + block.blockId + "`");
+            throw new Error(this.fancyName + " cannot redefine id " + block.blockId);
         }
         block.blockGraph = this;
         if (block.blockId === null) {
@@ -79,7 +79,7 @@ export default class Graph extends EventClass {
      */
     removeBlock(block) {
         if (block.blockGraph !== this || !this[_graphBlocks].includes(block)) {
-            throw new Error("`" + this.fancyName + "` has no block `" + block.fancyName + "`");
+            throw new Error(this.fancyName + " has no block " + block.fancyName);
         }
         block.removePoints();
         this[_graphBlocks].splice(this[_graphBlocks].indexOf(block), 1);
@@ -127,10 +127,10 @@ export default class Graph extends EventClass {
      */
     addVariable(variable) {
         if (variable.variableGraph !== null) {
-            throw new Error("`" + variable.fancyName + "` cannot redefine `variableGraph`");
+            throw new Error(variable.fancyName + " cannot redefine variableGraph");
         }
         if (this.variableByName(variable.variableName) !== null) {
-            throw new Error("`" + this.fancyName + "` cannot redefine variable name `" + variable.variableName + "`");
+            throw new Error(this.fancyName + " cannot redefine variable name " + variable.variableName);
         }
         variable.variableGraph = this;
         variable.added();
@@ -143,7 +143,7 @@ export default class Graph extends EventClass {
      */
     removeVariable(variable) {
         if (variable.variableGraph !== this || this.variableByName(variable.variableName) === null) {
-            throw new Error("`" + this.fancyName + "` has no variable `" + variable.fancyName + "`");
+            throw new Error(this.fancyName + " has no variable " + variable.fancyName);
         }
         if (variable.variableBlock !== null) {
             this.removeBlock(variable.variableBlock);
@@ -172,10 +172,10 @@ export default class Graph extends EventClass {
         }
         const valueTypeInfo = this.valueTypeByName(valueType);
         if (valueTypeInfo === null) {
-            throw new Error("`" + this.fancyName + "` has no valueType `" + valueType + "`");
+            throw new Error(this.fancyName + " has no valueType " + valueType);
         }
         if (typeof valueTypeInfo.typeConvert === "undefined") {
-            throw new Error("`" + this.fancyName + "` has no valueType `" + valueType + "` converter");
+            throw new Error(this.fancyName + " has no valueType " + valueType + " converter");
         }
         return valueTypeInfo.typeConvert(value);
     }
@@ -189,43 +189,43 @@ export default class Graph extends EventClass {
         const inputValueType = this.valueTypeByName(inputPoint.pointValueType);
 
         if (inputValueType === null) {
-            throw new Error("`" + this.fancyName + "` cannot find compatible type to convert connection from `" +
-                outputPoint.pointValueType + "` to `" + inputPoint.pointValueType + "`");
+            throw new Error(this.fancyName + " cannot find compatible type to convert connection from " +
+                outputPoint.pointValueType + " to " + inputPoint.pointValueType);
         }
 
         if (typeof outputPoint.pointOutput !== "undefined" && !outputPoint.pointOutput) {
-            this.errno(Error("`" + outputPoint.fancyName + "` is not an output"));
+            this.errno(Error(outputPoint.fancyName + " is not an output"));
             return false;
         }
         if (typeof inputPoint.pointOutput !== "undefined" && inputPoint.pointOutput) {
-            this.errno(Error("`" + inputPoint.fancyName + "` is not an input"));
+            this.errno(Error(inputPoint.fancyName + " is not an input"));
             return false;
         }
 
         if (typeof outputPoint.pointValue !== "undefined" && outputPoint.pointValue !== null) {
-            this.errno(new Error("`" + outputPoint.fancyName + "` have a non-null `pointValue` and cannot be connected"));
+            this.errno(new Error(outputPoint.fancyName + " have a non-null pointValue and cannot be connected"));
             return false;
         }
         if (typeof inputPoint.pointValue !== "undefined" && inputPoint.pointValue !== null) {
-            this.errno(new Error("`" + inputPoint.fancyName + "` have a non-null `pointValue` and cannot be connected"));
+            this.errno(new Error(inputPoint.fancyName + " have a non-null pointValue and cannot be connected"));
             return false;
         }
 
         if (typeof outputPoint.hasPolicy !== "undefined" && outputPoint.hasPolicy(PointPolicy.SINGLE_CONNECTION) && !outputPoint.emptyConnection()) {
-            this.errno(new Error("`" + outputPoint.fancyName + "` cannot have multiple connections"));
+            this.errno(new Error(outputPoint.fancyName + " cannot have multiple connections"));
             return false;
         }
         if (typeof inputPoint.hasPolicy !== "undefined" && inputPoint.hasPolicy(PointPolicy.SINGLE_CONNECTION) && !inputPoint.emptyConnection()) {
-            this.errno(new Error("`" + inputPoint.fancyName + "` cannot have multiple connections"));
+            this.errno(new Error(inputPoint.fancyName + " cannot have multiple connections"));
             return false;
         }
 
         if (typeof outputPoint.hasPolicy !== "undefined" && !outputPoint.hasPolicy(PointPolicy.SINGLE_CONNECTION) && !outputPoint.hasPolicy(PointPolicy.MULTIPLE_CONNECTIONS)) {
-            this.errno(new Error("`" + outputPoint.fancyName + "` cannot have connections"));
+            this.errno(new Error(outputPoint.fancyName + " cannot have connections"));
             return false;
         }
         if (typeof inputPoint.hasPolicy !== "undefined" && !inputPoint.hasPolicy(PointPolicy.SINGLE_CONNECTION) && !inputPoint.hasPolicy(PointPolicy.MULTIPLE_CONNECTIONS)) {
-            this.errno(new Error("`" + inputPoint.fancyName + "` cannot have connections"));
+            this.errno(new Error(inputPoint.fancyName + " cannot have connections"));
             return false;
         }
 
@@ -234,39 +234,39 @@ export default class Graph extends EventClass {
         }
 
         if (typeof outputPoint.hasPolicy !== "undefined" && !outputPoint.hasPolicy(PointPolicy.CONVERSION)) {
-            this.errno(new Error("`" + outputPoint.fancyName + "` cannot be converted"));
+            this.errno(new Error(outputPoint.fancyName + " cannot be converted"));
             return false;
         }
         if (typeof inputPoint.hasPolicy !== "undefined" && !inputPoint.hasPolicy(PointPolicy.CONVERSION)) {
-            this.errno(new Error("`" + inputPoint.fancyName + "` cannot be converted"));
+            this.errno(new Error(inputPoint.fancyName + " cannot be converted"));
             return false;
         }
 
         if (!inputValueType.typeCompatibles.includes(outputPoint.pointValueType)) {
-            this.errno(new Error("`" + inputPoint.pointValueType + "` is not compatible with `" +
-                outputPoint.pointValueType + "`"));
+            this.errno(new Error(inputPoint.pointValueType + " is not compatible with " +
+                outputPoint.pointValueType));
             return false;
         }
 
         let previousErrno = this[_graphErrno];
         if (typeof outputPoint.acceptConnect !== "undefined" && !outputPoint.acceptConnect(inputPoint)) {
             if (this[_graphErrno] !== null && this[_graphErrno] !== previousErrno) {
-                this.errno(new Error("`" + outputPoint.fancyName +
-                    "` cannot accept to connect to `" + inputPoint.fancyName + "`: " + this[_graphErrno].message));
+                this.errno(new Error(outputPoint.fancyName +
+                    " cannot accept to connect to " + inputPoint.fancyName + ": " + this[_graphErrno].message));
             } else {
-                this.errno(new Error("`" + outputPoint.fancyName +
-                    "` cannot accept to connect to `" + inputPoint.fancyName + "`"));
+                this.errno(new Error(outputPoint.fancyName +
+                    " cannot accept to connect to " + inputPoint.fancyName));
             }
             return false;
         }
         previousErrno = this[_graphErrno];
         if (typeof inputPoint.acceptConnect !== "undefined" && !inputPoint.acceptConnect(outputPoint)) {
             if (this[_graphErrno] !== null && this[_graphErrno] !== previousErrno) {
-                this.errno(new Error("`" + outputPoint.fancyName +
-                    "` cannot accept to connect to `" + inputPoint.fancyName + "`: " + this[_graphErrno].message));
+                this.errno(new Error(outputPoint.fancyName +
+                    " cannot accept to connect to " + inputPoint.fancyName + ": " + this[_graphErrno].message));
             } else {
-                this.errno(new Error("`" + outputPoint.fancyName +
-                    "` cannot accept to connect to `" + inputPoint.fancyName + "`"));
+                this.errno(new Error(outputPoint.fancyName +
+                    " cannot accept to connect to " + inputPoint.fancyName));
             }
             return false;
         }
@@ -282,19 +282,19 @@ export default class Graph extends EventClass {
      */
     connect(outputPoint, inputPoint) {
         if (outputPoint.pointBlock === null) {
-            throw new Error("`" + outputPoint.fancyName + "` cannot connect to another point when not bound to a block");
+            throw new Error(outputPoint.fancyName + " cannot connect to another point when not bound to a block");
         }
         if (inputPoint.pointBlock === null) {
-            throw new Error("`" + inputPoint.fancyName + "` cannot connect to another point when not bound to a block");
+            throw new Error(inputPoint.fancyName + " cannot connect to another point when not bound to a block");
         }
         if (outputPoint === inputPoint) {
-            throw new Error("`" + this.fancyName + "` cannot connect `" + outputPoint.fancyName + "` to itself");
+            throw new Error(this.fancyName + " cannot connect " + outputPoint.fancyName + " to itself");
         }
         if (!outputPoint.pointOutput) {
-            throw new Error("`" + outputPoint.fancyName + "` is not an output");
+            throw new Error(outputPoint.fancyName + " is not an output");
         }
         if (inputPoint.pointOutput) {
-            throw new Error("`" + outputPoint.fancyName + "` is not an input");
+            throw new Error(outputPoint.fancyName + " is not an input");
         }
         if (!this.convertConnection(outputPoint, inputPoint)) {
             const connectionError = this[_graphErrno] || {};
@@ -307,13 +307,13 @@ export default class Graph extends EventClass {
                     }
                 }
             } else {
-                throw new Error("`" + this.fancyName + "` cannot connect `" +
-                    outputPoint.fancyName + "` to `" + inputPoint.fancyName + ": " + connectionError.message);
+                throw new Error(this.fancyName + " cannot connect " +
+                    outputPoint.fancyName + " to " + inputPoint.fancyName + ": " + connectionError.message);
             }
         }
         const connectionFound = this.connectionForPoints(outputPoint, inputPoint);
         if (connectionFound !== null) {
-            throw new Error("`" + connectionFound.fancyName + "` already exists");
+            throw new Error(connectionFound.fancyName + " already exists");
         }
         const connection = new Connection(outputPoint, inputPoint);
         if (!outputPoint.pointBlock.acceptConnect(outputPoint, inputPoint)) {
@@ -341,15 +341,15 @@ export default class Graph extends EventClass {
      */
     disconnect(outputPoint, inputPoint) {
         if (outputPoint.pointBlock === null) {
-            throw new Error("`" + outputPoint.fancyName + "` cannot disconnect from another point when not bound to a block");
+            throw new Error(outputPoint.fancyName + " cannot disconnect from another point when not bound to a block");
         }
         if (inputPoint.pointBlock === null) {
-            throw new Error("`" + inputPoint.fancyName + "` cannot disconnect from another point when not bound to a block");
+            throw new Error(inputPoint.fancyName + " cannot disconnect from another point when not bound to a block");
         }
         const connectionFound = this.connectionForPoints(outputPoint, inputPoint);
         if (connectionFound === null) {
-            throw new Error("`" + this.fancyName + "` cannot find a connection between `" +
-                outputPoint.fancyName + "` and `" + inputPoint.fancyName + "`");
+            throw new Error(this.fancyName + " cannot find a connection between " +
+                outputPoint.fancyName + " and " + inputPoint.fancyName);
         }
         this._removeConnection(connectionFound);
         outputPoint.pointBlock.pointDisconnected(outputPoint, inputPoint);
@@ -382,10 +382,10 @@ export default class Graph extends EventClass {
         const outputPoint = connection.connectionOutputPoint;
         const inputPoint = connection.connectionInputPoint;
         if (outputPoint.pointConnections.includes(connection)) {
-            throw new Error("`" + outputPoint.fancyName + "` cannot redefine `" + connection.fancyName + "`");
+            throw new Error(outputPoint.fancyName + " cannot redefine " + connection.fancyName);
         }
         if (inputPoint.pointConnections.includes(connection)) {
-            throw new Error("`" + inputPoint.fancyName + "` cannot redefine `" + connection.fancyName + "`");
+            throw new Error(inputPoint.fancyName + " cannot redefine " + connection.fancyName);
         }
         outputPoint.pointConnections.push(connection);
         inputPoint.pointConnections.push(connection);
@@ -400,10 +400,10 @@ export default class Graph extends EventClass {
         const outputPoint = connection.connectionOutputPoint;
         const inputPoint = connection.connectionInputPoint;
         if (!outputPoint.pointConnections.includes(connection)) {
-            throw new Error("`" + outputPoint.fancyName + "` has no connection `" + connection.fancyName + "`");
+            throw new Error(outputPoint.fancyName + " has no connection " + connection.fancyName);
         }
         if (!inputPoint.pointConnections.includes(connection)) {
-            throw new Error("`" + inputPoint.fancyName + "` has no connection `" + connection.fancyName + "`");
+            throw new Error(inputPoint.fancyName + " has no connection " + connection.fancyName);
         }
         connection.connectionOutputPoint.pointConnections.splice(connection.connectionOutputPoint.pointConnections.indexOf(connection), 1);
         connection.connectionInputPoint.pointConnections.splice(connection.connectionInputPoint.pointConnections.indexOf(connection), 1);
@@ -416,7 +416,7 @@ export default class Graph extends EventClass {
      */
     addValueType(valueTypeInfo) {
         if (this.valueTypeByName(valueTypeInfo.typeName) !== null) {
-            throw new Error("`" + this.fancyName + "` cannot redefine value type`" + valueTypeInfo.typeName + "`");
+            throw new Error(this.fancyName + " cannot redefine value type" + valueTypeInfo.typeName);
         }
         this[_graphValueTypes][valueTypeInfo.typeName] = valueTypeInfo;
     }

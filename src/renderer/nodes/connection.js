@@ -21,10 +21,10 @@ export default class RenderConnection {
         this[_outputRenderPoint] = outputRenderPoint;
         this[_inputRenderPoint] = inputRenderPoint;
         if (connection.connectionOutputPoint !== outputRenderPoint.point) {
-            throw new Error("`" + connection.fancyName + "` is not connected to `" + outputRenderPoint.point.fancyName + "`");
+            throw new Error(connection.fancyName + " is not connected to " + outputRenderPoint.point.fancyName);
         }
         if (connection.connectionInputPoint !== inputRenderPoint.point) {
-            throw new Error("`" + connection.fancyName + "` is not connected to `" + inputRenderPoint.point.fancyName + "`");
+            throw new Error(connection.fancyName + " is not connected to " + inputRenderPoint.point.fancyName);
         }
     }
 

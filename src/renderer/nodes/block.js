@@ -69,10 +69,10 @@ export default class RenderBlock extends RenderNode {
      */
     addRenderPoint(renderPoint) {
         if (this.renderer === null) {
-            throw new Error("`" + this.fancyName + "` cannot add renderPoint when not bound to a renderer");
+            throw new Error(this.fancyName + " cannot add renderPoint when not bound to a renderer");
         }
         if (renderPoint.element !== null || this[_renderPoints].some(rp => rp.point === renderPoint.point)) {
-            throw new Error("`" + this.fancyName + "` cannot redefine render point `" + renderPoint.fancyName + "`");
+            throw new Error(this.fancyName + " cannot redefine render point " + renderPoint.fancyName);
         }
         this[_renderPoints].push(renderPoint);
         renderPoint.renderBlock = this;
@@ -86,10 +86,10 @@ export default class RenderBlock extends RenderNode {
      */
     removeRenderPoint(renderPoint) {
         if (this.renderer === null) {
-            throw new Error("`" + this.fancyName + "` cannot remove renderPoint when not bound to a renderer");
+            throw new Error(this.fancyName + " cannot remove renderPoint when not bound to a renderer");
         }
         if (renderPoint.element === null || !this[_renderPoints].includes(renderPoint)) {
-            throw new Error("`" + this.fancyName + "` cannot redefine render point `" + renderPoint.fancyName + "`");
+            throw new Error(this.fancyName + " cannot redefine render point " + renderPoint.fancyName);
         }
         this[_renderPoints].splice(this[_renderPoints].indexOf(renderPoint), 1);
         renderPoint.removed();

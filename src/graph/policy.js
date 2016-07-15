@@ -60,7 +60,7 @@ export default class PointPolicy {
         for (const policyLabel of policyLabels) {
             const labelPolicyValue = PolicyLabels[policyLabel];
             if (typeof labelPolicyValue === "undefined") {
-                throw new Error("`" + policyLabel + "` is not a valid point policy");
+                throw new Error(policyLabel + " is not a valid point policy");
             }
             policy |= labelPolicyValue;
         }

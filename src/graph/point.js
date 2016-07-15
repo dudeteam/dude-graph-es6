@@ -36,15 +36,15 @@ export default class Point extends EventClass {
             this[_pointPolicy] = PointPolicy.DEFAULT;
         }
         if (typeof this[_pointName] !== "string") {
-            throw new Error("`" + this.fancyName + "` must have a non-null `pointName`");
+            throw new Error(this.fancyName + " must have a non-null pointName");
         }
         if (this[_pointTemplate] === null && typeof this[_pointValueType] !== "string") {
-            throw new Error("`" + this.fancyName + "` " +
-                "`pointValueType` must be a non-null String if no `pointTemplate` is provided");
+            throw new Error(this.fancyName + " " +
+                "pointValueType must be a non-null String if no pointTemplate is provided");
         }
         if (this.hasPolicy(PointPolicy.SINGLE_CONNECTION) && this.hasPolicy(PointPolicy.MULTIPLE_CONNECTIONS)) {
-            throw new Error("`" + this.fancyName + "` `pointPolicy` cannot mix " +
-                "`SINGLE_CONNECTION` and `MULTIPLE_CONNECTIONS`");
+            throw new Error(this.fancyName + " pointPolicy cannot mix " +
+                "SINGLE_CONNECTION and MULTIPLE_CONNECTIONS");
         }
     }
 
@@ -128,19 +128,19 @@ export default class Point extends EventClass {
      */
     changeValue(value, ignoreEmit) {
         if (this[_pointBlock] === null) {
-            throw new Error("`" + this.fancyName + "` cannot change value when not bound to a block");
+            throw new Error(this.fancyName + " cannot change value when not bound to a block");
         }
         if (value !== null && !this.emptyConnection()) {
-            throw new Error("`" + this.fancyName + "` cannot change value when connected to another point");
+            throw new Error(this.fancyName + " cannot change value when connected to another point");
         }
         if (value !== null && !this.hasPolicy(PointPolicy.VALUE)) {
-            throw new Error("`" + this.fancyName + "` cannot change value when the policy `VALUE` is disabled");
+            throw new Error(this.fancyName + " cannot change value when the policy VALUE is disabled");
         }
         const oldValue = this[_pointValue];
         const assignValue = this[_pointBlock].blockGraph.convertValue(this[_pointValueType], value);
         if (typeof assignValue === "undefined") {
-            throw new Error("`" + this[_pointBlock].blockGraph.fancyName + "` " + value +
-                "` is not compatible with type `" + this[_pointValueType] + "`");
+            throw new Error(this[_pointBlock].blockGraph.fancyName + " " + value +
+                " is not compatible with type " + this[_pointValueType]);
         }
         this[_pointValue] = assignValue;
         this[_pointBlock].pointValueChanged(this, assignValue, oldValue);
@@ -156,13 +156,13 @@ export default class Point extends EventClass {
      */
     changeValueType(pointValueType, ignoreEmit) {
         if (this[_pointBlock] === null) {
-            throw new Error("`" + this.fancyName + "` cannot change value type when not bound to a block");
+            throw new Error(this.fancyName + " cannot change value type when not bound to a block");
         }
         if (this[_pointBlock].blockGraph.valueTypeByName(pointValueType) === null) {
-            throw new Error("`" + this[_pointBlock].blockGraph.fancyName + "` has no value type `" + pointValueType + "`");
+            throw new Error(this[_pointBlock].blockGraph.fancyName + " has no value type " + pointValueType);
         }
         if (typeof this[_pointBlock].blockGraph.convertValue(pointValueType, this[_pointValue]) === "undefined") {
-            throw new Error("`" + this[_pointValue] + "` is not compatible with value type `" + pointValueType + "`");
+            throw new Error(this[_pointValue] + " is not compatible with value type " + pointValueType);
         }
         const oldValueType = this[_pointValueType];
         this[_pointValueType] = pointValueType;
@@ -196,7 +196,7 @@ export default class Point extends EventClass {
      */
     connect(otherPoint) {
         if (this[_pointBlock] === null) {
-            throw new Error("`" + this.fancyName + "`");
+            throw new Error(this.fancyName + " cannot connect when not bound to a block");
         }
         if (this[_pointOutput]) {
             return this[_pointBlock].blockGraph.connect(this, otherPoint);
@@ -210,7 +210,7 @@ export default class Point extends EventClass {
      */
     disconnect(otherPoint) {
         if (this[_pointBlock] === null) {
-            throw new Error("`" + this.fancyName + "`");
+            throw new Error(this.fancyName + " cannot disconnect when not bound to a block");
         }
         if (this[_pointOutput]) {
             return this[_pointBlock].blockGraph.disconnect(this, otherPoint);

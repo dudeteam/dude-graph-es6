@@ -26,13 +26,13 @@ export default class RenderGroup extends RenderNode {
      */
     addRenderBlock(renderBlock) {
         if (this.renderer === null) {
-            throw new Error("`" + this.fancyName + "` cannot add renderBlock when not bound to a renderer");
+            throw new Error(this.fancyName + " cannot add renderBlock when not bound to a renderer");
         }
         if (this.renderer !== renderBlock.renderer) {
-            throw new Error("`" + this.fancyName + "` is not in the same renderer as `" + renderBlock.fancyName + "`");
+            throw new Error(this.fancyName + " is not in the same renderer as " + renderBlock.fancyName);
         }
         if (renderBlock.parent !== null) {
-            throw new Error("`" + renderBlock.fancyName + "` cannot redefine `parent`");
+            throw new Error(renderBlock.fancyName + " cannot redefine parent");
         }
         this[_renderBlocks].push(renderBlock);
         renderBlock.parent = this;
@@ -43,10 +43,10 @@ export default class RenderGroup extends RenderNode {
      */
     removeRenderBlock(renderBlock) {
         if (this.renderer === null) {
-            throw new Error("`" + this.fancyName + "` cannot remove renderBlock when not bound to a renderer");
+            throw new Error(this.fancyName + " cannot remove renderBlock when not bound to a renderer");
         }
         if (renderBlock.parent !== this || !this[_renderBlocks].includes(renderBlock)) {
-            throw new Error("`" + this.fancyName + "` has no `" + renderBlock.fancyName + "`");
+            throw new Error(this.fancyName + " has no " + renderBlock.fancyName);
         }
         this[_renderBlocks].splice(this[_renderBlocks].indexOf(renderBlock), 1);
         renderBlock.parent = null;

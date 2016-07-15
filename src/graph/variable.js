@@ -22,13 +22,13 @@ export default class Variable extends EventClass {
         this[_variableBlock] = defaultValue(variableData.variableBlock, null);
         this[_variableGraph] = null;
         if (typeof this[_variableName] !== "string") {
-            throw new Error("`" + this.fancyName + "` `variableName` must be a non-null String");
+            throw new Error(this.fancyName + " variableName must be a non-null String");
         }
         if (typeof this[_variableValueType] !== "string") {
-            throw new Error("`" + this.fancyName + "` `_variableValueType` must be a non-null String");
+            throw new Error(this.fancyName + " _variableValueType must be a non-null String");
         }
         if (this[_variableBlock] !== null && !(this[_variableBlock] instanceof VariableBlock)) {
-            throw new Error("`" + this.fancyName + "` `variableBlock` must be of type `VariableBlock`");
+            throw new Error(this.fancyName + " variableBlock must be of type VariableBlock");
         }
     }
 
@@ -89,8 +89,8 @@ export default class Variable extends EventClass {
     changeVariableValue(value, ignoreEmit) {
         const assignValue = this[_variableGraph].convertValue(this[_variableValueType], value);
         if (typeof assignValue === "undefined") {
-            throw new Error("`" + this.fancyName + "` " + value +
-                "` is not compatible with type `" + this[_variableValueType] + "`");
+            throw new Error(this.fancyName + " " + value +
+                " is not compatible with type " + this[_variableValueType]);
         }
         const oldValue = this[_variableValue];
         this[_variableValue] = assignValue;

@@ -29,10 +29,10 @@ export default class Block extends EventClass {
         this[_blockTemplates] = defaultValue(blockData.blockTemplates, {});
         this[_blockGraph] = null;
         if (this[_blockId] !== null && typeof this[_blockId] !== "string") {
-            throw new Error("`" + this.fancyName + "` must have a null or valid string `blockId`");
+            throw new Error(this.fancyName + " must have a null or valid string blockId");
         }
         if (typeof this[_blockName] !== "string") {
-            throw new Error("`" + this.fancyName + "` must have a non-null `blockName`");
+            throw new Error(this.fancyName + " must have a non-null blockName");
         }
     }
 
@@ -138,18 +138,18 @@ export default class Block extends EventClass {
      */
     changeTemplate(templateName, valueType, ignoreEmit) {
         if (this[_blockGraph] === null) {
-            throw new Error("`" + this.fancyName + "` cannot manipulate templates when not bound to a graph");
+            throw new Error(this.fancyName + " cannot manipulate templates when not bound to a graph");
         }
         if (this[_blockGraph].valueTypeByName(valueType) === null) {
-            throw new Error("`" + this.fancyName + "` has no value type `" + valueType + "`");
+            throw new Error(this.fancyName + " has no value type " + valueType);
         }
         const template = this.templateByName(templateName);
         if (template === null) {
-            throw new Error("`" + this.fancyName + "` has no template `" + templateName + "`");
+            throw new Error(this.fancyName + " has no template " + templateName);
         }
         if (!template.templates.includes(valueType)) {
-            throw new Error("`" + this.fancyName + "` has no value type `" + valueType +
-                "` is its templates: ` " + template.templates.join(", ") + "`");
+            throw new Error(this.fancyName + " has no value type " + valueType +
+                " is its templates:  " + template.templates.join(", "));
         }
         if (template.valueType === valueType) {
             return; // Already the same type
@@ -210,7 +210,7 @@ export default class Block extends EventClass {
      */
     templateByName(templateName) {
         if (this[_blockGraph] === null) {
-            throw new Error("`" + this.fancyName + "` cannot manipulate templates when not bound to a graph");
+            throw new Error(this.fancyName + " cannot manipulate templates when not bound to a graph");
         }
         return this[_blockTemplates][templateName] || null;
     }
@@ -222,13 +222,13 @@ export default class Block extends EventClass {
      */
     addPoint(point, position) {
         if (this[_blockGraph] === null) {
-            throw new Error("`" + this.fancyName + "` cannot add point when not bound to a graph");
+            throw new Error(this.fancyName + " cannot add point when not bound to a graph");
         }
         if (point.pointOutput && this.outputByName(point.pointName) !== null) {
-            throw new Error("`" + this.fancyName + "` cannot redefine `" + point.pointName + "`");
+            throw new Error(this.fancyName + " cannot redefine " + point.pointName);
         }
         if (!point.pointOutput && this.inputByName(point.pointName) !== null) {
-            throw new Error("`" + this.fancyName + "` cannot redefine `" + point.pointName + "`");
+            throw new Error(this.fancyName + " cannot redefine " + point.pointName);
         }
         point.pointBlock = this;
         try {
@@ -238,7 +238,7 @@ export default class Block extends EventClass {
                 const template = this.templateByName(point.pointTemplate);
                 if (template === null) {
                     //noinspection ExceptionCaughtLocallyJS
-                    throw new Error("`" + this.fancyName + "` has no template `" + point.pointTemplate + "`");
+                    throw new Error(this.fancyName + " has no template " + point.pointTemplate);
                 }
                 point.changeValueType(template.valueType, true);
             }
@@ -266,10 +266,10 @@ export default class Block extends EventClass {
      */
     removePoint(point) {
         if (point.pointOutput && this.outputByName(point.pointName) === null) {
-            throw new Error("`" + this.fancyName + "` has not output `" + point.pointName + "`");
+            throw new Error(this.fancyName + " has not output " + point.pointName);
         }
         if (!point.pointOutput && this.inputByName(point.pointName) === null) {
-            throw new Error("`" + this.fancyName + "` has no input `" + point.pointName + "`");
+            throw new Error(this.fancyName + " has no input " + point.pointName);
         }
         point.disconnectAll();
         this.pointRemoved(point);
@@ -320,7 +320,7 @@ export default class Block extends EventClass {
      */
     acceptConnect(blockPoint, otherPoint) {
         if (blockPoint.pointBlock !== this) {
-            throw new Error("`" + this.fancyName + "` has no point `" + blockPoint.pointName + "`");
+            throw new Error(this.fancyName + " has no point " + blockPoint.pointName);
         }
         return otherPoint === otherPoint;
     }

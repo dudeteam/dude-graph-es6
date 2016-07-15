@@ -6,7 +6,7 @@ const _namespaces = {
 const _namespace = (qname) => {
     const pair = qname.split(":");
     if (pair.length > 1 && typeof _namespaces[pair[0]] === "undefined") {
-        throw new Error("`" + pair[0] + "` is not a valid namespace, valid namespaces are", _namespaces);
+        throw new Error(pair[0] + " is not a valid namespace, valid namespaces are", _namespaces);
     }
     return {
         "URI": pair.length > 1 ? _namespaces[pair[0]] : null,
