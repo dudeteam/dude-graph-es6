@@ -145,6 +145,7 @@ export default class RenderPoint {
      */
     updateData() {
         this.element.attr("class", "dude-graph-point dude-graph-type-" + this.point.pointValueType);
+        this.element.classed("dude-graph-point-empty", this.empty);
         this[_svgName].text(this.point.pointName);
     }
     /**
