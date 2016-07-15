@@ -22,25 +22,25 @@ describe("dude-graph API", () => {
         const graph = new Graph();
         expect(graph.graphBlocks).to.have.lengthOf(0);
         expect(graph.graphConnections).to.have.lengthOf(0);
-        expect(graph.valueTypeByName("Number")).to.be.not.null;
-        expect(graph.valueTypeByName("String")).to.be.not.null;
-        expect(graph.valueTypeByName("Boolean")).to.be.not.null;
-        expect(graph.valueTypeByName("Object")).to.be.not.null;
-        expect(graph.valueTypeByName("Array")).to.be.not.null;
+        expect(graph.valueTypeByName("number")).to.be.not.null;
+        expect(graph.valueTypeByName("string")).to.be.not.null;
+        expect(graph.valueTypeByName("boolean")).to.be.not.null;
+        expect(graph.valueTypeByName("object")).to.be.not.null;
+        expect(graph.valueTypeByName("array")).to.be.not.null;
     });
     it("should create blocks", () => {
         const block = new Block({
             "blockId": "testId",
             "blockName": "Test",
             "blockTemplates": {
-                "ValueType": ["Number", "String"]
+                "ValueType": ["number", "string"]
             }
         });
         expect(block.blockId).to.be.equal("testId");
         expect(block.blockType).to.be.equal("Block");
         expect(block.blockName).to.be.equal("Test");
         expect(block.blockTemplates).to.be.eql({
-            "ValueType": ["Number", "String"]
+            "ValueType": ["number", "string"]
         });
         // Different ways of creating a block
         new Block();
@@ -52,7 +52,7 @@ describe("dude-graph API", () => {
         });
         new Block({
             "blockTemplates": {
-                "ValueType": ["Number", "String"]
+                "ValueType": ["number", "string"]
             }
         });
     });
@@ -160,7 +160,7 @@ describe("dude-graph API", () => {
             //noinspection JSCheckFunctionSignatures
             new Point(true, {
                 "pointName": "output",
-                "pointValueType": "String",
+                "pointValueType": "string",
                 "pointPolicy": ["UNKNOWN_POLICY"] // Unknown point policy
             });
         }).to.throw();
@@ -179,7 +179,7 @@ describe("dude-graph API", () => {
             graph.addBlock(block);
             block.addPoint(new Point(false, {
                 "pointName": "input2",
-                "pointValueType": "String",
+                "pointValueType": "string",
                 "pointValue": Object
             }));
         }).to.throw();
@@ -198,7 +198,7 @@ describe("dude-graph API", () => {
         const block = new Block();
         const outputPoint = new Point(true, {
             "pointName": "output",
-            "pointValueType": "String"
+            "pointValueType": "string"
         });
         expect(() => {
             block.addPoint(outputPoint); // The block must be added to the graph to accept points
@@ -210,19 +210,19 @@ describe("dude-graph API", () => {
         expect(() => {
             block.addPoint(new Point(true, {
                 "pointName": "output", // Cannot add 2 outputs with the same name
-                "pointValueType": "String"
+                "pointValueType": "string"
             }));
         }).to.throw();
         block.addPoint(new Point(false, {
             "pointName": "output", // But can add an input with the same name as an output
-            "pointValueType": "String"
+            "pointValueType": "string"
         }));
         expect(block.blockOutputs).to.have.lengthOf(1);
         expect(block.blockInputs).to.have.lengthOf(1);
         expect(() => {
             block.addPoint(new Point(false, {
                 "pointName": "output", // But still cannot add 2 inputs with the same name
-                "pointValueType": "String"
+                "pointValueType": "string"
             }));
         }).to.throw();
         expect(() => {
@@ -238,23 +238,23 @@ describe("dude-graph API", () => {
         graph.addBlock(block);
         const outputPoint1 = new Point(true, {
             "pointName": "out1",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         const outputPoint2 = new Point(true, {
             "pointName": "out2",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         const outputPoint3 = new Point(true, {
             "pointName": "out3",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         const outputPoint4 = new Point(true, {
             "pointName": "out4",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         const outputPoint5 = new Point(true, {
             "pointName": "out5",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         block.addPoint(outputPoint4); // Add to end [4]
         block.addPoint(outputPoint2, 0); // Add to start [2, 4]
@@ -272,7 +272,7 @@ describe("dude-graph API", () => {
         const block = new Block();
         const inputPoint = new Point(true, {
             "pointName": "in",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         graph.addBlock(block);
         block.addPoint(inputPoint);
@@ -300,7 +300,7 @@ describe("dude-graph API", () => {
         }).to.throw();
         const inputPoint2 = new Point(true, {
             "pointName": "in2",
-            "pointValueType": "String",
+            "pointValueType": "string",
             "pointValue": 42 // 42 =~=> `String`
         });
         block.addPoint(inputPoint2);
@@ -312,7 +312,7 @@ describe("dude-graph API", () => {
         expect(() => {
             block.addPoint(new Point(false, {
                 "pointName": "in2",
-                "pointValueType": "Number",
+                "pointValueType": "number",
                 "pointValue": "NaN" // "NaN" =/=> `Number`
             }));
         }).to.throw();
@@ -322,20 +322,20 @@ describe("dude-graph API", () => {
         const block = new Block();
         const inputPoint = new Point(true, {
             "pointName": "in",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         graph.addBlock(block);
         block.addPoint(inputPoint);
         inputPoint.pointValue = 32;
-        inputPoint.pointValueType = "String";
-        expect(inputPoint.pointValueType).to.be.equal("String");
+        inputPoint.pointValueType = "string";
+        expect(inputPoint.pointValueType).to.be.equal("string");
         expect(inputPoint.pointValue).to.be.equal("32");
         expect(() => {
-            inputPoint.pointValueType = "Array";
+            inputPoint.pointValueType = "array";
         }).to.throw();
         inputPoint.pointValue = null;
-        inputPoint.pointValueType = "Array";
-        expect(inputPoint.pointValueType).to.be.equal("Array");
+        inputPoint.pointValueType = "array";
+        expect(inputPoint.pointValueType).to.be.equal("array");
         inputPoint.pointValue = [32, [], {}];
         expect(inputPoint.pointValue).to.be.eql([32, [], {}]);
         expect(() => {
@@ -368,7 +368,7 @@ describe("dude-graph API", () => {
             inputPoint.pointValue = "NewNewValue"; // Only "NewValue" is accepted for `NewType`
         }).to.throw();
         // Reconvert to `String` as "ThisIsACorrectNewValue" is convertible to `String`
-        inputPoint.pointValueType = "String";
+        inputPoint.pointValueType = "string";
         expect(inputPoint.pointValue).to.be.equal("ThisIsACorrectNewValue");
         inputPoint.pointValue = "NewValue";
         expect(inputPoint.pointValue).to.be.equal("NewValue");
@@ -385,11 +385,11 @@ describe("dude-graph API", () => {
         graph.addBlock(block2);
         const outputPoint1 = new Point(true, {
             "pointName": "out",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         const inputPoint1 = new Point(false, {
             "pointName": "in",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         expect(() => {
             outputPoint1.connect(inputPoint1); // The points are not bound to blocks
@@ -418,11 +418,11 @@ describe("dude-graph API", () => {
         graph.addBlock(block2);
         const outputPoint1 = new Point(true, {
             "pointName": "out",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         const inputPoint1 = new Point(false, {
             "pointName": "in",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         expect(() => {
             outputPoint1.disconnect(inputPoint1); // The points are not bound to blocks
@@ -454,11 +454,11 @@ describe("dude-graph API", () => {
         graph.addBlock(block2);
         const outputPoint1 = new Point(true, {
             "pointName": "out",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         const inputPoint2 = new Point(false, {
             "pointName": "in",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         block1.addPoint(outputPoint1);
         block2.addPoint(inputPoint2);
@@ -503,27 +503,27 @@ describe("dude-graph API", () => {
         graph.addBlock(block2);
         const outputPoint1Number = new Point(true, {
             "pointName": "out",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         const outputPoint1Boolean = new Point(true, {
             "pointName": "out3",
-            "pointValueType": "Boolean"
+            "pointValueType": "boolean"
         });
         const outputPoint1String = new Point(true, {
             "pointName": "out4",
-            "pointValueType": "String"
+            "pointValueType": "string"
         });
         const inputPoint2Number = new Point(false, {
             "pointName": "in",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         const inputPoint2Boolean = new Point(false, {
             "pointName": "in2",
-            "pointValueType": "Boolean"
+            "pointValueType": "boolean"
         });
         const inputPoint2String = new Point(false, {
             "pointName": "in3",
-            "pointValueType": "String"
+            "pointValueType": "string"
         });
         block1.addPoint(outputPoint1Number);
         block1.addPoint(outputPoint1Boolean);
@@ -561,11 +561,11 @@ describe("dude-graph API", () => {
         graph.addBlock(block2);
         const outputPoint = new Point(true, {
             "pointName": "out",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         const inputPoint = new Point(false, {
             "pointName": "in",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         block1.addPoint(outputPoint);
         block2.addPoint(inputPoint);
@@ -596,16 +596,16 @@ describe("dude-graph API", () => {
         graph.addBlock(block2);
         const outputPoint11 = new Point(true, {
             "pointName": "out",
-            "pointValueType": "Number",
+            "pointValueType": "number",
             "pointSingleConnection": false
         });
         const inputPoint21 = new Point(false, {
             "pointName": "in",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         const inputPoint22 = new Point(false, {
             "pointName": "in2",
-            "pointValueType": "Boolean"
+            "pointValueType": "boolean"
         });
         block1.addPoint(outputPoint11);
         block2.addPoint(inputPoint21);
@@ -617,14 +617,14 @@ describe("dude-graph API", () => {
         const block1 = new Block();
         const outputPoint1 = new Point(true, {
             "pointName": "out",
-            "pointValueType": "Number",
+            "pointValueType": "number",
             "pointSingleConnection": false,
             "pointPolicy": ["VALUE", "MULTIPLE_CONNECTIONS", "CONVERSION"]
         });
         expect(outputPoint1.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.false;
         const outputPoint2 = new Point(true, {
             "pointName": "out2",
-            "pointValueType": "Number",
+            "pointValueType": "number",
             "pointPolicy": ["VALUE", "SINGLE_CONNECTION", "CONVERSION"]
         });
         expect(outputPoint2.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.true;
@@ -633,12 +633,12 @@ describe("dude-graph API", () => {
         const block2 = new Block();
         const inputPoint1 = new Point(false, {
             "pointName": "in",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         expect(inputPoint1.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.true;
         const inputPoint2 = new Point(false, {
             "pointName": "in2",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         expect(inputPoint2.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.true;
         graph.addBlock(block2);
@@ -670,11 +670,11 @@ describe("dude-graph API", () => {
         graph.addBlock(block2);
         const outputPoint1 = new Point(true, {
             "pointName": "out",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         const inputPoint2 = new Point(false, {
             "pointName": "in",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         block1.addPoint(outputPoint1);
         block2.addPoint(inputPoint2);
@@ -707,35 +707,35 @@ describe("dude-graph API", () => {
         graph.addBlock(block);
         block.addPoint(new Point(true, {
             "pointName": "out",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         }));
         block.addPoint(new Point(true, {
             "pointName": "out2",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         }));
         block.addPoint(new Point(true, {
             "pointName": "out3",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         }));
         block.addPoint(new Point(true, {
             "pointName": "out4",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         }));
         block.addPoint(new Point(true, {
             "pointName": "out5",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         }));
         block.addPoint(new Point(false, {
             "pointName": "in",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         }));
         block.addPoint(new Point(false, {
             "pointName": "in2",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         }));
         block.addPoint(new Point(false, {
             "pointName": "in3",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         }));
         expect(block.blockOutputs).to.have.lengthOf(5);
         expect(block.blockInputs).to.have.lengthOf(3);
@@ -757,7 +757,7 @@ describe("dude-graph API", () => {
             const badBlock = new Block({
                 "blockTemplates": {
                     "TemplateName": {
-                        "valueType": "Number"
+                        "valueType": "number"
                         // `templates` is required
                     }
                 }
@@ -769,7 +769,7 @@ describe("dude-graph API", () => {
                 "blockTemplates": {
                     "TemplateName": {
                         // `valueType` is required
-                        "templates": ["Number"]
+                        "templates": ["number"]
                     }
                 }
             });
@@ -779,8 +779,8 @@ describe("dude-graph API", () => {
             const badBlock = new Block({
                 "blockTemplates": {
                     "TemplateName": {
-                        "valueType": "String",
-                        "templates": ["Number", "Boolean"] // `valueType` must be included in `templates`
+                        "valueType": "string",
+                        "templates": ["number", "boolean"] // `valueType` must be included in `templates`
                     }
                 }
             });
@@ -800,8 +800,8 @@ describe("dude-graph API", () => {
         const block = new Block({
             "blockTemplates": {
                 "TemplateTest": {
-                    "valueType": "Number",
-                    "templates": ["Number", "String"]
+                    "valueType": "number",
+                    "templates": ["number", "string"]
                 }
             }
         });
@@ -809,20 +809,20 @@ describe("dude-graph API", () => {
             block.templateByName("TemplateTest"); // Cannot manipulate templates while not bound to a graph
         }).to.throw();
         expect(() => {
-            block.changeTemplate("TemplateTest", "String"); // Cannot manipulate templates while not bound to a graph
+            block.changeTemplate("TemplateTest", "string"); // Cannot manipulate templates while not bound to a graph
         }).to.throw();
         graph.addBlock(block);
-        block.changeTemplate("TemplateTest", "String");
-        expect(block.templateByName("TemplateTest").valueType).to.equals("String");
-        expect(block.templateByName("TemplateTest").templates).to.eql(["Number", "String"]);
-        block.changeTemplate("TemplateTest", "Number");
-        expect(block.templateByName("TemplateTest").valueType).to.equals("Number");
-        expect(block.templateByName("TemplateTest").templates).to.eql(["Number", "String"]);
-        block.changeTemplate("TemplateTest", "String");
-        expect(block.templateByName("TemplateTest").valueType).to.equals("String");
-        expect(block.templateByName("TemplateTest").templates).to.eql(["Number", "String"]);
+        block.changeTemplate("TemplateTest", "string");
+        expect(block.templateByName("TemplateTest").valueType).to.equals("string");
+        expect(block.templateByName("TemplateTest").templates).to.eql(["number", "string"]);
+        block.changeTemplate("TemplateTest", "number");
+        expect(block.templateByName("TemplateTest").valueType).to.equals("number");
+        expect(block.templateByName("TemplateTest").templates).to.eql(["number", "string"]);
+        block.changeTemplate("TemplateTest", "string");
+        expect(block.templateByName("TemplateTest").valueType).to.equals("string");
+        expect(block.templateByName("TemplateTest").templates).to.eql(["number", "string"]);
         expect(() => {
-            block.changeTemplate("TemplateTest", "Boolean"); // `TemplateTest` has no template `Boolean`
+            block.changeTemplate("TemplateTest", "boolean"); // `TemplateTest` has no template `Boolean`
         }).to.throw();
     });
     it("should test point templates", () => {
@@ -830,8 +830,8 @@ describe("dude-graph API", () => {
         const block = new Block({
             "blockTemplates": {
                 "TemplateTest": {
-                    "valueType": "Number",
-                    "templates": ["Number", "String"]
+                    "valueType": "number",
+                    "templates": ["number", "string"]
                 }
             }
         });
@@ -848,19 +848,19 @@ describe("dude-graph API", () => {
         });
         block.addPoint(inputPoint11);
         block.addPoint(inputPoint12);
-        expect(inputPoint11.pointValueType).to.be.equals("Number");
-        expect(inputPoint12.pointValueType).to.be.equals("Number");
-        block.changeTemplate("TemplateTest", "String");
-        expect(inputPoint11.pointValueType).to.be.equals("String");
-        expect(inputPoint12.pointValueType).to.be.equals("String");
+        expect(inputPoint11.pointValueType).to.be.equals("number");
+        expect(inputPoint12.pointValueType).to.be.equals("number");
+        block.changeTemplate("TemplateTest", "string");
+        expect(inputPoint11.pointValueType).to.be.equals("string");
+        expect(inputPoint12.pointValueType).to.be.equals("string");
         inputPoint11.pointValue = "I'm a String, and NotANumber";
         inputPoint12.pointValue = "Me neither";
         expect(() => {
-            block.changeTemplate("TemplateTest", "Number"); // All points cannot safely be transformed to `Number`
+            block.changeTemplate("TemplateTest", "number"); // All points cannot safely be transformed to `Number`
         }).to.throw();
         inputPoint11.pointValue = "64";
         inputPoint12.pointValue = "32";
-        block.changeTemplate("TemplateTest", "Number"); // Now they can be transformed to `Number`
+        block.changeTemplate("TemplateTest", "number"); // Now they can be transformed to `Number`
         expect(inputPoint11.pointValue);
     });
     it("should test point templates and connections", () => {
@@ -868,8 +868,8 @@ describe("dude-graph API", () => {
         const block1 = new Block({
             "blockTemplates": {
                 "TemplateTest": {
-                    "valueType": "Number",
-                    "templates": ["Number", "String", "Boolean"]
+                    "valueType": "number",
+                    "templates": ["number", "string", "boolean"]
                 }
             }
         });
@@ -887,28 +887,28 @@ describe("dude-graph API", () => {
             "pointTemplate": "TemplateTest"
         });
         block1.addPoint(inputPoint11);
-        expect(inputPoint11.pointValueType).to.be.equals("Number");
+        expect(inputPoint11.pointValueType).to.be.equals("number");
         block1.addPoint(inputPoint12);
-        expect(inputPoint12.pointValueType).to.be.equals("Number");
+        expect(inputPoint12.pointValueType).to.be.equals("number");
         block1.addPoint(inputPoint13);
-        expect(inputPoint13.pointValueType).to.be.equals("Number");
+        expect(inputPoint13.pointValueType).to.be.equals("number");
         const block2 = new Block();
         graph.addBlock(block2);
         const outputPointNumber = new Point(true, {
             "pointName": "out",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         const outputPointString = new Point(true, {
             "pointName": "out2",
-            "pointValueType": "String"
+            "pointValueType": "string"
         });
         const outputPointBoolean = new Point(true, {
             "pointName": "out3",
-            "pointValueType": "Boolean"
+            "pointValueType": "boolean"
         });
         const outputPointArray = new Point(true, {
             "pointName": "out4",
-            "pointValueType": "Array"
+            "pointValueType": "array"
         });
         block2.addPoint(outputPointNumber);
         block2.addPoint(outputPointString);
@@ -920,18 +920,18 @@ describe("dude-graph API", () => {
         outputPointNumber.connect(inputPoint11); // `Number` ===> `TemplateTest:Number`
         outputPointNumber.disconnect(inputPoint11);
         inputPoint12.pointValue = 32;
-        block1.changeTemplate("TemplateTest", "String"); // inputPoint1_2 `TemplateTest:Number` =~=> `String`
-        expect(inputPoint11.pointValueType).to.be.equal("String");
-        expect(inputPoint12.pointValueType).to.be.equal("String");
-        expect(inputPoint13.pointValueType).to.be.equal("String");
+        block1.changeTemplate("TemplateTest", "string"); // inputPoint1_2 `TemplateTest:Number` =~=> `String`
+        expect(inputPoint11.pointValueType).to.be.equal("string");
+        expect(inputPoint12.pointValueType).to.be.equal("string");
+        expect(inputPoint13.pointValueType).to.be.equal("string");
         expect(inputPoint12.pointValue).to.be.equal("32");
         inputPoint12.pointValue = null;
         outputPointBoolean.connect(inputPoint11); // inputPoint1_1 `Boolean` =~=> `TemplateTest:String`
         inputPoint12.pointValue = false;
         inputPoint13.pointValue = true;
-        expect(inputPoint11.pointValueType).to.be.equal("String");
-        expect(inputPoint12.pointValueType).to.be.equal("String");
-        expect(inputPoint13.pointValueType).to.be.equal("String");
+        expect(inputPoint11.pointValueType).to.be.equal("string");
+        expect(inputPoint12.pointValueType).to.be.equal("string");
+        expect(inputPoint13.pointValueType).to.be.equal("string");
         expect(inputPoint12.pointValue).to.be.equal("false");
         expect(inputPoint13.pointValue).to.be.equal("true");
     });
@@ -940,8 +940,8 @@ describe("dude-graph API", () => {
         const block1 = new Block({
             "blockTemplates": {
                 "TemplateTest": {
-                    "valueType": "String",
-                    "templates": ["Number", "String", "Boolean"]
+                    "valueType": "string",
+                    "templates": ["number", "string", "boolean"]
                 }
             }
         });
@@ -959,43 +959,43 @@ describe("dude-graph API", () => {
             "pointTemplate": "TemplateTest"
         });
         block1.addPoint(inputPoint11);
-        expect(inputPoint11.pointValueType).to.be.equals("String");
+        expect(inputPoint11.pointValueType).to.be.equals("string");
         block1.addPoint(inputPoint12);
-        expect(inputPoint12.pointValueType).to.be.equals("String");
+        expect(inputPoint12.pointValueType).to.be.equals("string");
         block1.addPoint(inputPoint13);
-        expect(inputPoint13.pointValueType).to.be.equals("String");
+        expect(inputPoint13.pointValueType).to.be.equals("string");
         const block2 = new Block();
         graph.addBlock(block2);
         const outputPointNumberConversion = new Point(true, {
             "pointName": "out1",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         const outputPointNumberNoConversion = new Point(true, {
             "pointName": "out2",
-            "pointValueType": "Number",
+            "pointValueType": "number",
             "pointPolicy": ["VALUE", "SINGLE_CONNECTION"]
         });
         const outputPointArrayNoConversion = new Point(true, {
             "pointName": "out3",
-            "pointValueType": "Array",
+            "pointValueType": "array",
             "pointPolicy": ["VALUE", "SINGLE_CONNECTION"]
         });
         block2.addPoint(outputPointNumberConversion);
-        expect(outputPointNumberConversion.pointValueType).to.be.equals("Number");
+        expect(outputPointNumberConversion.pointValueType).to.be.equals("number");
         block2.addPoint(outputPointNumberNoConversion);
-        expect(outputPointNumberNoConversion.pointValueType).to.be.equals("Number");
+        expect(outputPointNumberNoConversion.pointValueType).to.be.equals("number");
         block2.addPoint(outputPointArrayNoConversion);
-        expect(outputPointArrayNoConversion.pointValueType).to.be.equals("Array");
+        expect(outputPointArrayNoConversion.pointValueType).to.be.equals("array");
         outputPointNumberConversion.connect(inputPoint11);
-        expect(block1.templateByName("TemplateTest").valueType).to.be.equals("String");
-        expect(outputPointNumberConversion.pointValueType).to.be.equals("Number");
-        expect(inputPoint11.pointValueType).to.be.equals("String");
+        expect(block1.templateByName("TemplateTest").valueType).to.be.equals("string");
+        expect(outputPointNumberConversion.pointValueType).to.be.equals("number");
+        expect(inputPoint11.pointValueType).to.be.equals("string");
         outputPointNumberNoConversion.connect(inputPoint12);
-        expect(block1.templateByName("TemplateTest").valueType).to.be.equals("Number");
-        expect(outputPointNumberConversion.pointValueType).to.be.equals("Number");
-        expect(inputPoint11.pointValueType).to.be.equals("Number");
-        expect(inputPoint12.pointValueType).to.be.equals("Number");
-        expect(inputPoint13.pointValueType).to.be.equals("Number");
+        expect(block1.templateByName("TemplateTest").valueType).to.be.equals("number");
+        expect(outputPointNumberConversion.pointValueType).to.be.equals("number");
+        expect(inputPoint11.pointValueType).to.be.equals("number");
+        expect(inputPoint12.pointValueType).to.be.equals("number");
+        expect(inputPoint13.pointValueType).to.be.equals("number");
         expect(() => {
             outputPointArrayNoConversion.connect(inputPoint13);
         }).to.throw();
@@ -1006,40 +1006,40 @@ describe("dude-graph API", () => {
         const block2 = new Block();
         const inputPoint1 = new Point(false, {
             "pointName": "in1",
-            "pointValueType": "String"
+            "pointValueType": "string"
         });
         const inputPoint2 = new Point(false, {
             "pointName": "in2",
-            "pointValueType": "String",
+            "pointValueType": "string",
             "pointPolicy": ["VALUE"]
         });
         const inputPoint3 = new Point(false, {
             "pointName": "in3",
-            "pointValueType": "String",
+            "pointValueType": "string",
             "pointPolicy": ["SINGLE_CONNECTION"]
         });
         const inputPoint4 = new Point(false, {
             "pointName": "in4",
-            "pointValueType": "String",
+            "pointValueType": "string",
             "pointPolicy": ["MULTIPLE_CONNECTIONS"]
         });
         const inputPoint5 = new Point(false, {
             "pointName": "in5",
-            "pointValueType": "String",
+            "pointValueType": "string",
             "pointPolicy": ["VALUE", "SINGLE_CONNECTION"]
         });
         const inputPoint6 = new Point(false, {
             "pointName": "in6",
-            "pointValueType": "String",
+            "pointValueType": "string",
             "pointPolicy": ["VALUE", "MULTIPLE_CONNECTIONS"]
         });
         const outputPoint1 = new Point(true, {
             "pointName": "out1",
-            "pointValueType": "String"
+            "pointValueType": "string"
         });
         const outputPoint2 = new Point(true, {
             "pointName": "out2",
-            "pointValueType": "String"
+            "pointValueType": "string"
         });
         graph.addBlock(block1);
         graph.addBlock(block2);
@@ -1099,7 +1099,7 @@ describe("dude-graph API", () => {
         expect(() => {
             new Point(false, {
                 "pointName": "invalid1",
-                "pointValueType": "String",
+                "pointValueType": "string",
                 "pointPolicy": ["SINGLE_CONNECTION", "MULTIPLE_CONNECTIONS"]
             });
         }).to.throw();
@@ -1109,8 +1109,8 @@ describe("dude-graph API", () => {
         const block1 = new Block({
             "blockTemplates": {
                 "TemplateTest": {
-                    "valueType": "Number",
-                    "templates": ["Number", "String"]
+                    "valueType": "number",
+                    "templates": ["number", "string"]
                 }
             }
         });
@@ -1125,7 +1125,7 @@ describe("dude-graph API", () => {
         block1.addPoint(inputPoint1);
         const outputPoint2 = new Point(true, {
             "pointName": "out",
-            "pointValueType": "Number"
+            "pointValueType": "number"
         });
         block2.addPoint(outputPoint2);
         outputPoint2.connect(inputPoint1);
@@ -1201,18 +1201,18 @@ describe("dude-graph API", () => {
         sinon.assert.called(blockAddedSpy);
         graph.addBlock(block);
 
-        block.addPoint(new StreamPoint(true, {"pointName": "out", "pointValueType": "Stream"}));
+        block.addPoint(new StreamPoint(true, {"pointName": "out", "pointValueType": "stream"}));
 
-        assignationBlock.addPoint(new StreamPoint(false, {"pointName": "in", "pointValueType": "Stream"}));
+        assignationBlock.addPoint(new StreamPoint(false, {"pointName": "in", "pointValueType": "stream"}));
         sinon.assert.called(pointAddedSpy);
         sinon.assert.calledWith(blockPointAddedSpy, assignationBlock.inputByName("in"));
 
-        assignationBlock.addPoint(new Point(false, {"pointName": "variable", "pointValueType": "Number"}));
-        assignationBlock.addPoint(new Point(false, {"pointName": "value", "pointValueType": "Number", "pointValue": 2}));
+        assignationBlock.addPoint(new Point(false, {"pointName": "variable", "pointValueType": "number"}));
+        assignationBlock.addPoint(new Point(false, {"pointName": "value", "pointValueType": "number", "pointValue": 2}));
         expect(() => {
             assignationBlock.validatePoints();
         }).to.throw();
-        assignationBlock.addPoint(new StreamPoint(true, {"pointName": "out", "pointValueType": "Stream"}));
+        assignationBlock.addPoint(new StreamPoint(true, {"pointName": "out", "pointValueType": "stream"}));
         assignationBlock.validatePoints();
 
         assignationBlock.inputByName("value").pointValue = 4;
@@ -1239,7 +1239,7 @@ describe("dude-graph API", () => {
         const graph = new Graph();
         const variable = new Variable({
             "variableName": "Hello",
-            "variableValueType": "String"
+            "variableValueType": "string"
         });
         graph.addVariable(variable);
         expect(graph.graphVariables).to.have.lengthOf(1);
@@ -1271,14 +1271,14 @@ describe("dude-graph API", () => {
             //noinspection JSCheckFunctionSignatures
             graph.addVariable(new Variable({
                 "variableName": 32, // variableName is not a String
-                "variableValueType": "String"
+                "variableValueType": "string"
             }));
         }).to.throw();
         expect(() => {
             //noinspection JSCheckFunctionSignatures
             graph.addVariable(new Variable({
                 // variableName is missing
-                "variableValueType": "String"
+                "variableValueType": "string"
             }));
         }).to.throw();
         expect(() => {
@@ -1299,7 +1299,7 @@ describe("dude-graph API", () => {
         const graph = new Graph();
         const variable = new Variable({
             "variableName": "Hello",
-            "variableValueType": "String"
+            "variableValueType": "string"
         });
         expect(() => {
             variable.variableValue = 32; // Cannot change variableValue when not bound to graph
@@ -1317,7 +1317,7 @@ describe("dude-graph API", () => {
         const graph = new Graph();
         const variable = new Variable({
             "variableName": "Hello",
-            "variableValueType": "String"
+            "variableValueType": "string"
         });
         graph.addVariable(variable);
         let variableBlock = new VariableBlock({
@@ -1367,7 +1367,7 @@ describe("dude-graph Events", () => {
         const blockSpy = sinon.spy();
         const graph = new Graph();
         const block = new Block();
-        const point = new Point(true, {"pointName": "out", "pointValueType": "Number"});
+        const point = new Point(true, {"pointName": "out", "pointValueType": "number"});
         graph.on("block-point-add", graphSpy);
         block.on("point-add", blockSpy);
         graph.addBlock(block);
@@ -1380,7 +1380,7 @@ describe("dude-graph Events", () => {
         const blockSpy = sinon.spy();
         const graph = new Graph();
         const block = new Block();
-        const point = new Point(true, {"pointName": "out", "pointValueType": "Number"});
+        const point = new Point(true, {"pointName": "out", "pointValueType": "number"});
         graph.on("block-point-remove", graphSpy);
         block.on("point-remove", blockSpy);
         graph.addBlock(block);
@@ -1394,21 +1394,21 @@ describe("dude-graph Events", () => {
         const pointSpy = sinon.spy();
         const graph = new Graph();
         const block = new Block();
-        const point = new Point(true, {"pointName": "out", "pointValueType": "Number"});
+        const point = new Point(true, {"pointName": "out", "pointValueType": "number"});
         graph.addBlock(block);
         block.addPoint(point);
         graph.on("point-value-type-change", graphSpy);
         point.on("value-type-change", pointSpy);
-        point.pointValueType = "String";
-        sinon.assert.calledWith(graphSpy, point, "String", "Number");
-        sinon.assert.calledWith(pointSpy, "String", "Number");
+        point.pointValueType = "string";
+        sinon.assert.calledWith(graphSpy, point, "string", "number");
+        sinon.assert.calledWith(pointSpy, "string", "number");
     });
     it("should test point-value-change", () => {
         const graphSpy = sinon.spy();
         const pointSpy = sinon.spy();
         const graph = new Graph();
         const block = new Block();
-        const point = new Point(true, {"pointName": "out", "pointValueType": "Number"});
+        const point = new Point(true, {"pointName": "out", "pointValueType": "number"});
         graph.addBlock(block);
         block.addPoint(point);
         graph.on("point-value-change", graphSpy);
@@ -1423,8 +1423,8 @@ describe("dude-graph Events", () => {
         const graph = new Graph();
         const block1 = new Block();
         const block2 = new Block();
-        const point1 = new Point(true, {"pointName": "out", "pointValueType": "Number"});
-        const point2 = new Point(false, {"pointName": "in", "pointValueType": "Number"});
+        const point1 = new Point(true, {"pointName": "out", "pointValueType": "number"});
+        const point2 = new Point(false, {"pointName": "in", "pointValueType": "number"});
         graph.addBlock(block1);
         graph.addBlock(block2);
         block1.addPoint(point1);
@@ -1441,8 +1441,8 @@ describe("dude-graph Events", () => {
         const graph = new Graph();
         const block1 = new Block();
         const block2 = new Block();
-        const point1 = new Point(true, {"pointName": "out", "pointValueType": "Number"});
-        const point2 = new Point(false, {"pointName": "in", "pointValueType": "Number"});
+        const point1 = new Point(true, {"pointName": "out", "pointValueType": "number"});
+        const point2 = new Point(false, {"pointName": "in", "pointValueType": "number"});
         graph.addBlock(block1);
         graph.addBlock(block2);
         block1.addPoint(point1);
@@ -1461,24 +1461,24 @@ describe("dude-graph Events", () => {
         const block = new Block({
             "blockTemplates": {
                 "Test": {
-                    "valueType": "Number",
-                    "templates": ["Number", "String"]
+                    "valueType": "number",
+                    "templates": ["number", "string"]
                 }
             }
         });
         graph.addBlock(block);
         graph.on("block-template-update", graphSpy);
         block.on("template-update", blockSpy);
-        block.changeTemplate("Test", "String");
-        sinon.assert.calledWith(graphSpy, block, "Test", "String", "Number");
-        sinon.assert.calledWith(blockSpy, "Test", "String", "Number");
+        block.changeTemplate("Test", "string");
+        sinon.assert.calledWith(graphSpy, block, "Test", "string", "number");
+        sinon.assert.calledWith(blockSpy, "Test", "string", "number");
     });
     it("should test variable-add", () => {
         const spy = sinon.spy();
         const graph = new Graph();
         const variable = new Variable({
             "variableName": "variable",
-            "variableValueType": "String"
+            "variableValueType": "string"
         });
         graph.on("variable-add", spy);
         graph.addVariable(variable);
@@ -1489,7 +1489,7 @@ describe("dude-graph Events", () => {
         const graph = new Graph();
         const variable = new Variable({
             "variableName": "variable",
-            "variableValueType": "String"
+            "variableValueType": "string"
         });
         graph.on("variable-remove", spy);
         graph.addVariable(variable);

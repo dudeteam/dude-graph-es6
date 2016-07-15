@@ -3,11 +3,11 @@
  * @type {object}
  */
 export default {
-    "Stream": {
+    "stream": {
         "convert": () => undefined,
         "typeCompatibles": []
     },
-    "String": {
+    "string": {
         "typeConvert": (value) => {
             if (typeof value === "string") {
                 return value;
@@ -17,9 +17,9 @@ export default {
             }
             return undefined;
         },
-        "typeCompatibles": ["Text", "Number", "Boolean"]
+        "typeCompatibles": ["text", "number", "boolean"]
     },
-    "Text": {
+    "text": {
         "typeConvert": (value) => {
             if (typeof value === "string") {
                 return value;
@@ -29,9 +29,9 @@ export default {
             }
             return undefined;
         },
-        "typeCompatibles": ["String", "Number", "Boolean"]
+        "typeCompatibles": ["string", "number", "boolean"]
     },
-    "Number": {
+    "number": {
         "typeConvert": (value) => {
             if (typeof value === "number") {
                 return value;
@@ -47,9 +47,9 @@ export default {
             }
             return undefined;
         },
-        "typeCompatibles": ["Boolean"]
+        "typeCompatibles": ["boolean"]
     },
-    "Boolean": {
+    "boolean": {
         "typeConvert": (value) => {
             if (typeof value === "boolean") {
                 return value;
@@ -62,9 +62,9 @@ export default {
             }
             return undefined;
         },
-        "typeCompatibles": ["Number"]
+        "typeCompatibles": ["number"]
     },
-    "Object": {
+    "object": {
         "typeConvert": (value) => {
             if (typeof value === "object") {
                 return value;
@@ -73,7 +73,7 @@ export default {
         },
         "typeCompatibles": []
     },
-    "Array": {
+    "array": {
         "typeConvert": (value) => {
             if (Array.isArray(value)) {
                 return value;
@@ -82,7 +82,7 @@ export default {
         },
         "typeCompatibles": []
     },
-    "Resource": {
+    "resource": {
         "typeConvert": (value) => {
             if (typeof value === "object") {
                 return value;
