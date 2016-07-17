@@ -11,9 +11,10 @@ export default {
         "typeConvert": (value) => {
             if (typeof value === "string") {
                 return value;
-            }
-            if (typeof value === "number" || typeof value === "boolean") {
-                return "" + value;
+            } else if (typeof value === "number") {
+                return value.toString();
+            } else if (typeof value === "boolean") {
+                return value ? "true" : "false";
             }
             return undefined;
         },
@@ -23,9 +24,10 @@ export default {
         "typeConvert": (value) => {
             if (typeof value === "string") {
                 return value;
-            }
-            if (typeof value === "number" || typeof value === "boolean") {
-                return "" + value;
+            } else if (typeof value === "number") {
+                return value.toString();
+            } else if (typeof value === "boolean") {
+                return value ? "true" : "false";
             }
             return undefined;
         },
@@ -54,7 +56,7 @@ export default {
             if (typeof value === "boolean") {
                 return value;
             }
-            if (value === 1 || value === "true") {
+            if ((typeof value === "number" && value !== 1) || value === "true") {
                 return true;
             }
             if (value === 0 || value === "false") {

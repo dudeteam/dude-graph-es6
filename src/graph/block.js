@@ -182,17 +182,17 @@ export default class Block extends EventClass {
             for (let i = 0; i < this[_blockOutputs].length; i++) {
                 const point = this[_blockOutputs][i];
                 if (point.pointTemplate === templateName) {
-                    point.changeVariableValue(null);
+                    point.changeValue(null);
                     point.changeValueType(oldValueType, true);
-                    point.changeVariableValue(outputValueSaves[i]);
+                    point.changeValue(outputValueSaves[i]);
                 }
             }
             for (let i = 0; i < this[_blockInputs].length; i++) {
                 const point = this[_blockInputs][i];
                 if (point.pointTemplate === templateName) {
-                    point.changeVariableValue(null);
+                    point.changeValue(null);
                     point.changeValueType(oldValueType, true);
-                    point.changeVariableValue(inputValueSaves[i]);
+                    point.changeValue(inputValueSaves[i]);
                 }
             }
             throw exception;

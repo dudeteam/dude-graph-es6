@@ -1000,6 +1000,55 @@ describe("dude-graph API", () => {
             outputPointArrayNoConversion.connect(inputPoint13);
         }).to.throw();
     });
+    it("should test point templates conversion failure", () => {
+        class PPoint extends Point {
+            constructor(a, b) {
+                super(a, b);
+            }
+            changeValueType(newValueType, ignoreEmit) {
+                if (newValueType !== "boolean") {
+                    super.changeValueType(newValueType, ignoreEmit);
+                } else {
+                    throw new Error("failure for test");
+                }
+            }
+        }
+        const graph = new Graph();
+        const block = new Block({
+            "blockTemplates": {
+                "TemplateName": {
+                    "valueType": "number",
+                    "templates": ["number", "boolean"]
+                }
+            }
+        });
+        const point1 = new Point(false, {"pointName": "in1", "pointTemplate": "TemplateName", "pointValue": 2});
+        const point2 = new Point(false, {"pointName": "in2", "pointTemplate": "TemplateName", "pointValue": 0});
+        const point3 = new PPoint(false, {"pointName": "in3", "pointTemplate": "TemplateName", "pointValue": 1});
+
+        graph.addBlock(block);
+        block.addPoint(point1);
+        block.addPoint(point2);
+        block.addPoint(point3);
+
+        expect(point1.pointValueType).to.be.equal("number");
+        expect(point1.pointValue).to.be.equal(2);
+        expect(point2.pointValueType).to.be.equal("number");
+        expect(point2.pointValue).to.be.equal(0);
+        expect(point3.pointValueType).to.be.equal("number");
+        expect(point3.pointValue).to.be.equal(1);
+
+        expect(() => {
+            block.changeTemplate("TemplateName", "boolean"); // 2 will be converted to true, then 0 to false and 1 will throw
+        }).to.throw();
+
+        expect(point1.pointValueType).to.be.equal("number");
+        expect(point1.pointValue).to.be.equal(2); // Must keep its original value and not the conversion from true => 1
+        expect(point2.pointValueType).to.be.equal("number");
+        expect(point2.pointValue).to.be.equal(0);
+        expect(point3.pointValueType).to.be.equal("number");
+        expect(point3.pointValue).to.be.equal(1);
+    });
     it("should test point policy", () => {
         const graph = new Graph();
         const block1 = new Block();
