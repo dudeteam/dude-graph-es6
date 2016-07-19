@@ -50,7 +50,7 @@
 </style>
 <body>
 <svg id="renderer"></svg>
-<script src="dist/dude-graph.js"></script>
+<script src="../dist/dude-graph.js"></script>
 <script>
     var graph = new dudeGraph.Graph();
     var renderer = new dudeGraph.Renderer(graph, document.getElementById("renderer"));
@@ -90,24 +90,20 @@
     commander.transaction();
     commander.addRenderBlock(renderBlock1);
     commander.addRenderBlock(renderBlock2);
-    commander.commit();
 
-    commander.transaction();
     commander.addRenderBlockRenderPoint(renderBlock1, outputRender1);
     commander.addRenderBlockRenderPoint(renderBlock1, inputRender1);
     commander.addRenderBlockRenderPoint(renderBlock2, outputRender2);
     commander.addRenderBlockRenderPoint(renderBlock2, inputRender2);
-    commander.commit();
 
-    commander.transaction();
     commander.addRenderGroup(renderGroup);
     commander.addRenderGroupRenderBlock(renderGroup, renderBlock1);
     commander.addRenderGroupRenderBlock(renderGroup, renderBlock2);
-    commander.commit();
 
-    commander.transaction();
     commander.connectRenderPoints(outputRender1, inputRender2);
     commander.commit();
+
+    setTimeout(() => { commander.changeRenderNodePosition(renderGroup, [320, 320]); }, 2000);
 </script>
 </body>
 </html>

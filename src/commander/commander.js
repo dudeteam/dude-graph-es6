@@ -1,4 +1,5 @@
 import RenderBlock from "../renderer/nodes/block";
+import RenderGroup from "../renderer/nodes/group";
 
 const _renderer = Symbol("renderer");
 const _transactions = Symbol("transactions");
@@ -270,19 +271,41 @@ export default class Commander {
         }
         this.command(
             () => {
-                renderNode.position = position.slice(0);
-                renderNode.updatePosition();
-                if (renderNode instanceof RenderBlock && renderNode.parent !== null) {
-                    renderNode.parent.updatePosition();
-                    renderNode.parent.updateSize();
+                if (renderNode instanceof RenderBlock) {
+                    renderNode.position = position;
+                    renderNode.updatePosition();
+                    if (renderNode.parent !== null) {
+                        renderNode.parent.updatePosition();
+                        renderNode.parent.updateSize();
+                    }
+                } else if (renderNode instanceof RenderGroup) {
+                    const diff = [position[0] - renderNode.position[0], position[1] - renderNode.position[1]];
+                    for (const renderBlock of renderNode.renderBlocks) {
+                        renderBlock.position[0] += diff[0];
+                        renderBlock.position[1] += diff[1];
+                        renderBlock.updatePosition();
+                    }
+                    renderNode.position = position;
+                    renderNode.updatePosition();
                 }
             },
             () => {
-                renderNode.position = oldPosition.slice(0);
-                renderNode.updatePosition();
-                if (renderNode instanceof RenderBlock && renderNode.parent !== null) {
-                    renderNode.parent.updatePosition();
-                    renderNode.parent.updateSize();
+                if (renderNode instanceof RenderBlock) {
+                    renderNode.position = oldPosition;
+                    renderNode.updatePosition();
+                    if (renderNode.parent !== null) {
+                        renderNode.parent.updatePosition();
+                        renderNode.parent.updateSize();
+                    }
+                } else if (renderNode instanceof RenderGroup) {
+                    const diff = [oldPosition[0] - renderNode.position[0], oldPosition[1] - renderNode.position[1]];
+                    for (const renderBlock of renderNode.renderBlocks) {
+                        renderBlock.position[0] += diff[0];
+                        renderBlock.position[1] += diff[1];
+                        renderBlock.updatePosition();
+                    }
+                    renderNode.position = oldPosition;
+                    renderNode.updatePosition();
                 }
             }
         );
