@@ -54,7 +54,7 @@
 <script>
     var graph = new dudeGraph.Graph();
     var renderer = new dudeGraph.Renderer(graph, document.getElementById("renderer"));
-    var commander = new dudeGraph.Commander(renderer);
+    var commander = new dudeGraph.Commander(graph, renderer);
 
     var block1 = new dudeGraph.Block();
     var block2 = new dudeGraph.Block();
@@ -62,16 +62,6 @@
     var output2 = new dudeGraph.Point(true, {"pointName": "out", "pointValueType": "string"});
     var input1 = new dudeGraph.Point(false, {"pointName": "in", "pointValueType": "string"});
     var input2 = new dudeGraph.Point(false, {"pointName": "in", "pointValueType": "string"});
-
-    graph.addBlock(block1);
-    graph.addBlock(block2);
-    block1.addPoint(output1);
-    block1.addPoint(input1);
-    block2.addPoint(output2);
-    block2.addPoint(input2);
-
-    output1.connect(input2);
-    output2.connect(input1);
 
     var renderBlock1 = new dudeGraph.RenderBlock(block1);
     var outputRender1 = new dudeGraph.RenderPoint(output1);
@@ -88,8 +78,16 @@
     renderGroup.position = [320, 320];
 
     commander.transaction();
+
+    commander.addBlock(block1);
+    commander.addBlock(block2);
     commander.addRenderBlock(renderBlock1);
     commander.addRenderBlock(renderBlock2);
+
+    commander.addBlockPoint(block1, output1);
+    commander.addBlockPoint(block1, input1);
+    commander.addBlockPoint(block2, output2);
+    commander.addBlockPoint(block2, input2);
 
     commander.addRenderBlockRenderPoint(renderBlock1, outputRender1);
     commander.addRenderBlockRenderPoint(renderBlock1, inputRender1);
@@ -100,7 +98,9 @@
     commander.addRenderGroupRenderBlock(renderGroup, renderBlock1);
     commander.addRenderGroupRenderBlock(renderGroup, renderBlock2);
 
+    commander.connectPoints(output1, input2);
     commander.connectRenderPoints(outputRender1, inputRender2);
+
     commander.commit();
 
     setTimeout(() => { commander.changeRenderNodePosition(renderGroup, [320, 320]); }, 2000);

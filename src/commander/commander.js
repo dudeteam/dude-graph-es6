@@ -1,6 +1,7 @@
 import RenderBlock from "../renderer/nodes/block";
 import RenderGroup from "../renderer/nodes/group";
 
+const _graph = Symbol("graph");
 const _renderer = Symbol("renderer");
 const _transactions = Symbol("transactions");
 const _undo = Symbol("undo");
@@ -13,10 +14,12 @@ const _redo = Symbol("redo");
 export default class Commander {
 
     /**
-     * Creates a commander for the specified renderer
+     * Creates a commander for the specified graph and the specified renderer
+     * @param {Graph} graph - specifies the graph
      * @param {Renderer} renderer - specifies the renderer
      */
-    constructor(renderer) {
+    constructor(graph, renderer) {
+        this[_graph] = graph;
         this[_renderer] = renderer;
         this[_transactions] = [];
         this[_undo] = [];
@@ -100,6 +103,71 @@ export default class Commander {
             throw new Error("There is no transaction to rollback");
         }
         this[_transactions].pop();
+    }
+
+    /**
+     * @see {Graph.addBlock}
+     * @param {Block} block - @see {Graph.addBlock}
+     */
+    addBlock(block) {
+        this.command(
+            () => { this[_graph].addBlock(block); },
+            () => { this[_graph].removeBlock(block); }
+        );
+    }
+    /**
+     * @see {Graph.removeBlock}
+     * @param {Block} block - @see {Graph.removeBlock}
+     */
+    removeBlock(block) {
+        this.command(
+            () => { this[_graph].removeBlock(block); },
+            () => { this[_graph].addBlock(block); }
+        );
+    }
+    /**
+     * @see {Block.addPoint}
+     * @param {Block} block - @see {Block.addPoint}
+     * @param {Point} point - @see {Block.addPoint}
+     */
+    addBlockPoint(block, point) {
+        this.command(
+            () => { block.addPoint(point); },
+            () => { block.removePoint(point); }
+        );
+    }
+    /**
+     * @see {Block.removePoint}
+     * @param {Block} block - @see {Block.removePoint}
+     * @param {Point} point - @see {Block.removePoint}
+     */
+    removeBlockPoint(block, point) {
+        this.command(
+            () => { block.removePoint(point); },
+            () => { block.addPoint(point); }
+        );
+    }
+    /**
+     * @see {Graph.connect}
+     * @param {Point} outputPoint - @see {Graph.connect}
+     * @param {Point} inputPoint - @see {Graph.connect}
+     */
+    connectPoints(outputPoint, inputPoint) {
+        this.command(
+            () => { outputPoint.connect(inputPoint); },
+            () => { outputPoint.disconnect(inputPoint); }
+        );
+    }
+    /**
+     * @see {Graph.disconnect}
+     * @param {Point} outputPoint - @see {Graph.disconnect}
+     * @param {Point} inputPoint - @see {Graph.disconnect}
+     */
+    disconnectPoints(outputPoint, inputPoint) {
+        this.command(
+            () => { outputPoint.disconnect(inputPoint); },
+            () => { outputPoint.connect(inputPoint); }
+        );
     }
 
     /**
