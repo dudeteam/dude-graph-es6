@@ -58,10 +58,10 @@ export default class Graph extends EventClass {
         if (block.blockId !== null && typeof this[_graphBlockIds][block.blockId] !== "undefined") {
             throw new Error(this.fancyName + " cannot redefine id " + block.blockId);
         }
-        block.blockGraph = this;
         if (block.blockId === null) {
             block.blockId = this.nextBlockId();
         }
+        block.blockGraph = this;
         for (const templateId in block.blockTemplates) {
             // for(const [template, templateId] of Object.entries(block.blockTemplates))
             if (block.blockTemplates.hasOwnProperty(templateId)) {
@@ -82,6 +82,7 @@ export default class Graph extends EventClass {
             throw new Error(this.fancyName + " has no block " + block.fancyName);
         }
         block.removePoints();
+        block.blockGraph = null;
         this[_graphBlocks].splice(this[_graphBlocks].indexOf(block), 1);
         this[_graphBlockIds][block.blockId] = undefined;
         this.emit("block-remove", block);

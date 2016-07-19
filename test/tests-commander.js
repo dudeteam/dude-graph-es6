@@ -1,13 +1,15 @@
+import {expect} from "chai";
 import sinon from "sinon";
 
 import {Commander} from "../src/dude-graph";
+import {Graph, Block, Point} from "../src/dude-graph";
 
 describe("dude-commander API", () => {
     it("should create a commander", () => {
-        new Commander(null);
+        new Commander(null, null);
     });
     it("should add an command and undo/redo it", () => {
-        const commander = new Commander(null);
+        const commander = new Commander(null, null);
         const redoSpy = sinon.spy();
         const undoSpy = sinon.spy();
         commander.command(redoSpy, undoSpy);
@@ -30,7 +32,7 @@ describe("dude-commander API", () => {
         sinon.assert.calledTwice(undoSpy);
     });
     it("should add 3 actions and undo/redo them", () => {
-        const commander = new Commander(null);
+        const commander = new Commander(null, null);
         const redoSpy1 = sinon.spy();
         const redoSpy2 = sinon.spy();
         const redoSpy3 = sinon.spy();
@@ -75,7 +77,7 @@ describe("dude-commander API", () => {
         sinon.assert.calledOnce(undoSpy1);
     });
     it("should clear redo stack if a new command is pushed after an undo", () => {
-        const commander = new Commander(null);
+        const commander = new Commander(null, null);
         const redoSpy = sinon.spy();
         const undoSpy = sinon.spy();
         commander.command(redoSpy, undoSpy); // [action1], []
@@ -98,7 +100,7 @@ describe("dude-commander API", () => {
         sinon.assert.calledTwice(undoSpy);
     });
     it("should create a transaction", () => {
-        const commander = new Commander(null);
+        const commander = new Commander(null, null);
         const redoSpy1 = sinon.spy();
         const redoSpy2 = sinon.spy();
         const undoSpy1 = sinon.spy();
@@ -134,7 +136,7 @@ describe("dude-commander API", () => {
         sinon.assert.calledOnce(undoSpy2);
     });
     it("should create nested transactions", () => {
-        const commander = new Commander(null);
+        const commander = new Commander(null, null);
         const redoSpy1 = sinon.spy();
         const redoSpy2 = sinon.spy();
         const redoSpy3 = sinon.spy();
@@ -162,5 +164,72 @@ describe("dude-commander API", () => {
         sinon.assert.calledOnce(undoSpy1);
         sinon.assert.notCalled(undoSpy2);
         sinon.assert.calledOnce(undoSpy3);
+    });
+});
+describe("dude-commander graph API", () => {
+    it("should add/remove a block", () => {
+        const graph = new Graph();
+        const block = new Block();
+        const commander = new Commander(graph, null);
+        expect(graph.graphBlocks).have.lengthOf(0);
+        commander.addBlock(block);
+        expect(graph.graphBlocks).have.lengthOf(1);
+        commander.undo();
+        expect(graph.graphBlocks).have.lengthOf(0);
+        commander.redo();
+        expect(graph.graphBlocks).have.lengthOf(1);
+        commander.removeBlock(block);
+        expect(graph.graphBlocks).have.lengthOf(0);
+        commander.undo();
+        expect(graph.graphBlocks).have.lengthOf(1);
+        commander.redo();
+        expect(graph.graphBlocks).have.lengthOf(0);
+    });
+    it("should add/remove a point into a block", () => {
+        const graph = new Graph();
+        const block = new Block();
+        const point = new Point(true, {"pointName": "out", "pointValueType": "number"});
+        const commander = new Commander(graph, null);
+        commander.addBlock(block);
+        expect(block.blockOutputs).have.lengthOf(0);
+        commander.addBlockPoint(block, point);
+        expect(block.blockOutputs).have.lengthOf(1);
+        commander.undo();
+        expect(block.blockOutputs).have.lengthOf(0);
+        commander.redo();
+        expect(block.blockOutputs).have.lengthOf(1);
+        commander.removeBlockPoint(block, point);
+        expect(block.blockOutputs).have.lengthOf(0);
+        commander.undo();
+        expect(block.blockOutputs).have.lengthOf(1);
+        commander.redo();
+        expect(block.blockOutputs).have.lengthOf(0);
+    });
+    it("should connect/disconnect points", () => {
+        const graph = new Graph();
+        const block1 = new Block();
+        const block2 = new Block();
+        const point1 = new Point(true, {"pointName": "out", "pointValueType": "number"});
+        const point2 = new Point(false, {"pointName": "in", "pointValueType": "number"});
+        const commander = new Commander(graph, null);
+        commander.transaction();
+        commander.addBlock(block1);
+        commander.addBlock(block2);
+        commander.addBlockPoint(block1, point1);
+        commander.addBlockPoint(block2, point2);
+        commander.commit();
+        expect(graph.connectionForPoints(point1, point2)).to.be.null;
+        commander.connectPoints(point1, point2);
+        expect(graph.connectionForPoints(point1, point2)).to.be.not.null;
+        commander.undo();
+        expect(graph.connectionForPoints(point1, point2)).to.be.null;
+        commander.redo();
+        expect(graph.connectionForPoints(point1, point2)).to.be.not.null;
+        commander.disconnectPoints(point1, point2);
+        expect(graph.connectionForPoints(point1, point2)).to.be.null;
+        commander.undo();
+        expect(graph.connectionForPoints(point1, point2)).to.be.not.null;
+        commander.redo();
+        expect(graph.connectionForPoints(point1, point2)).to.be.null;
     });
 });
