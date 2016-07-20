@@ -125,16 +125,10 @@ export default class RenderNode extends EventClass {
     updatePosition() {}
 
     /**
-     * Called when this render node has been selected
+     * Brings this render node to the front
      */
-    selected() {
-        this.element.classed("dude-graph-selected", true);
-    }
-    /**
-     * Called when this render node has been deselected
-     */
-    deselected() {
-        this.element.classed("dude-graph-selected", false);
+    front() {
+        this.element.element.parentElement.appendChild(this.element.element);
     }
 
 }

@@ -73,7 +73,7 @@
 
     renderBlock1.position = [32, 32];
     renderBlock1.name = "Start";
-    renderBlock2.position = [256, 128];
+    renderBlock2.position = [64, 64];
     renderBlock2.name = "Step";
     renderGroup.position = [320, 320];
 
@@ -102,6 +102,14 @@
     commander.connectRenderPoints(outputRender1, inputRender2);
 
     commander.commit();
+
+    renderBlock1.element.element.onmousedown = function () {
+        renderBlock1.front();
+    };
+    renderBlock2.element.element.onmousedown = function () {
+        renderBlock2.front();
+    };
+
 </script>
 </body>
 </html>
