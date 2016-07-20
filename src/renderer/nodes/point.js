@@ -121,6 +121,9 @@ export default class RenderPoint {
         this[_svgName] = this.element.append("svg:text").classed("dude-graph-point-name");
 
         this[_svgCircle].attr("d", () => {
+            if (this[_point].pointValueType === "stream") {
+                return "M " + -r + " " + -r * 1.5 + " L " + -r + " " + r * 1.5 + " L " + r + " " + 0 + " Z";
+            }
             return "M 0,0m " + -r + ", 0a " + [r, r] + " 0 1,0 " + r * 2 + ",0a " + [r, r] + " 0 1,0 " + -(r * 2) + ",0";
         });
         this[_svgName].attr("text-anchor", this.point.pointOutput ? "end" : "start");
