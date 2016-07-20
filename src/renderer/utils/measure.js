@@ -41,7 +41,7 @@ export const renderBlockPreferredSize = (renderBlock) => {
         if (widerOutput === null) {
             widerOutput = renderPoint;
         } else {
-            if (renderPoint.size[0] > widerOutput[0]) {
+            if (renderPoint.size[0] > widerOutput.size[0]) {
                 widerOutput = renderPoint;
             }
         }
@@ -50,7 +50,7 @@ export const renderBlockPreferredSize = (renderBlock) => {
         if (widerInput === null) {
             widerInput = renderPoint;
         } else {
-            if (renderPoint.size[0] > widerInput[0]) {
+            if (renderPoint.size[0] > widerInput.size[0]) {
                 widerInput = renderPoint;
             }
         }
