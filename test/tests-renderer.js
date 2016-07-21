@@ -188,9 +188,11 @@ describe("dude-renderer API", () => {
         renderer.addRenderBlock(renderBlock);
         expect(renderBlock.renderPoints).to.have.lengthOf(0);
         expect(renderBlock.element.select(".dude-graph-block-points").element.childElementCount).to.be.equal(0);
+        expect(renderBlock.inputByName("point")).to.be.null;
         renderBlock.addRenderPoint(renderPoint);
         expect(renderBlock.renderPoints).to.have.lengthOf(1);
         expect(renderBlock.element.select(".dude-graph-block-points").element.childElementCount).to.be.equal(1);
+        expect(renderBlock.inputByName("point")).to.be.equal(renderPoint);
     });
     it("should add render connections", () => {
         let svg = document.getElementById("svg");

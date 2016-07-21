@@ -298,7 +298,7 @@ export default class Block extends EventClass {
     /**
      * Returns the corresponding output point for the specified point name
      * @param {string} pointName - specifies the point name
-     * @returns {Point}
+     * @returns {Point|null}
      */
     outputByName(pointName) {
         return this[_blockOutputs].find(point => point.pointName === pointName) || null;
@@ -306,7 +306,7 @@ export default class Block extends EventClass {
     /**
      * Returns the corresponding input point for the specified point name
      * @param {string} pointName - specifies the point name
-     * @returns {Point}
+     * @returns {Point|null}
      */
     inputByName(pointName) {
         return this[_blockInputs].find(point => point.pointName === pointName) || null;
