@@ -250,8 +250,8 @@ export default class Commander {
                 renderBlock.addRenderPoint(renderPoint);
                 renderPoint.updateAll();
                 renderBlock.updateSize();
-                for (renderPoint of renderBlock.renderPoints) {
-                    renderPoint.updatePosition();
+                for (const otherRenderPoint of renderBlock.renderPoints) {
+                    otherRenderPoint.updatePosition();
                 }
             },
             () => { renderBlock.removeRenderPoint(renderPoint); renderBlock.updateSize(); }
@@ -269,8 +269,8 @@ export default class Commander {
                 renderBlock.addRenderPoint(renderPoint);
                 renderPoint.updateAll();
                 renderBlock.updateSize();
-                for (renderPoint of renderBlock.renderPoints) {
-                    renderPoint.updatePosition();
+                for (const otherRenderPoint of renderBlock.renderPoints) {
+                    otherRenderPoint.updatePosition();
                 }
             }
         );
