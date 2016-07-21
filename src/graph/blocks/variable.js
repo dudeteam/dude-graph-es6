@@ -1,6 +1,6 @@
 import Block from "../block";
 
-const _graphVariable = Symbol("_graphVariable");
+const _variable = Symbol("_variable");
 
 export default class VariableBlock extends Block {
 
@@ -10,7 +10,7 @@ export default class VariableBlock extends Block {
     constructor(blockData) {
         super(blockData);
 
-        this[_graphVariable] = null;
+        this[_variable] = null;
     }
 
     /**
@@ -18,16 +18,16 @@ export default class VariableBlock extends Block {
      * @override
      */
     added() {
-        this[_graphVariable] = this.blockGraph.variableByName(this.blockName);
-        if (this[_graphVariable] === null) {
-            this.blockGraph.removeBlock(this);
+        this[_variable] = this.graph.variableByName(this.name);
+        if (this[_variable] === null) {
+            this.graph.removeBlock(this);
             throw new Error(this.fancyName + " must be linked to a graph variable");
         }
-        if (this[_graphVariable].variableBlock !== null && this[_graphVariable].variableBlock !== this) {
-            this.blockGraph.removeBlock(this);
-            throw new Error(this[_graphVariable].fancyName + " cannot redefine variableBlock");
+        if (this[_variable].block !== null && this[_variable].block !== this) {
+            this.graph.removeBlock(this);
+            throw new Error(this[_variable].fancyName + " cannot redefine block");
         }
-        this[_graphVariable].variableBlock = this;
+        this[_variable].block = this;
     }
 
     /**
@@ -35,7 +35,7 @@ export default class VariableBlock extends Block {
      * @override
      */
     removed () {
-        this[_graphVariable].variableBlock = null;
+        this[_variable].block = null;
     }
 
 }

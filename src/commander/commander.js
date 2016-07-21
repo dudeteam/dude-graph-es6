@@ -160,24 +160,24 @@ export default class Commander {
     }
     /**
      * @see {Graph.connect}
-     * @param {Point} outputPoint - @see {Graph.connect}
      * @param {Point} inputPoint - @see {Graph.connect}
+     * @param {Point} outputPoint - @see {Graph.connect}
      */
-    connectPoints(outputPoint, inputPoint) {
+    connectPoints(inputPoint, outputPoint) {
         this.command(
-            () => { outputPoint.connect(inputPoint); },
-            () => { outputPoint.disconnect(inputPoint); }
+            () => { inputPoint.connect(outputPoint); },
+            () => { inputPoint.disconnect(outputPoint); }
         );
     }
     /**
      * @see {Graph.disconnect}
-     * @param {Point} outputPoint - @see {Graph.disconnect}
      * @param {Point} inputPoint - @see {Graph.disconnect}
+     * @param {Point} outputPoint - @see {Graph.disconnect}
      */
-    disconnectPoints(outputPoint, inputPoint) {
+    disconnectPoints(inputPoint, outputPoint) {
         this.command(
-            () => { outputPoint.disconnect(inputPoint); },
-            () => { outputPoint.connect(inputPoint); }
+            () => { inputPoint.disconnect(outputPoint); },
+            () => { inputPoint.connect(outputPoint); }
         );
     }
 
@@ -211,19 +211,19 @@ export default class Commander {
 
     /**
      * @see {Renderer.connect}
-     * @param {RenderPoint} outputRenderPoint - @see {Renderer.connect}
      * @param {RenderPoint} inputRenderPoint - @see {Renderer.connect}
+     * @param {RenderPoint} outputRenderPoint - @see {Renderer.connect}
      */
-    connectRenderPoints(outputRenderPoint, inputRenderPoint) {
+    connectRenderPoints(inputRenderPoint, outputRenderPoint) {
         this.command(
             () => {
-                const renderConnection = this[_renderer].connect(outputRenderPoint, inputRenderPoint);
+                const renderConnection = this[_renderer].connect(inputRenderPoint, outputRenderPoint);
                 outputRenderPoint.updateData();
                 inputRenderPoint.updateData();
                 renderConnection.updateAll();
             },
             () => {
-                this[_renderer].disconnect(outputRenderPoint, inputRenderPoint);
+                this[_renderer].disconnect(inputRenderPoint, outputRenderPoint);
                 outputRenderPoint.updateData();
                 inputRenderPoint.updateData();
             }
@@ -231,18 +231,18 @@ export default class Commander {
     }
     /**
      * @see {Renderer.disconnect}
-     * @param {RenderPoint} outputRenderPoint - @see {Renderer.disconnect}
      * @param {RenderPoint} inputRenderPoint - @see {Renderer.disconnect}
+     * @param {RenderPoint} outputRenderPoint - @see {Renderer.disconnect}
      */
-    disconnectRenderPoints(outputRenderPoint, inputRenderPoint) {
+    disconnectRenderPoints(inputRenderPoint, outputRenderPoint) {
         this.command(
             () => {
-                this[_renderer].disconnect(outputRenderPoint, inputRenderPoint);
+                this[_renderer].disconnect(inputRenderPoint, outputRenderPoint);
                 outputRenderPoint.updateData();
                 inputRenderPoint.updateData();
             },
             () => {
-                const renderConnection = this[_renderer].connect(outputRenderPoint, inputRenderPoint);
+                const renderConnection = this[_renderer].connect(inputRenderPoint, outputRenderPoint);
                 outputRenderPoint.updateData();
                 inputRenderPoint.updateData();
                 renderConnection.updateAll();

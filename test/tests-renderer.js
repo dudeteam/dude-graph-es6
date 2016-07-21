@@ -179,7 +179,7 @@ describe("dude-renderer API", () => {
         const svg = document.getElementById("svg");
         const graph = new Graph();
         const block = new Block();
-        const point = new Point(false, {"pointName": "point", "pointValueType": "string"});
+        const point = new Point(true, {"name": "point", "valueType": "string"});
         const renderer = new Renderer(graph, svg);
         const renderBlock = new RenderBlock(block);
         const renderPoint = new RenderPoint(point);
@@ -199,8 +199,8 @@ describe("dude-renderer API", () => {
         let graph = new Graph();
         let block1 = new Block();
         let block2 = new Block();
-        let outputPoint = new Point(true, {"pointName": "point", "pointValueType": "string"});
-        let inputPoint = new Point(false, {"pointName": "point", "pointValueType": "string"});
+        let outputPoint = new Point(false, {"name": "point", "valueType": "string"});
+        let inputPoint = new Point(true, {"name": "point", "valueType": "string"});
         let renderer = new Renderer(graph, svg);
         let renderBlock1 = new RenderBlock(block1);
         let renderBlock2 = new RenderBlock(block2);
@@ -213,7 +213,7 @@ describe("dude-renderer API", () => {
         renderer.addRenderBlock(renderBlock1);
         renderer.addRenderBlock(renderBlock2);
         expect(() => {
-            renderer.connect(outputRenderPoint, inputRenderPoint); // the render points are not bound to render blocks
+            renderer.connect(inputRenderPoint, outputRenderPoint); // the render points are not bound to render blocks
         }).to.throw();
         renderBlock1.addRenderPoint(outputRenderPoint);
         renderBlock2.addRenderPoint(inputRenderPoint);
@@ -221,20 +221,20 @@ describe("dude-renderer API", () => {
             renderer.connect(inputRenderPoint, outputRenderPoint); // 1st parameter must be the output point
         }).to.throw();
         expect(() => {
-            renderer.connect(outputRenderPoint, inputRenderPoint); // the points are not connected in the graph
+            renderer.connect(inputRenderPoint, outputRenderPoint); // the points are not connected in the graph
         }).to.throw();
         outputPoint.connect(inputPoint);
         expect(outputRenderPoint.renderConnections).to.have.lengthOf(0);
         expect(inputRenderPoint.renderConnections).to.have.lengthOf(0);
-        expect(renderer.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint)).to.be.null;
-        let renderConnection = renderer.connect(outputRenderPoint, inputRenderPoint);
+        expect(renderer.renderConnectionsForRenderPoints(inputRenderPoint, outputRenderPoint)).to.be.null;
+        let renderConnection = renderer.connect(inputRenderPoint, outputRenderPoint);
         expect(outputRenderPoint.renderConnections).to.have.lengthOf(1);
         expect(inputRenderPoint.renderConnections).to.have.lengthOf(1);
-        expect(renderer.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint)).to.be.equal(renderConnection);
+        expect(renderer.renderConnectionsForRenderPoints(inputRenderPoint, outputRenderPoint)).to.be.equal(renderConnection);
         expect(renderConnection.outputRenderPoint).to.be.equal(outputRenderPoint);
         expect(renderConnection.inputRenderPoint).to.be.equal(inputRenderPoint);
         expect(() => {
-            renderer.connect(outputRenderPoint, inputRenderPoint); // already connected
+            renderer.connect(inputRenderPoint, outputRenderPoint); // already connected
         }).to.throw();
     });
     it("should remove a render connections", () => {
@@ -242,8 +242,8 @@ describe("dude-renderer API", () => {
         let graph = new Graph();
         let block1 = new Block();
         let block2 = new Block();
-        let outputPoint = new Point(true, {"pointName": "point", "pointValueType": "string"});
-        let inputPoint = new Point(false, {"pointName": "point", "pointValueType": "string"});
+        let outputPoint = new Point(false, {"name": "point", "valueType": "string"});
+        let inputPoint = new Point(true, {"name": "point", "valueType": "string"});
         let renderer = new Renderer(graph, svg);
         let renderBlock1 = new RenderBlock(block1);
         let renderBlock2 = new RenderBlock(block2);
@@ -259,22 +259,22 @@ describe("dude-renderer API", () => {
         renderBlock2.addRenderPoint(inputRenderPoint);
         outputPoint.connect(inputPoint);
         expect(() => {
-            renderer.disconnect(outputRenderPoint, inputRenderPoint); // render points not connected
+            renderer.disconnect(inputRenderPoint, outputRenderPoint); // render points not connected
         }).to.throw();
-        renderer.connect(outputRenderPoint, inputRenderPoint);
+        renderer.connect(inputRenderPoint, outputRenderPoint);
         expect(() => {
-            renderer.disconnect(inputRenderPoint, outputRenderPoint); // 1st parameter must be the output point
+            renderer.disconnect(outputRenderPoint, inputRenderPoint); // 1st parameter must be the input point
         }).to.throw();
-        expect(renderer.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint)).to.be.not.null;
+        expect(renderer.renderConnectionsForRenderPoints(inputRenderPoint, outputRenderPoint)).to.be.not.null;
         expect(outputRenderPoint.renderConnections).to.have.lengthOf(1);
         expect(inputRenderPoint.renderConnections).to.have.lengthOf(1);
-        renderer.disconnect(outputRenderPoint, inputRenderPoint);
-        expect(renderer.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint)).to.be.null;
+        renderer.disconnect(inputRenderPoint, outputRenderPoint);
+        expect(renderer.renderConnectionsForRenderPoints(inputRenderPoint, outputRenderPoint)).to.be.null;
         expect(outputRenderPoint.renderConnections).to.have.lengthOf(0);
         expect(inputRenderPoint.renderConnections).to.have.lengthOf(0);
     });
 });
-describe("dude-renderer events", () => {
+describe("dude-renderer Events", () => {
     beforeEach(function () {
         this.jsdom = gjsdom(`<html><body><svg id="svg"></svg></body></html>`);
     });
@@ -311,7 +311,7 @@ describe("dude-renderer events", () => {
         const graph = new Graph();
         const renderer = new Renderer(graph, svg);
         const block = new Block();
-        const point = new Point(false, {"pointName": "in", "pointValueType": "string"});
+        const point = new Point(true, {"name": "in", "valueType": "string"});
         const renderBlock = new RenderBlock(block);
         const renderPoint = new RenderPoint(point);
         graph.addBlock(block);
@@ -354,7 +354,7 @@ describe("dude-renderer events", () => {
         const graph = new Graph();
         const renderer = new Renderer(graph, svg);
         const block = new Block();
-        const point = new Point(false, {"pointName": "in", "pointValueType": "string"});
+        const point = new Point(true, {"name": "in", "valueType": "string"});
         const renderBlock = new RenderBlock(block);
         const renderPoint = new RenderPoint(point);
         graph.addBlock(block);

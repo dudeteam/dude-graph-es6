@@ -4,46 +4,46 @@ import EventClass from "event-class-es6";
 import PointPolicy from "./policy";
 import defaultValue from "./utils/default";
 
-const _pointOutput = Symbol("pointOutput");
-const _pointName = Symbol("pointName");
-const _pointTemplate = Symbol("pointTemplate");
-const _pointValueType = Symbol("pointValueType");
-const _pointValue = Symbol("pointValue");
-const _pointPolicy = Symbol("pointPolicy");
-const _pointBlock = Symbol("pointBlock");
-const _pointConnections = Symbol("pointConnections");
+const _name = Symbol("name");
+const _input = Symbol("input");
+const _template = Symbol("template");
+const _valueType = Symbol("valueType");
+const _pointValue = Symbol("value");
+const _policy = Symbol("policy");
+const _block = Symbol("block");
+const _connections = Symbol("connections");
 
 export default class Point extends EventClass {
 
     /**
-     * @param {boolean} pointOutput - whether this point is an output or an input
+     * @param {boolean} input - whether this point is an input or an output
      * @param {Point.pointDataTypedef} pointData - The point configuration data
      */
-    constructor(pointOutput, pointData) {
+    constructor(input, pointData) {
         super();
 
-        this[_pointOutput] = pointOutput;
-        this[_pointName] = defaultValue(pointData.pointName, null);
-        this[_pointTemplate] = defaultValue(pointData.pointTemplate, null);
-        this[_pointValueType] = defaultValue(pointData.pointValueType, null);
+        this[_name] = defaultValue(pointData.name, null);
+        this[_input] = input;
+        this[_template] = defaultValue(pointData.template, null);
+        this[_valueType] = defaultValue(pointData.valueType, null);
         this[_pointValue] = defaultValue(pointData.pointValue, null);
-        this[_pointPolicy] = PointPolicy.NONE;
-        this[_pointBlock] = null;
-        this[_pointConnections] = [];
-        if (typeof pointData.pointPolicy !== "undefined") {
-            this[_pointPolicy] = PointPolicy.deserialize(pointData.pointPolicy);
+        this[_policy] = PointPolicy.NONE;
+        this[_block] = null;
+        this[_connections] = [];
+        if (typeof pointData.policy !== "undefined") {
+            this[_policy] = PointPolicy.deserialize(pointData.policy);
         } else {
-            this[_pointPolicy] = PointPolicy.DEFAULT;
+            this[_policy] = PointPolicy.DEFAULT;
         }
-        if (typeof this[_pointName] !== "string") {
-            throw new Error(this.fancyName + " must have a non-null pointName");
+        if (typeof this[_name] !== "string") {
+            throw new Error(this.fancyName + " must have a non-null name");
         }
-        if (this[_pointTemplate] === null && typeof this[_pointValueType] !== "string") {
+        if (this[_template] === null && typeof this[_valueType] !== "string") {
             throw new Error(this.fancyName + " " +
-                "pointValueType must be a non-null String if no pointTemplate is provided");
+                "valueType must be a non-null String if no template is provided");
         }
         if (this.hasPolicy(PointPolicy.SINGLE_CONNECTION) && this.hasPolicy(PointPolicy.MULTIPLE_CONNECTIONS)) {
-            throw new Error(this.fancyName + " pointPolicy cannot mix " +
+            throw new Error(this.fancyName + " policy cannot mix " +
                 "SINGLE_CONNECTION and MULTIPLE_CONNECTIONS");
         }
     }
@@ -52,74 +52,79 @@ export default class Point extends EventClass {
      * Returns this point fancy name
      * @returns {string}
      */
-    get fancyName() { return this[_pointName]; }
+    get fancyName() { return this[_name]; }
     /**
      * Returns this point type
      * @returns {string}
      */
-    get pointType() { return this.constructor.name; }
+    get type() { return this.constructor.name; }
     /**
      * Returns the name of this point
      * @returns {string}
      */
-    get pointName() { return this[_pointName]; }
+    get name() { return this[_name]; }
     /**
-     * Returns whether this point is an output or an input
+     * Returns whether this point is an input
      * @returns {boolean}
      */
-    get pointOutput() { return this[_pointOutput]; }
+    get input() { return this[_input]; }
+    /**
+     * Returns whether this point is an output
+     * @returns {boolean}
+     */
+    get output() { return !this[_input]; }
     /**
      * Returns this point template
      * @returns {string|null}
      */
-    get pointTemplate() { return this[_pointTemplate]; }
+    get template() { return this[_template]; }
     /**
      * Returns this point value type
      * @returns {string}
      */
-    get pointValueType() { return this[_pointValueType]; }
+    get valueType() { return this[_valueType]; }
     /**
      * Sets this point value type to the specified value type
-     * @param {string} pointValueType - specifies the value type
+     * @param {string} valueType - specifies the value type
      */
-    set pointValueType(pointValueType) { this.changeValueType(pointValueType); }
+    set valueType(valueType) { this.changeValueType(valueType); }
     /**
      * Returns this point value
      * @returns {*|null}
      */
-    get pointValue() { return this[_pointValue]; }
+    get value() { return this[_pointValue]; }
     /**
      * Sets this point value to the specified value
-     * @param {*|null} pointValue - specifies the value
+     * @param {*|null} value - specifies the value
      */
-    set pointValue(pointValue) { this.changeValue(pointValue); }
+    set value(value) { this.changeValue(value); }
     /**
      * Returns this point policy
      * @returns {number}
      */
-    get pointPolicy() { return this[_pointPolicy]; }
+    get policy() { return this[_policy]; }
     /**
      * Returns this point's block
      * @returns {Block|null}
      */
-    get pointBlock() { return this[_pointBlock]; }
+    get block() { return this[_block]; }
     /**
      * Sets this point block to the specified block
-     * @param {Block|null} pointBlock - specifies the block
+     * @param {Block|null} block - specifies the block
      */
-    set pointBlock(pointBlock) { this[_pointBlock] = pointBlock; }
+    set block(block) { this[_block] = block; }
     /**
      * Returns this point connections
      * @returns {Array<Connection>}
      */
-    get pointConnections() { return this[_pointConnections]; }
+    get connections() { return this[_connections]; }
 
     /**
      * Returns whether this point has the specified policy
      * @param {number} policy - specifies the policy
      * @returns {boolean}
      */
-    hasPolicy(policy) { return PointPolicy.has(this[_pointPolicy], policy); }
+    hasPolicy(policy) { return PointPolicy.has(this[_policy], policy); }
 
     /**
      * Changes this point value to the specified value
@@ -127,7 +132,7 @@ export default class Point extends EventClass {
      * @param {boolean} [ignoreEmit=false] - whether to emit events
      */
     changeValue(value, ignoreEmit) {
-        if (this[_pointBlock] === null) {
+        if (this[_block] === null) {
             throw new Error(this.fancyName + " cannot change value when not bound to a block");
         }
         if (value !== null && !this.emptyConnection()) {
@@ -137,38 +142,38 @@ export default class Point extends EventClass {
             throw new Error(this.fancyName + " cannot change value when the policy VALUE is disabled");
         }
         const oldValue = this[_pointValue];
-        const assignValue = this[_pointBlock].blockGraph.convertValue(this[_pointValueType], value);
+        const assignValue = this[_block].graph.convertValue(this[_valueType], value);
         if (typeof assignValue === "undefined") {
-            throw new Error(this[_pointBlock].blockGraph.fancyName + " " + value +
-                " is not compatible with type " + this[_pointValueType]);
+            throw new Error(this[_block].graph.fancyName + " " + value +
+                " is not compatible with type " + this[_valueType]);
         }
         this[_pointValue] = assignValue;
-        this[_pointBlock].pointValueChanged(this, assignValue, oldValue);
+        this[_block].pointValueChanged(this, assignValue, oldValue);
         if (!ignoreEmit) {
             this.emit("value-change", assignValue, oldValue);
-            this[_pointBlock].blockGraph.emit("point-value-change", this, assignValue, oldValue);
+            this[_block].graph.emit("point-value-change", this, assignValue, oldValue);
         }
     }
     /**
      * Changes this point value type to the specified value type
-     * @param {*|null} pointValueType - specifies the value type
+     * @param {*|null} valueType - specifies the value type
      * @param {boolean} [ignoreEmit=false] - whether to emit events
      */
-    changeValueType(pointValueType, ignoreEmit) {
-        if (this[_pointBlock] === null) {
+    changeValueType(valueType, ignoreEmit) {
+        if (this[_block] === null) {
             throw new Error(this.fancyName + " cannot change value type when not bound to a block");
         }
-        if (this[_pointBlock].blockGraph.valueTypeByName(pointValueType) === null) {
-            throw new Error(this[_pointBlock].blockGraph.fancyName + " has no value type " + pointValueType);
+        if (this[_block].graph.valueTypeByName(valueType) === null) {
+            throw new Error(this[_block].graph.fancyName + " has no value type " + valueType);
         }
-        if (typeof this[_pointBlock].blockGraph.convertValue(pointValueType, this[_pointValue]) === "undefined") {
-            throw new Error(this[_pointValue] + " is not compatible with value type " + pointValueType);
+        if (typeof this[_block].graph.convertValue(valueType, this[_pointValue]) === "undefined") {
+            throw new Error(this[_pointValue] + " is not compatible with value type " + valueType);
         }
-        const oldValueType = this[_pointValueType];
-        this[_pointValueType] = pointValueType;
+        const oldValueType = this[_valueType];
+        this[_valueType] = valueType;
         if (!ignoreEmit) {
-            this.emit("value-type-change", pointValueType, oldValueType);
-            this[_pointBlock].blockGraph.emit("point-value-type-change", this, pointValueType, oldValueType);
+            this.emit("value-type-change", valueType, oldValueType);
+            this[_block].graph.emit("point-value-type-change", this, valueType, oldValueType);
         }
         this.changeValue(this[_pointValue], !!ignoreEmit);
     }
@@ -187,7 +192,7 @@ export default class Point extends EventClass {
      * Returns whether this point has no connections
      * @returns {boolean}
      */
-    emptyConnection() { return this[_pointConnections].length === 0; }
+    emptyConnection() { return this[_connections].length === 0; }
 
     /**
      * Connects the specified other point to this point
@@ -195,13 +200,13 @@ export default class Point extends EventClass {
      * @returns {Connection}
      */
     connect(otherPoint) {
-        if (this[_pointBlock] === null) {
+        if (this[_block] === null) {
             throw new Error(this.fancyName + " cannot connect when not bound to a block");
         }
-        if (this[_pointOutput]) {
-            return this[_pointBlock].blockGraph.connect(this, otherPoint);
+        if (this[_input]) {
+            return this[_block].graph.connect(this, otherPoint);
         }
-        return this[_pointBlock].blockGraph.connect(otherPoint, this);
+        return this[_block].graph.connect(otherPoint, this);
     }
     /**
      * Disconnects the specified other point from this point
@@ -209,20 +214,20 @@ export default class Point extends EventClass {
      * @returns {Connection}
      */
     disconnect(otherPoint) {
-        if (this[_pointBlock] === null) {
+        if (this[_block] === null) {
             throw new Error(this.fancyName + " cannot disconnect when not bound to a block");
         }
-        if (this[_pointOutput]) {
-            return this[_pointBlock].blockGraph.disconnect(this, otherPoint);
+        if (this[_input]) {
+            return this[_block].graph.disconnect(this, otherPoint);
         }
-        return this[_pointBlock].blockGraph.disconnect(otherPoint, this);
+        return this[_block].graph.disconnect(otherPoint, this);
     }
     /**
      * Disconnects all points from this point
      */
     disconnectAll() {
-        for (let i = this[_pointConnections].length - 1; i >= 0; i--) {
-            this.disconnect(this[_pointConnections][i].other(this));
+        for (let i = this[_connections].length - 1; i >= 0; i--) {
+            this.disconnect(this[_connections][i].other(this));
         }
     }
 
@@ -255,9 +260,9 @@ export default class Point extends EventClass {
 
 /**
  * @typedef {Object} Point.pointDataTypedef
- * @property {string} pointName
- * @property {string|null} [pointTemplate=null]
- * @property {string} [pointValueType=null]
- * @property {*|null} [pointValue=null]
- * @property {Array<string>} [pointPolicy=["VALUE", "SINGLE_CONNECTION", "CONVERSION"]]
+ * @property {string} name
+ * @property {string|null} [template=null]
+ * @property {string} [valueType=null]
+ * @property {*|null} [value=null]
+ * @property {Array<string>} [policy=["VALUE", "SINGLE_CONNECTION", "CONVERSION"]]
  */

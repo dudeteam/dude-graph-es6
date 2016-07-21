@@ -1,12 +1,12 @@
 import EventClass from "event-class-es6";
 import defaultValue from "./utils/default";
-import VariableBlock from "./blocks/variable";
+import block from "./blocks/variable";
 
-const _variableName = Symbol("variableName");
-const _variableValueType = Symbol("variableValueType");
-const _variableValue = Symbol("variableValue");
-const _variableBlock = Symbol("variableBlock");
-const _variableGraph = Symbol("variableGraph");
+const _name = Symbol("name");
+const _valueType = Symbol("valueType");
+const _value = Symbol("value");
+const _block = Symbol("block");
+const _graph = Symbol("graph");
 
 export default class Variable extends EventClass {
 
@@ -16,19 +16,19 @@ export default class Variable extends EventClass {
     constructor(variableData) {
         super();
 
-        this[_variableName] = defaultValue(variableData.variableName);
-        this[_variableValueType] = defaultValue(variableData.variableValueType);
-        this[_variableValue] = defaultValue(variableData.variableValue);
-        this[_variableBlock] = defaultValue(variableData.variableBlock, null);
-        this[_variableGraph] = null;
-        if (typeof this[_variableName] !== "string") {
-            throw new Error(this.fancyName + " variableName must be a non-null String");
+        this[_name] = defaultValue(variableData.name);
+        this[_valueType] = defaultValue(variableData.valueType);
+        this[_value] = defaultValue(variableData.value);
+        this[_block] = defaultValue(variableData.block, null);
+        this[_graph] = null;
+        if (typeof this[_name] !== "string") {
+            throw new Error(this.fancyName + " name must be a non-null String");
         }
-        if (typeof this[_variableValueType] !== "string") {
-            throw new Error(this.fancyName + " _variableValueType must be a non-null String");
+        if (typeof this[_valueType] !== "string") {
+            throw new Error(this.fancyName + " valueType must be a non-null String");
         }
-        if (this[_variableBlock] !== null && !(this[_variableBlock] instanceof VariableBlock)) {
-            throw new Error(this.fancyName + " variableBlock must be of type VariableBlock");
+        if (this[_block] !== null && !(this[_block] instanceof block)) {
+            throw new Error(this.fancyName + " block must be of type block");
         }
     }
 
@@ -41,42 +41,42 @@ export default class Variable extends EventClass {
      * Returns the variable name
      * @returns {string}
      */
-    get variableName() { return this[_variableName]; }
+    get name() { return this[_name]; }
     /**
      * Returns the variable value type
      * @returns {string}
      */
-    get variableValueType() { return this[_variableValueType]; }
+    get valueType() { return this[_valueType]; }
     /**
      * Returns the variable value
      * @returns {*|null}
      */
-    get variableValue() { return this[_variableValue]; }
+    get value() { return this[_value]; }
     /**
      * Sets this variable value to the specified value
-     * @param {*|null} variableValue - specifies the value
+     * @param {*|null} value - specifies the value
      */
-    set variableValue(variableValue) { this.changeVariableValue(variableValue); }
+    set value(value) { this.changeValue(value); }
     /**
      * Returns this variable block
      * @returns {Block}
      */
-    get variableBlock() { return this[_variableBlock]; }
+    get block() { return this[_block]; }
     /**
      * Sets this variable block to the specified block
-     * @param {Block} variableBlock - specifies the block
+     * @param {Block} block - specifies the block
      */
-    set variableBlock(variableBlock) { this[_variableBlock] = variableBlock; }
+    set block(block) { this[_block] = block; }
     /**
      * Returns this variable graph
      * @returns {Graph}
      */
-    get variableGraph() { return this[_variableGraph]; }
+    get graph() { return this[_graph]; }
     /**
      * Sets this variable graph to the specified graph
-     * @param {Graph} variableGraph - specifies the graph
+     * @param {Graph} graph - specifies the graph
      */
-    set variableGraph(variableGraph) { this[_variableGraph] = variableGraph; }
+    set graph(graph) { this[_graph] = graph; }
 
     added() {}
     removed() {}
@@ -86,17 +86,17 @@ export default class Variable extends EventClass {
      * @param {*|null} value - specifies the value
      * @param {boolean} [ignoreEmit=false] - whether to emit events
      */
-    changeVariableValue(value, ignoreEmit) {
-        const assignValue = this[_variableGraph].convertValue(this[_variableValueType], value);
+    changeValue(value, ignoreEmit) {
+        const assignValue = this[_graph].convertValue(this[_valueType], value);
         if (typeof assignValue === "undefined") {
             throw new Error(this.fancyName + " " + value +
-                " is not compatible with type " + this[_variableValueType]);
+                " is not compatible with type " + this[_valueType]);
         }
-        const oldValue = this[_variableValue];
-        this[_variableValue] = assignValue;
+        const oldValue = this[_value];
+        this[_value] = assignValue;
         if (!ignoreEmit) {
             this.emit("value-change", assignValue, oldValue);
-            this[_variableGraph].emit("variable-value-change", this, assignValue, oldValue);
+            this[_graph].emit("variable-value-change", this, assignValue, oldValue);
         }
     }
 
@@ -104,8 +104,8 @@ export default class Variable extends EventClass {
 
 /**
  * @typedef {Object} Variable.variableDataTypedef
- * @property {string} variableName
- * @property {string} variableValueType
- * @property {*|null} [variableValue=null]
- * @property {Block} [variableBlock=null]
+ * @property {string} name
+ * @property {string} valueType
+ * @property {*|null} [value=null]
+ * @property {Block} [block=null]
  */

@@ -6,70 +6,70 @@ import PointPolicy from "./policy";
 
 import uuid from "./utils/uuid";
 
-const _graphErrno = Symbol("graphErrno");
-const _graphBlocks = Symbol("graphBlocks");
-const _graphBlockIds = Symbol("graphBlockIds");
-const _graphVariables = Symbol("graphVariables");
-const _graphValueTypes = Symbol("graphValueTypes");
-const _graphConnections = Symbol("graphConnections");
+const _errno = Symbol("errno");
+const _blocks = Symbol("blocks");
+const _blockIds = Symbol("blockIds");
+const _variables = Symbol("variables");
+const _valueTypes = Symbol("valueTypes");
+const _connections = Symbol("connections");
 
 export default class Graph extends EventClass {
 
     constructor() {
         super();
 
-        this[_graphErrno] = null;
-        this[_graphBlocks] = [];
-        this[_graphBlockIds] = {};
-        this[_graphVariables] = [];
-        this[_graphValueTypes] = valueTypes;
-        this[_graphConnections] = [];
+        this[_errno] = null;
+        this[_blocks] = [];
+        this[_blockIds] = {};
+        this[_variables] = [];
+        this[_valueTypes] = valueTypes;
+        this[_connections] = [];
     }
 
     /**
      * Returns this graph fancy name
      * @returns {string}
      */
-    get fancyName() { return "graph (" + this[_graphBlocks].length + " blocks)"; }
+    get fancyName() { return "graph (" + this[_blocks].length + " blocks)"; }
     /**
      * Returns this graph blocks
      * @returns {Array<Block>}
      */
-    get graphBlocks() { return this[_graphBlocks]; }
+    get blocks() { return this[_blocks]; }
     /**
      * Returns this graph variables
      * @returns {Array<Variable>}
      */
-    get graphVariables() { return this[_graphVariables]; }
+    get variables() { return this[_variables]; }
     /**
      * Returns this graph connections
      * @returns {Array<Connection>}
      */
-    get graphConnections() { return this[_graphConnections]; }
+    get connections() { return this[_connections]; }
 
     /**
      * Adds the specified block to this graph
      * @param {Block} block - the block to add
      */
     addBlock(block) {
-        if (block.blockGraph !== null) {
-            throw new Error(block.fancyName + " cannot redefine blockGraph");
+        if (block.graph !== null) {
+            throw new Error(block.fancyName + " cannot redefine graph");
         }
-        if (block.blockId !== null && typeof this[_graphBlockIds][block.blockId] !== "undefined") {
-            throw new Error(this.fancyName + " cannot redefine id " + block.blockId);
+        if (block.id !== null && typeof this[_blockIds][block.id] !== "undefined") {
+            throw new Error(this.fancyName + " cannot redefine id " + block.id);
         }
-        if (block.blockId === null) {
-            block.blockId = this.nextBlockId();
+        if (block.id === null) {
+            block.id = this.nextId();
         }
-        block.blockGraph = this;
-        for (const templateId in block.blockTemplates) {
-            // for(const [template, templateId] of Object.entries(block.blockTemplates))
-            if (block.blockTemplates.hasOwnProperty(templateId)) {
-                block.changeTemplate(templateId, block.blockTemplates[templateId].valueType, true);
+        block.graph = this;
+        for (const templateId in block.templates) {
+            // for(const [template, templateId] of Object.entries(block.templates))
+            if (block.templates.hasOwnProperty(templateId)) {
+                block.changeTemplate(templateId, block.templates[templateId].valueType, true);
             }
         }
-        this[_graphBlocks].push(block);
-        this[_graphBlockIds][block.blockId] = block;
+        this[_blocks].push(block);
+        this[_blockIds][block.id] = block;
         this.emit("block-add", block);
         block.added();
     }
@@ -78,13 +78,13 @@ export default class Graph extends EventClass {
      * @param {Block} block - the block to remove
      */
     removeBlock(block) {
-        if (block.blockGraph !== this || !this[_graphBlocks].includes(block)) {
+        if (block.graph !== this || !this[_blocks].includes(block)) {
             throw new Error(this.fancyName + " has no block " + block.fancyName);
         }
         block.removePoints();
-        block.blockGraph = null;
-        this[_graphBlocks].splice(this[_graphBlocks].indexOf(block), 1);
-        this[_graphBlockIds][block.blockId] = undefined;
+        block.graph = null;
+        this[_blocks].splice(this[_blocks].indexOf(block), 1);
+        this[_blockIds][block.id] = undefined;
         this.emit("block-remove", block);
         block.removed();
     }
@@ -94,32 +94,32 @@ export default class Graph extends EventClass {
      * Returns the next unique block id
      * @returns {string}
      */
-    nextBlockId() {
+    nextId() {
         return uuid();
     }
     /**
      * Returns the block corresponding to the specified block id
-     * @param {string} blockId - specifies the block id
+     * @param {string} id - specifies the block id
      * @returns {Block|null}
      */
-    blockById(blockId) {
-        return this[_graphBlockIds][blockId] || null;
+    blockById(id) {
+        return this[_blockIds][id] || null;
     }
     /**
      * Returns the blocks corresponding to the specified block name
-     * @param {string} blockName - specifies the block name
+     * @param {string} name - specifies the block name
      * @returns {Array<Block>}
      */
-    blocksByName(blockName) {
-        return this[_graphBlocks].filter(block => block.blockName === blockName);
+    blocksByName(name) {
+        return this[_blocks].filter(block => block.name === name);
     }
     /**
      * Returns the blocks corresponding to the specified block type
-     * @param {string} blockType - specifies the block type
+     * @param {string} type - specifies the block type
      * @returns {Array<Block>}
      */
-    blocksByType(blockType) {
-        return this[_graphBlocks].filter(block => block.blockType === blockType || block instanceof blockType);
+    blocksByType(type) {
+        return this[_blocks].filter(block => block.type === type || block instanceof type);
     }
 
     /**
@@ -127,15 +127,15 @@ export default class Graph extends EventClass {
      * @param {Variable} variable - specifies the variable
      */
     addVariable(variable) {
-        if (variable.variableGraph !== null) {
-            throw new Error(variable.fancyName + " cannot redefine variableGraph");
+        if (variable.graph !== null) {
+            throw new Error(variable.fancyName + " cannot redefine graph");
         }
-        if (this.variableByName(variable.variableName) !== null) {
-            throw new Error(this.fancyName + " cannot redefine variable name " + variable.variableName);
+        if (this.variableByName(variable.name) !== null) {
+            throw new Error(this.fancyName + " cannot redefine variable name " + variable.name);
         }
-        variable.variableGraph = this;
+        variable.graph = this;
         variable.added();
-        this[_graphVariables].push(variable);
+        this[_variables].push(variable);
         this.emit("variable-add", variable);
     }
     /**
@@ -143,22 +143,22 @@ export default class Graph extends EventClass {
      * @param {Variable} variable - specifies the variable
      */
     removeVariable(variable) {
-        if (variable.variableGraph !== this || this.variableByName(variable.variableName) === null) {
+        if (variable.graph !== this || this.variableByName(variable.name) === null) {
             throw new Error(this.fancyName + " has no variable " + variable.fancyName);
         }
-        if (variable.variableBlock !== null) {
-            this.removeBlock(variable.variableBlock);
+        if (variable.block !== null) {
+            this.removeBlock(variable.block);
         }
-        this[_graphVariables].splice(this[_graphVariables].indexOf(variable), 1);
+        this[_variables].splice(this[_variables].indexOf(variable), 1);
         this.emit("variable-remove", variable);
     }
     /**
      * Returns the variable corresponding to the specified variable name
-     * @param {string} variableName - specifies the variable name
+     * @param {string} name - specifies the variable name
      * @returns {Variable|null}
      */
-    variableByName(variableName) {
-        return this[_graphVariables].find(variable => variable.variableName === variableName) || null;
+    variableByName(name) {
+        return this[_variables].find(variable => variable.name === name) || null;
     }
 
     /**
@@ -182,89 +182,89 @@ export default class Graph extends EventClass {
     }
     /**
      * Returns whether the connection can be converted from the specified output point to the specified input point
-     * @param {Point|Graph.modelPointTypedef} outputPoint - specifies the output point
-     * @param {Point|Graph.modelPointTypedef} inputPoint - specifies the input point
+     * @param {Point} outputPoint - specifies the output point
+     * @param {Point} inputPoint - specifies the input point
      * @returns {boolean}
      */
     convertConnection(outputPoint, inputPoint) {
-        const inputValueType = this.valueTypeByName(inputPoint.pointValueType);
+        const inputValueType = this.valueTypeByName(inputPoint.valueType);
 
         if (inputValueType === null) {
             throw new Error(this.fancyName + " cannot find compatible type to convert connection from " +
-                outputPoint.pointValueType + " to " + inputPoint.pointValueType);
+                outputPoint.valueType + " to " + inputPoint.valueType);
         }
 
-        if (typeof outputPoint.pointOutput !== "undefined" && !outputPoint.pointOutput) {
-            this.errno(Error(outputPoint.fancyName + " is not an output"));
-            return false;
-        }
-        if (typeof inputPoint.pointOutput !== "undefined" && inputPoint.pointOutput) {
+        if (!inputPoint.input) {
             this.errno(Error(inputPoint.fancyName + " is not an input"));
             return false;
         }
-
-        if (typeof outputPoint.pointValue !== "undefined" && outputPoint.pointValue !== null) {
-            this.errno(new Error(outputPoint.fancyName + " have a non-null pointValue and cannot be connected"));
-            return false;
-        }
-        if (typeof inputPoint.pointValue !== "undefined" && inputPoint.pointValue !== null) {
-            this.errno(new Error(inputPoint.fancyName + " have a non-null pointValue and cannot be connected"));
+        if (!outputPoint.output) {
+            this.errno(Error(outputPoint.fancyName + " is not an output"));
             return false;
         }
 
-        if (typeof outputPoint.hasPolicy !== "undefined" && outputPoint.hasPolicy(PointPolicy.SINGLE_CONNECTION) && !outputPoint.emptyConnection()) {
-            this.errno(new Error(outputPoint.fancyName + " cannot have multiple connections"));
+        if (inputPoint.value !== null) {
+            this.errno(new Error(inputPoint.fancyName + " have a non-null value and cannot be connected"));
             return false;
         }
-        if (typeof inputPoint.hasPolicy !== "undefined" && inputPoint.hasPolicy(PointPolicy.SINGLE_CONNECTION) && !inputPoint.emptyConnection()) {
+        if (outputPoint.value !== null) {
+            this.errno(new Error(outputPoint.fancyName + " have a non-null value and cannot be connected"));
+            return false;
+        }
+
+        if (inputPoint.hasPolicy(PointPolicy.SINGLE_CONNECTION) && !inputPoint.emptyConnection()) {
             this.errno(new Error(inputPoint.fancyName + " cannot have multiple connections"));
             return false;
         }
-
-        if (typeof outputPoint.hasPolicy !== "undefined" && !outputPoint.hasPolicy(PointPolicy.SINGLE_CONNECTION) && !outputPoint.hasPolicy(PointPolicy.MULTIPLE_CONNECTIONS)) {
-            this.errno(new Error(outputPoint.fancyName + " cannot have connections"));
+        if (outputPoint.hasPolicy(PointPolicy.SINGLE_CONNECTION) && !outputPoint.emptyConnection()) {
+            this.errno(new Error(outputPoint.fancyName + " cannot have multiple connections"));
             return false;
         }
-        if (typeof inputPoint.hasPolicy !== "undefined" && !inputPoint.hasPolicy(PointPolicy.SINGLE_CONNECTION) && !inputPoint.hasPolicy(PointPolicy.MULTIPLE_CONNECTIONS)) {
+
+        if (!inputPoint.hasPolicy(PointPolicy.SINGLE_CONNECTION) && !inputPoint.hasPolicy(PointPolicy.MULTIPLE_CONNECTIONS)) {
             this.errno(new Error(inputPoint.fancyName + " cannot have connections"));
             return false;
         }
+        if (!outputPoint.hasPolicy(PointPolicy.SINGLE_CONNECTION) && !outputPoint.hasPolicy(PointPolicy.MULTIPLE_CONNECTIONS)) {
+            this.errno(new Error(outputPoint.fancyName + " cannot have connections"));
+            return false;
+        }
 
-        if (outputPoint.pointValueType === inputPoint.pointValueType) {
+        if (inputPoint.valueType === outputPoint.valueType) {
             return true;
         }
 
-        if (typeof outputPoint.hasPolicy !== "undefined" && !outputPoint.hasPolicy(PointPolicy.CONVERSION)) {
-            this.errno(new Error(outputPoint.fancyName + " cannot be converted"));
-            return false;
-        }
-        if (typeof inputPoint.hasPolicy !== "undefined" && !inputPoint.hasPolicy(PointPolicy.CONVERSION)) {
+        if (!inputPoint.hasPolicy(PointPolicy.CONVERSION)) {
             this.errno(new Error(inputPoint.fancyName + " cannot be converted"));
             return false;
         }
-
-        if (!inputValueType.typeCompatibles.includes(outputPoint.pointValueType)) {
-            this.errno(new Error(inputPoint.pointValueType + " is not compatible with " +
-                outputPoint.pointValueType));
+        if (!outputPoint.hasPolicy(PointPolicy.CONVERSION)) {
+            this.errno(new Error(outputPoint.fancyName + " cannot be converted"));
             return false;
         }
 
-        let previousErrno = this[_graphErrno];
-        if (typeof outputPoint.acceptConnect !== "undefined" && !outputPoint.acceptConnect(inputPoint)) {
-            if (this[_graphErrno] !== null && this[_graphErrno] !== previousErrno) {
+        if (!inputValueType.typeCompatibles.includes(outputPoint.valueType)) {
+            this.errno(new Error(inputPoint.valueType + " is not compatible with " +
+                outputPoint.valueType));
+            return false;
+        }
+
+        let previousErrno = this[_errno];
+        if (!inputPoint.acceptConnect(outputPoint)) {
+            if (this[_errno] !== null && this[_errno] !== previousErrno) {
                 this.errno(new Error(outputPoint.fancyName +
-                    " cannot accept to connect to " + inputPoint.fancyName + ": " + this[_graphErrno].message));
+                    " cannot accept to connect to " + inputPoint.fancyName + ": " + this[_errno].message));
             } else {
                 this.errno(new Error(outputPoint.fancyName +
                     " cannot accept to connect to " + inputPoint.fancyName));
             }
             return false;
         }
-        previousErrno = this[_graphErrno];
-        if (typeof inputPoint.acceptConnect !== "undefined" && !inputPoint.acceptConnect(outputPoint)) {
-            if (this[_graphErrno] !== null && this[_graphErrno] !== previousErrno) {
+        previousErrno = this[_errno];
+        if (!outputPoint.acceptConnect(inputPoint)) {
+            if (this[_errno] !== null && this[_errno] !== previousErrno) {
                 this.errno(new Error(outputPoint.fancyName +
-                    " cannot accept to connect to " + inputPoint.fancyName + ": " + this[_graphErrno].message));
+                    " cannot accept to connect to " + inputPoint.fancyName + ": " + this[_errno].message));
             } else {
                 this.errno(new Error(outputPoint.fancyName +
                     " cannot accept to connect to " + inputPoint.fancyName));
@@ -277,34 +277,34 @@ export default class Graph extends EventClass {
 
     /**
      * Connects the specified points
-     * @param {Point} outputPoint - specifies the output point
      * @param {Point} inputPoint - specifies the input point
+     * @param {Point} outputPoint - specifies the output point
      * @returns {Connection}
      */
-    connect(outputPoint, inputPoint) {
-        if (outputPoint.pointBlock === null) {
-            throw new Error(outputPoint.fancyName + " cannot connect to another point when not bound to a block");
-        }
-        if (inputPoint.pointBlock === null) {
+    connect(inputPoint, outputPoint) {
+        if (inputPoint.block === null) {
             throw new Error(inputPoint.fancyName + " cannot connect to another point when not bound to a block");
         }
-        if (outputPoint === inputPoint) {
-            throw new Error(this.fancyName + " cannot connect " + outputPoint.fancyName + " to itself");
+        if (outputPoint.block === null) {
+            throw new Error(outputPoint.fancyName + " cannot connect to another point when not bound to a block");
         }
-        if (!outputPoint.pointOutput) {
-            throw new Error(outputPoint.fancyName + " is not an output");
+        if (inputPoint === outputPoint) {
+            throw new Error(this.fancyName + " cannot connect " + inputPoint.fancyName + " to itself");
         }
-        if (inputPoint.pointOutput) {
+        if (!inputPoint.input) {
             throw new Error(outputPoint.fancyName + " is not an input");
         }
+        if (!outputPoint.output) {
+            throw new Error(outputPoint.fancyName + " is not an output");
+        }
         if (!this.convertConnection(outputPoint, inputPoint)) {
-            const connectionError = this[_graphErrno] || {};
-            if (outputPoint.pointTemplate !== null || inputPoint.pointTemplate !== null) {
+            const connectionError = this[_errno] || {};
+            if (outputPoint.template !== null || inputPoint.template !== null) {
                 try {
-                    outputPoint.pointBlock.changeTemplate(outputPoint.pointTemplate, inputPoint.pointValueType);
+                    outputPoint.block.changeTemplate(outputPoint.template, inputPoint.valueType);
                 } catch (ex) {
-                    if (inputPoint.pointTemplate !== null) {
-                        inputPoint.pointBlock.changeTemplate(inputPoint.pointTemplate, outputPoint.pointValueType);
+                    if (inputPoint.template !== null) {
+                        inputPoint.block.changeTemplate(inputPoint.template, outputPoint.valueType);
                     }
                 }
             } else {
@@ -312,66 +312,66 @@ export default class Graph extends EventClass {
                     outputPoint.fancyName + " to " + inputPoint.fancyName + ": " + connectionError.message);
             }
         }
-        const connectionFound = this.connectionForPoints(outputPoint, inputPoint);
+        const connectionFound = this.connectionForPoints(inputPoint, outputPoint);
         if (connectionFound !== null) {
             throw new Error(connectionFound.fancyName + " already exists");
         }
-        const connection = new Connection(outputPoint, inputPoint);
-        if (!outputPoint.pointBlock.acceptConnect(outputPoint, inputPoint)) {
-            throw new Error(this[_graphErrno]);
+        const connection = new Connection(inputPoint, outputPoint);
+        if (!inputPoint.block.acceptConnect(inputPoint, outputPoint)) {
+            throw new Error(this[_errno]);
         }
-        if (!inputPoint.pointBlock.acceptConnect(inputPoint, outputPoint)) {
-            throw new Error(this[_graphErrno]);
+        if (!outputPoint.block.acceptConnect(outputPoint, inputPoint)) {
+            throw new Error(this[_errno]);
         }
         this._addConnection(connection);
-        outputPoint.pointBlock.pointConnected(outputPoint, inputPoint);
-        inputPoint.pointBlock.pointConnected(inputPoint, outputPoint);
-        outputPoint.connected(inputPoint);
+        inputPoint.block.pointConnected(inputPoint, outputPoint);
+        outputPoint.block.pointConnected(outputPoint, inputPoint);
         inputPoint.connected(outputPoint);
-        outputPoint.emit("connect", connection);
+        outputPoint.connected(inputPoint);
         inputPoint.emit("connect", connection);
-        this.emit("point-connect", outputPoint, connection);
+        outputPoint.emit("connect", connection);
         this.emit("point-connect", inputPoint, connection);
+        this.emit("point-connect", outputPoint, connection);
         return connection;
     }
     /**
      * Disconnects the specified points
-     * @param {Point} outputPoint - specifies the output point
      * @param {Point} inputPoint - specifies the input point
+     * @param {Point} outputPoint - specifies the output point
      * @returns {Connection}
      */
-    disconnect(outputPoint, inputPoint) {
-        if (outputPoint.pointBlock === null) {
-            throw new Error(outputPoint.fancyName + " cannot disconnect from another point when not bound to a block");
-        }
-        if (inputPoint.pointBlock === null) {
+    disconnect(inputPoint, outputPoint) {
+        if (inputPoint.block === null) {
             throw new Error(inputPoint.fancyName + " cannot disconnect from another point when not bound to a block");
         }
-        const connectionFound = this.connectionForPoints(outputPoint, inputPoint);
+        if (outputPoint.block === null) {
+            throw new Error(outputPoint.fancyName + " cannot disconnect from another point when not bound to a block");
+        }
+        const connectionFound = this.connectionForPoints(inputPoint, outputPoint);
         if (connectionFound === null) {
             throw new Error(this.fancyName + " cannot find a connection between " +
-                outputPoint.fancyName + " and " + inputPoint.fancyName);
+                inputPoint.fancyName + " and " + outputPoint.fancyName);
         }
         this._removeConnection(connectionFound);
-        outputPoint.pointBlock.pointDisconnected(outputPoint, inputPoint);
-        inputPoint.pointBlock.pointDisconnected(inputPoint, outputPoint);
-        outputPoint.disconnected(inputPoint);
+        inputPoint.block.pointDisconnected(inputPoint, outputPoint);
+        outputPoint.block.pointDisconnected(outputPoint, inputPoint);
         inputPoint.disconnected(outputPoint);
-        outputPoint.emit("disconnect", connectionFound);
+        outputPoint.disconnected(inputPoint);
         inputPoint.emit("disconnect", connectionFound);
-        this.emit("point-disconnect", outputPoint, connectionFound);
+        outputPoint.emit("disconnect", connectionFound);
         this.emit("point-disconnect", inputPoint, connectionFound);
+        this.emit("point-disconnect", outputPoint, connectionFound);
         return connectionFound;
     }
     /**
      * Returns the connection between the specified output point and input point or null
-     * @param {Point} outputPoint - specifies the output point
      * @param {Point} inputPoint - specifies the input point
+     * @param {Point} outputPoint - specifies the output point
      * @returns {Connection|null}
      */
-    connectionForPoints(outputPoint, inputPoint) {
-        return this[_graphConnections].find((connection) => {
-                return connection.connectionOutputPoint === outputPoint && connection.connectionInputPoint === inputPoint;
+    connectionForPoints(inputPoint, outputPoint) {
+        return this[_connections].find((connection) => {
+                return connection.connectionInputPoint === inputPoint && connection.connectionOutputPoint === outputPoint;
             }) || null;
     }
     /**
@@ -380,17 +380,17 @@ export default class Graph extends EventClass {
      * @private
      */
     _addConnection (connection) {
-        const outputPoint = connection.connectionOutputPoint;
         const inputPoint = connection.connectionInputPoint;
-        if (outputPoint.pointConnections.includes(connection)) {
-            throw new Error(outputPoint.fancyName + " cannot redefine " + connection.fancyName);
-        }
-        if (inputPoint.pointConnections.includes(connection)) {
+        const outputPoint = connection.connectionOutputPoint;
+        if (inputPoint.connections.includes(connection)) {
             throw new Error(inputPoint.fancyName + " cannot redefine " + connection.fancyName);
         }
-        outputPoint.pointConnections.push(connection);
-        inputPoint.pointConnections.push(connection);
-        this[_graphConnections].push(connection);
+        if (outputPoint.connections.includes(connection)) {
+            throw new Error(outputPoint.fancyName + " cannot redefine " + connection.fancyName);
+        }
+        inputPoint.connections.push(connection);
+        outputPoint.connections.push(connection);
+        this[_connections].push(connection);
     }
     /**
      * Removes the specified connection
@@ -398,17 +398,17 @@ export default class Graph extends EventClass {
      * @private
      */
     _removeConnection (connection) {
-        const outputPoint = connection.connectionOutputPoint;
         const inputPoint = connection.connectionInputPoint;
-        if (!outputPoint.pointConnections.includes(connection)) {
-            throw new Error(outputPoint.fancyName + " has no connection " + connection.fancyName);
-        }
-        if (!inputPoint.pointConnections.includes(connection)) {
+        const outputPoint = connection.connectionOutputPoint;
+        if (!inputPoint.connections.includes(connection)) {
             throw new Error(inputPoint.fancyName + " has no connection " + connection.fancyName);
         }
-        connection.connectionOutputPoint.pointConnections.splice(connection.connectionOutputPoint.pointConnections.indexOf(connection), 1);
-        connection.connectionInputPoint.pointConnections.splice(connection.connectionInputPoint.pointConnections.indexOf(connection), 1);
-        this[_graphConnections].splice(this[_graphConnections].indexOf(connection), 1);
+        if (!outputPoint.connections.includes(connection)) {
+            throw new Error(outputPoint.fancyName + " has no connection " + connection.fancyName);
+        }
+        connection.connectionInputPoint.connections.splice(connection.connectionInputPoint.connections.indexOf(connection), 1);
+        connection.connectionOutputPoint.connections.splice(connection.connectionOutputPoint.connections.indexOf(connection), 1);
+        this[_connections].splice(this[_connections].indexOf(connection), 1);
     }
 
     /**
@@ -419,7 +419,7 @@ export default class Graph extends EventClass {
         if (this.valueTypeByName(valueTypeInfo.typeName) !== null) {
             throw new Error(this.fancyName + " cannot redefine value type" + valueTypeInfo.typeName);
         }
-        this[_graphValueTypes][valueTypeInfo.typeName] = valueTypeInfo;
+        this[_valueTypes][valueTypeInfo.typeName] = valueTypeInfo;
     }
     /**
      * Returns the value type corresponding to the specified value type name
@@ -427,7 +427,7 @@ export default class Graph extends EventClass {
      * @returns {Graph.valueTypeInfoTypedef|null}
      */
     valueTypeByName(typeName) {
-        return this[_graphValueTypes][typeName] || null;
+        return this[_valueTypes][typeName] || null;
     }
 
     /**
@@ -435,7 +435,7 @@ export default class Graph extends EventClass {
      * @param {Error} errno - specifies the last error
      */
     errno(errno) {
-        this[_graphErrno] = errno;
+        this[_errno] = errno;
     }
 
 }
@@ -461,33 +461,4 @@ export default class Graph extends EventClass {
  * @typedef {function} Graph.convertTypeTypedef
  * @param {*|null} value
  * @returns {*|undefined}
- */
-
-/**
- * @typedef {Object} Graph.modelPointTypedef
- * @property {string} pointType
- * @property {string} pointName
- * @property {string} pointValueType
- * @property {*|null} pointValue
- * @property {number} [pointPolicy=0]
- */
-
-/**
- * @typedef {Object} Graph.modelTemplateTypedef
- * @property {string} valueType
- * @property {Array<string>} templates
- */
-
-/**
- * @typedef {Object} Graph.modelBlockTypedef
- * @property {Object} item
- * @property {string} item.name
- * @property {string} item.icon
- * @property {Object} item.data
- * @property {string} item.data.blockType
- * @property {string} item.data.blockName
- * @property {Graph.modelTemplateTypedef} [item.data.blockTemplate]
- * @property {Array<Graph.modelPointTypedef>} item.data.blockInputs
- * @property {Array<Graph.modelPointTypedef>} item.data.blockOutputs
- * @property {string} [item.data.modelPointName] - Filled for autocomplete purpose
  */

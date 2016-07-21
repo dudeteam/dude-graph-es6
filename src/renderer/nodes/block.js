@@ -25,7 +25,7 @@ export default class RenderBlock extends RenderNode {
         this[_block] = block;
         this[_parent] = null;
         this[_renderPoints] = [];
-        this.name = block.blockName;
+        this.name = block.name;
     }
 
     /**
@@ -54,15 +54,15 @@ export default class RenderBlock extends RenderNode {
      */
     get renderPoints() { return this[_renderPoints]; }
     /**
-     * Returns this render block output render points
-     * @returns {Array<RenderPoint>}
-     */
-    get renderOutputPoints() { return this[_renderPoints].filter(renderPoint => renderPoint.point.pointOutput); }
-    /**
      * Returns this render block input render points
      * @returns {Array<RenderPoint>}
      */
-    get renderInputPoints() { return this[_renderPoints].filter(renderPoint => !renderPoint.point.pointOutput); }
+    get renderInputPoints() { return this[_renderPoints].filter(renderPoint => renderPoint.point.input); }
+    /**
+     * Returns this render block output render points
+     * @returns {Array<RenderPoint>}
+     */
+    get renderOutputPoints() { return this[_renderPoints].filter(renderPoint => renderPoint.point.output); }
 
     /**
      * Adds the specified render point to this render block
@@ -100,20 +100,20 @@ export default class RenderBlock extends RenderNode {
         this.renderer.emit("render-point-remove", this, renderPoint);
     }
     /**
-     * Returns the corresponding output point for the specified render point name
-     * @param {string} renderPointName - specifies the render point name
+     * Returns the corresponding input point for the specified render point name
+     * @param {string} pointName - specifies the render point name
      * @returns {RenderPoint|null}
      */
-    outputByName(renderPointName) {
-        return this[_renderPoints].find(rp => rp.point.pointOutput && rp.point.pointName === renderPointName) || null;
+    inputByName(pointName) {
+        return this[_renderPoints].find(rp => !rp.point.output && rp.point.name === pointName) || null;
     }
     /**
-     * Returns the corresponding input point for the specified render point name
-     * @param {string} renderPointName - specifies the render point name
+     * Returns the corresponding output point for the specified render point name
+     * @param {string} pointName - specifies the render point name
      * @returns {RenderPoint|null}
      */
-    inputByName(renderPointName) {
-        return this[_renderPoints].find(rp => !rp.point.pointOutput && rp.point.pointName === renderPointName) || null;
+    outputByName(pointName) {
+        return this[_renderPoints].find(rp => rp.point.output && rp.point.name === pointName) || null;
     }
 
     /**
@@ -137,7 +137,7 @@ export default class RenderBlock extends RenderNode {
      * @override
      */
     updateData() {
-        this.element.attr("class", "dude-graph-block dude-graph-block-name-" + this[_block].blockName);
+        this.element.attr("class", "dude-graph-block dude-graph-block-name-" + this[_block].name);
         this[_svgName].text(this.name);
     }
     /**

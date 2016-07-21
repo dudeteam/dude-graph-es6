@@ -3,28 +3,28 @@ import {renderConnectionPreferredPath} from "../utils/measure";
 const _renderer = Symbol("renderer");
 const _element = Symbol("element");
 const _connection = Symbol("connection");
-const _outputRenderPoint = Symbol("outputRenderPoint");
 const _inputRenderPoint = Symbol("inputRenderPoint");
+const _outputRenderPoint = Symbol("outputRenderPoint");
 
 export default class RenderConnection {
 
     /**
      * Creates a render connection for the specified connection, between the specified outputRenderPoint and inputRenderPoint
      * @param {Connection} connection - specifies the connection
-     * @param {RenderPoint} outputRenderPoint - specifies the output render point
      * @param {RenderPoint} inputRenderPoint - specifies the input render point
+     * @param {RenderPoint} outputRenderPoint - specifies the output render point
      */
-    constructor(connection, outputRenderPoint, inputRenderPoint) {
+    constructor(connection, inputRenderPoint, outputRenderPoint) {
         this[_renderer] = null;
         this[_element] = null;
         this[_connection] = connection;
-        this[_outputRenderPoint] = outputRenderPoint;
         this[_inputRenderPoint] = inputRenderPoint;
-        if (connection.connectionOutputPoint !== outputRenderPoint.point) {
-            throw new Error(connection.fancyName + " is not connected to " + outputRenderPoint.point.fancyName);
-        }
+        this[_outputRenderPoint] = outputRenderPoint;
         if (connection.connectionInputPoint !== inputRenderPoint.point) {
             throw new Error(connection.fancyName + " is not connected to " + inputRenderPoint.point.fancyName);
+        }
+        if (connection.connectionOutputPoint !== outputRenderPoint.point) {
+            throw new Error(connection.fancyName + " is not connected to " + outputRenderPoint.point.fancyName);
         }
     }
 
@@ -59,15 +59,15 @@ export default class RenderConnection {
      */
     get connection() { return this[_connection]; }
     /**
-     * Returns this render connection outputRenderPoint
-     * @returns {RenderPoint}
-     */
-    get outputRenderPoint() { return this[_outputRenderPoint]; }
-    /**
      * Returns this render connection inputRenderPoint
      * @returns {RenderPoint}
      */
     get inputRenderPoint() { return this[_inputRenderPoint]; }
+    /**
+     * Returns this render connection outputRenderPoint
+     * @returns {RenderPoint}
+     */
+    get outputRenderPoint() { return this[_outputRenderPoint]; }
 
     /**
      * Called when this render connection is added
@@ -90,7 +90,7 @@ export default class RenderConnection {
      * Called when this render connection data changed and should update its element
      */
     updateData() {
-        this.element.attr("class", "dude-graph-connection dude-graph-type-" + this.outputRenderPoint.point.pointValueType);
+        this.element.attr("class", "dude-graph-connection dude-graph-type-" + this.outputRenderPoint.point.valueType);
     }
 
     /**

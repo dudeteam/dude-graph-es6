@@ -94,9 +94,9 @@ export const renderGroupPreferredSize = (renderGroup) => {
  * @returns {Array<number>}
  */
 export const renderPointPreferredSize = (renderPoint) => {
-    const pointNameBoundingBox = textBoundingBox(renderPoint.point.pointName);
+    const nameBoundingBox = textBoundingBox(renderPoint.point.name);
     return [
-        pointNameBoundingBox[0] + renderPoint.renderBlock.renderer.config.point.padding * 2,
+        nameBoundingBox[0] + renderPoint.renderBlock.renderer.config.point.padding * 2,
         renderPoint.renderBlock.renderer.config.point.height
     ];
 };
@@ -123,16 +123,16 @@ export const renderGroupPreferredPosition = (renderGroup) => {
  * @returns {Array<number>}
  */
 export const renderPointPreferredPosition = (renderPoint) => {
-    if (renderPoint.point.pointOutput) {
-        const index = renderPoint.renderBlock.renderOutputPoints.indexOf(renderPoint);
-        return [
-            renderPoint.renderBlock.size[0] - renderPoint.renderBlock.renderer.config.point.padding,
-            renderPoint.renderBlock.renderer.config.block.header + renderPoint.renderBlock.renderer.config.point.height * index
-        ];
-    } else {
+    if (renderPoint.point.input) {
         const index = renderPoint.renderBlock.renderInputPoints.indexOf(renderPoint);
         return [
             renderPoint.renderBlock.renderer.config.point.padding,
+            renderPoint.renderBlock.renderer.config.block.header + renderPoint.renderBlock.renderer.config.point.height * index
+        ];
+    } else {
+        const index = renderPoint.renderBlock.renderOutputPoints.indexOf(renderPoint);
+        return [
+            renderPoint.renderBlock.size[0] - renderPoint.renderBlock.renderer.config.point.padding,
             renderPoint.renderBlock.renderer.config.block.header + renderPoint.renderBlock.renderer.config.point.height * index
         ];
     }

@@ -121,14 +121,14 @@ export default class RenderPoint {
         this[_svgName] = this.element.append("svg:text").classed("dude-graph-point-name");
 
         this[_svgCircle].attr("d", () => {
-            if (this[_point].pointValueType === "stream") {
+            if (this[_point].valueType === "stream") {
                 return "M " + -r + " " + -r * 1.5 + " L " + -r + " " + r * 1.5 + " L " + r + " " + 0 + " Z";
             }
             return "M 0,0m " + -r + ", 0a " + [r, r] + " 0 1,0 " + r * 2 + ",0a " + [r, r] + " 0 1,0 " + -(r * 2) + ",0";
         });
-        this[_svgName].attr("text-anchor", this.point.pointOutput ? "end" : "start");
+        this[_svgName].attr("text-anchor", this.point.input ? "start" : "end");
         this[_svgName].attr("dominant-baseline", "middle");
-        this[_svgName].attr("x", (this.point.pointOutput ? -1 : 1) * this.renderBlock.renderer.config.point.padding);
+        this[_svgName].attr("x", (this.point.input ? 1 : -1) * this.renderBlock.renderer.config.point.padding);
     }
     /**
      * Called when this render point is removed
@@ -147,9 +147,9 @@ export default class RenderPoint {
      * Called when this render point data changed and should update its element
      */
     updateData() {
-        this.element.attr("class", "dude-graph-point dude-graph-type-" + this.point.pointValueType);
+        this.element.attr("class", "dude-graph-point dude-graph-type-" + this.point.valueType);
         this.element.classed("dude-graph-point-empty", this.empty);
-        this[_svgName].text(this.point.pointName);
+        this[_svgName].text(this.point.name);
     }
     /**
      * Called when this render point position changed and should update its element

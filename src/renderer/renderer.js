@@ -123,14 +123,14 @@ export default class Renderer extends EventClass {
      * @param {RenderBlock} renderBlock - specifies the render block
      */
     addRenderBlock(renderBlock) {
-        if (renderBlock.block.blockGraph !== this[_graph]) {
+        if (renderBlock.block.graph !== this[_graph]) {
             throw new Error(this.fancyName + " cannot add a renderBlock bound to another graph");
         }
         if (renderBlock.id !== null && typeof this[_renderBlockIds][renderBlock.id] !== "undefined") {
             throw new Error(this.fancyName + " cannot redefine id " + renderBlock.id);
         }
         if (renderBlock.id === null) {
-            renderBlock.id = renderBlock.block.blockId + "#" + uuid();
+            renderBlock.id = renderBlock.block.id + "#" + uuid();
         }
         this[_renderBlocks].push(renderBlock);
         this[_renderBlockIds][renderBlock.id] = renderBlock;
@@ -223,11 +223,11 @@ export default class Renderer extends EventClass {
 
     /**
      * Connects the specified output render point to the specified input render point
-     * @param {RenderPoint} outputRenderPoint - specifies the output render point
      * @param {RenderPoint} inputRenderPoint - specifies the input render point
+     * @param {RenderPoint} outputRenderPoint - specifies the output render point
      * @returns {RenderConnection}
      */
-    connect(outputRenderPoint, inputRenderPoint) {
+    connect(inputRenderPoint, outputRenderPoint) {
         if (outputRenderPoint.renderBlock === null) {
             throw new Error(outputRenderPoint.fancyName +
                 " cannot connect to another render point when not bound to a render block");
@@ -242,22 +242,22 @@ export default class Renderer extends EventClass {
         if (inputRenderPoint.renderBlock.renderer !== this) {
             throw new Error(inputRenderPoint.fancyName + " is not in this renderer");
         }
-        if (!outputRenderPoint.point.pointOutput) {
+        if (!outputRenderPoint.point.output) {
             throw new Error(outputRenderPoint.fancyName + " is not an output");
         }
-        if (inputRenderPoint.point.pointOutput) {
+        if (inputRenderPoint.point.output) {
             throw new Error(inputRenderPoint.fancyName + " is not an input");
         }
-        const connection = this[_graph].connectionForPoints(outputRenderPoint.point, inputRenderPoint.point);
+        const connection = this[_graph].connectionForPoints(inputRenderPoint.point, outputRenderPoint.point);
         if (connection === null) {
             throw new Error(outputRenderPoint.point.fancyName +
                 " is not connected to " + inputRenderPoint.point.fancyName);
         }
-        const renderConnectionFound = this.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint);
+        const renderConnectionFound = this.renderConnectionsForRenderPoints(inputRenderPoint, outputRenderPoint);
         if (renderConnectionFound !== null) {
             throw new Error(this.fancyName + " cannot redefine " + renderConnectionFound.fancyName);
         }
-        const renderConnection = new RenderConnection(connection, outputRenderPoint, inputRenderPoint);
+        const renderConnection = new RenderConnection(connection, inputRenderPoint, outputRenderPoint);
         this[_renderConnections].push(renderConnection);
         outputRenderPoint.addRenderConnection(renderConnection);
         inputRenderPoint.addRenderConnection(renderConnection);
@@ -269,37 +269,37 @@ export default class Renderer extends EventClass {
     }
     /**
      * Disconnects the specified output render point from the specified input render point
-     * @param {RenderPoint} outputRenderPoint - specifies the output render point
      * @param {RenderPoint} inputRenderPoint - specifies the input render point
+     * @param {RenderPoint} outputRenderPoint - specifies the output render point
      */
-    disconnect(outputRenderPoint, inputRenderPoint) {
-        if (outputRenderPoint.renderBlock === null) {
-            throw new Error(outputRenderPoint.fancyName +
-                " cannot connect to another render point when not bound to a render block");
-        }
+    disconnect(inputRenderPoint, outputRenderPoint) {
         if (inputRenderPoint.renderBlock === null) {
             throw new Error(inputRenderPoint.fancyName +
                 " cannot connect to another render point when not bound to a render block");
         }
-        if (outputRenderPoint.renderBlock.renderer !== this) {
-            throw new Error(outputRenderPoint.fancyName + " is not in this renderer");
+        if (outputRenderPoint.renderBlock === null) {
+            throw new Error(outputRenderPoint.fancyName +
+                " cannot connect to another render point when not bound to a render block");
         }
         if (inputRenderPoint.renderBlock.renderer !== this) {
             throw new Error(inputRenderPoint.fancyName + " is not in this renderer");
         }
-        if (!outputRenderPoint.point.pointOutput) {
-            throw new Error(outputRenderPoint.fancyName + " is not an output");
+        if (outputRenderPoint.renderBlock.renderer !== this) {
+            throw new Error(outputRenderPoint.fancyName + " is not in this renderer");
         }
-        if (inputRenderPoint.point.pointOutput) {
+        if (!inputRenderPoint.point.input) {
             throw new Error(inputRenderPoint.fancyName + " is not an input");
         }
-        const renderConnection = this.renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint);
+        if (!outputRenderPoint.point.output) {
+            throw new Error(outputRenderPoint.fancyName + " is not an output");
+        }
+        const renderConnection = this.renderConnectionsForRenderPoints(inputRenderPoint, outputRenderPoint);
         if (renderConnection === null) {
             throw new Error(this.fancyName + " cannot find a render connection between " +
                 outputRenderPoint.fancyName + " and " + inputRenderPoint.fancyName);
         }
-        outputRenderPoint.removeRenderConnection(renderConnection);
         inputRenderPoint.removeRenderConnection(renderConnection);
+        outputRenderPoint.removeRenderConnection(renderConnection);
         this[_renderConnections].splice(this[_renderConnections].indexOf(renderConnection), 1);
         renderConnection.removed();
         renderConnection.element.remove();
@@ -308,13 +308,13 @@ export default class Renderer extends EventClass {
     }
     /**
      * Returns the render connection between the specified output render point from the specified input render point
-     * @param {RenderPoint} outputRenderPoint - specifies the output render point
      * @param {RenderPoint} inputRenderPoint - specifies the input render point
+     * @param {RenderPoint} outputRenderPoint - specifies the output render point
      * @returns {RenderConnection|null}
      */
-    renderConnectionsForRenderPoints(outputRenderPoint, inputRenderPoint) {
+    renderConnectionsForRenderPoints(inputRenderPoint, outputRenderPoint) {
         return this[_renderConnections].find((rc) => {
-                return rc.outputRenderPoint === outputRenderPoint && rc.inputRenderPoint === inputRenderPoint;
+                return rc.inputRenderPoint === inputRenderPoint && rc.outputRenderPoint === outputRenderPoint;
             }) || null;
     }
 
