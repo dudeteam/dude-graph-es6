@@ -27,6 +27,17 @@ export default class Commander {
     }
 
     /**
+     * Returns this commander graph
+     * @returns {Graph}
+     */
+    get graph() { return this[_graph]; }
+    /**
+     * Returns this commander renderer
+     * @returns {Renderer}
+     */
+    get renderer() { return this[_renderer]; }
+
+    /**
      * Adds a command in the commander
      * @param {function} redo - the function to make/redo the command
      * @param {function} undo - the function to undo the command
