@@ -276,7 +276,7 @@ export default class Block extends EventClass {
         point.removed();
         point.block = null;
         if (point.input) {
-            this[_inputs].splice(this[_outputs].indexOf(point), 1);
+            this[_inputs].splice(this[_inputs].indexOf(point), 1);
         } else {
             this[_outputs].splice(this[_outputs].indexOf(point), 1);
         }

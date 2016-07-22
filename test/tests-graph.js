@@ -552,6 +552,11 @@ describe("dude-graph API", () => {
         expect(() => {
             outputPoint1String.connect(inputPoint2Boolean); // `String` =/=> `Boolean`
         }).to.throw();
+        // Connection other
+        const connection = outputPoint1Number.connect(inputPoint2Number); // `Number` =~=> `Boolean`
+        expect(() => {
+            connection.other(outputPoint1Boolean); // outputPoint1Boolean is not part of this connection
+        }).to.throw();
     });
     it("should ensure we cannot mix connect and point value", () => {
         const graph = new Graph();
@@ -1025,11 +1030,13 @@ describe("dude-graph API", () => {
         const point1 = new Point(true, {"name": "in1", "template": "TemplateName", "pointValue": 2});
         const point2 = new Point(true, {"name": "in2", "template": "TemplateName", "pointValue": 0});
         const point3 = new PPoint(true, {"name": "in3", "template": "TemplateName", "pointValue": 1});
+        const point4 = new Point(false, {"name": "out1", "template": "TemplateName", "pointValue": 4});
 
         graph.addBlock(block);
         block.addPoint(point1);
         block.addPoint(point2);
         block.addPoint(point3);
+        block.addPoint(point4);
 
         expect(point1.valueType).to.be.equal("number");
         expect(point1.value).to.be.equal(2);
@@ -1037,6 +1044,8 @@ describe("dude-graph API", () => {
         expect(point2.value).to.be.equal(0);
         expect(point3.valueType).to.be.equal("number");
         expect(point3.value).to.be.equal(1);
+        expect(point4.valueType).to.be.equal("number");
+        expect(point4.value).to.be.equal(4);
 
         expect(() => {
             block.changeTemplate("TemplateName", "boolean"); // 2 will be converted to true, then 0 to false and 1 will throw
@@ -1048,6 +1057,20 @@ describe("dude-graph API", () => {
         expect(point2.value).to.be.equal(0);
         expect(point3.valueType).to.be.equal("number");
         expect(point3.value).to.be.equal(1);
+        expect(point4.valueType).to.be.equal("number");
+        expect(point4.value).to.be.equal(4);
+    });
+    it("should test PointPolicy", () => {
+        const policy = PointPolicy.deserialize(["VALUE", "MULTIPLE_CONNECTIONS"]);
+        expect(PointPolicy.has(policy, PointPolicy.VALUE)).to.be.true;
+        expect(PointPolicy.has(policy, PointPolicy.SINGLE_CONNECTION)).to.be.false;
+        expect(PointPolicy.has(policy, PointPolicy.MULTIPLE_CONNECTIONS)).to.be.true;
+        expect(PointPolicy.has(policy, PointPolicy.CONVERSION)).to.be.false;
+        const policyLabels = PointPolicy.serialize(policy);
+        expect(policyLabels).to.include("VALUE");
+        expect(policyLabels).to.not.include("SINGLE_CONNECTION");
+        expect(policyLabels).to.include("MULTIPLE_CONNECTIONS");
+        expect(policyLabels).to.not.include("CONVERSION");
     });
     it("should test point policy", () => {
         const graph = new Graph();
