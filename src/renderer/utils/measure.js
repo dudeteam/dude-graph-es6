@@ -34,18 +34,9 @@ export const renderNodesBoundingBox = (renderNodes, nullable) => {
  * @returns {Array<number>}
  */
 export const renderBlockPreferredSize = (renderBlock) => {
-    let widerOutput = null;
     let widerInput = null;
+    let widerOutput = null;
     let pointsHeight = 0;
-    for (const renderPoint of renderBlock.renderOutputPoints) {
-        if (widerOutput === null) {
-            widerOutput = renderPoint;
-        } else {
-            if (renderPoint.size[0] > widerOutput.size[0]) {
-                widerOutput = renderPoint;
-            }
-        }
-    }
     for (const renderPoint of renderBlock.renderInputPoints) {
         if (widerInput === null) {
             widerInput = renderPoint;
@@ -55,17 +46,25 @@ export const renderBlockPreferredSize = (renderBlock) => {
             }
         }
     }
+    for (const renderPoint of renderBlock.renderOutputPoints) {
+        if (widerOutput === null) {
+            widerOutput = renderPoint;
+        } else {
+            if (renderPoint.size[0] > widerOutput.size[0]) {
+                widerOutput = renderPoint;
+            }
+        }
+    }
     const nameWidth = textBoundingBox(renderBlock.name)[0];
-    const outputWidth = widerOutput === null ? 0 : widerOutput.size[0];
-    const inputWidth = widerInput === null ? 0 : widerInput.size[0];
-    const tallerRenderPoints = renderBlock.renderOutputPoints.length > renderBlock.renderInputPoints ?
-        renderBlock.renderOutputPoints : renderBlock.renderInputPoints;
+    const outputWidth = widerInput === null ? 0 : widerInput.size[0];
+    const inputWidth = widerOutput === null ? 0 : widerOutput.size[0];
+    const tallerRenderPoints = renderBlock.renderInputPoints >= renderBlock.renderOutputPoints.length ? renderBlock.renderInputPoints : renderBlock.renderOutputPoints;
     for (const renderPoint of tallerRenderPoints) {
         pointsHeight += renderPoint.size[1];
     }
     const maxWidth = Math.max(
         nameWidth + renderBlock.renderer.config.block.padding * 2,
-        outputWidth + inputWidth + renderBlock.renderer.config.block.pointSpacing
+        inputWidth + outputWidth + renderBlock.renderer.config.block.pointSpacing
     );
     return [maxWidth, pointsHeight + renderBlock.renderer.config.block.header];
 };
