@@ -41,7 +41,7 @@ export const renderBlockPreferredSize = (renderBlock) => {
         if (widerInput === null) {
             widerInput = renderPoint;
         } else {
-            if (renderPoint.size[0] > widerInput.size[0]) {
+            if (renderPoint.size[0] >= widerInput.size[0]) {
                 widerInput = renderPoint;
             }
         }
@@ -50,15 +50,15 @@ export const renderBlockPreferredSize = (renderBlock) => {
         if (widerOutput === null) {
             widerOutput = renderPoint;
         } else {
-            if (renderPoint.size[0] > widerOutput.size[0]) {
+            if (renderPoint.size[0] >= widerOutput.size[0]) {
                 widerOutput = renderPoint;
             }
         }
     }
     const nameWidth = textBoundingBox(renderBlock.name)[0];
-    const outputWidth = widerInput === null ? 0 : widerInput.size[0];
-    const inputWidth = widerOutput === null ? 0 : widerOutput.size[0];
-    const tallerRenderPoints = renderBlock.renderInputPoints >= renderBlock.renderOutputPoints.length ? renderBlock.renderInputPoints : renderBlock.renderOutputPoints;
+    const inputWidth = widerInput === null ? 0 : widerInput.size[0];
+    const outputWidth = widerOutput === null ? 0 : widerOutput.size[0];
+    const tallerRenderPoints = renderBlock.renderInputPoints.length >= renderBlock.renderOutputPoints.length ? renderBlock.renderInputPoints : renderBlock.renderOutputPoints;
     for (const renderPoint of tallerRenderPoints) {
         pointsHeight += renderPoint.size[1];
     }
