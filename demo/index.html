@@ -71,11 +71,10 @@
     var inputRender2 = new dudeGraph.RenderPoint(input2);
     var renderGroup = new dudeGraph.RenderGroup();
 
-    renderBlock1.position = [32, 32];
+    renderBlock1.position = [32, 64];
     renderBlock1.name = "Start";
-    renderBlock2.position = [64, 64];
+    renderBlock2.position = [256, 128];
     renderBlock2.name = "Step";
-    renderGroup.position = [320, 320];
 
     commander.transaction();
 
@@ -98,8 +97,8 @@
     commander.addRenderGroupRenderBlock(renderGroup, renderBlock1);
     commander.addRenderGroupRenderBlock(renderGroup, renderBlock2);
 
-    commander.connectPoints(output1, input2);
-    commander.connectRenderPoints(outputRender1, inputRender2);
+    commander.connectPoints(input2, output1);
+    commander.connectRenderPoints(inputRender2, outputRender1);
 
     commander.commit();
 
@@ -109,6 +108,8 @@
     renderBlock2.element.element.onmousedown = function () {
         renderBlock2.front();
     };
+
+    console.log(renderBlock1.inputByName("in").absolutePosition);
 
 </script>
 </body>
