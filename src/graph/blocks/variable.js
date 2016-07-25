@@ -1,4 +1,5 @@
 import Block from "../block";
+import Point from "../point";
 
 const _variable = Symbol("_variable");
 
@@ -28,6 +29,7 @@ export default class VariableBlock extends Block {
             throw new Error(this[_variable].fancyName + " cannot redefine block");
         }
         this[_variable].block = this;
+        this.addPoint(new Point(false, {"name": "value", "valueType": this[_variable].valueType, "value": this[_variable].value, "policy": ["VALUE", "MULTIPLE_CONNECTIONS"]}));
     }
 
     /**
