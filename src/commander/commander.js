@@ -348,6 +348,9 @@ export default class Commander {
         if (typeof oldPosition === "undefined") {
             oldPosition = renderNode.position.slice(0);
         }
+        if (position[0] === oldPosition[0] && position[1] === oldPosition[1]) {
+            return;
+        }
         this.command(
             () => {
                 if (renderNode instanceof RenderBlock) {
