@@ -180,6 +180,27 @@ export default class Commander {
             () => { inputPoint.connect(outputPoint); }
         );
     }
+    /**
+     * @see {Point.changeValue}
+     * @param {Point} point - @see {Point.changeValue}
+     * @param {*|null} value - @see {Point.changeValue}
+     * @param {*|null} [oldValue=point.value] - @see {Point.changeValue}
+     */
+    changePointValue(point, value, oldValue) {
+        if (typeof oldValue === "undefined") {
+            oldValue = point.value;
+        }
+        this.command(
+            () => {
+                point.value = value;
+                this[_renderer].renderPoints.filter(rp => rp.point === point).forEach(rp => rp.updateData());
+            },
+            () => {
+                point.value = oldValue;
+                this[_renderer].renderPoints.filter(rp => rp.point === point).forEach(rp => rp.updateData());
+            }
+        );
+    }
 
     /**
      * @see {Renderer.addRenderBlock}
@@ -208,7 +229,6 @@ export default class Commander {
         }
         this.commit();
     }
-
     /**
      * @see {Renderer.connect}
      * @param {RenderPoint} inputRenderPoint - @see {Renderer.connect}
@@ -249,7 +269,6 @@ export default class Commander {
             }
         );
     }
-
     /**
      * @see {RenderBlock.addRenderPoint}
      * @param {RenderBlock} renderBlock - @see {RenderBlock.addRenderPoint}
@@ -286,7 +305,6 @@ export default class Commander {
             }
         );
     }
-
     /**
      * @see {Renderer.addRenderGroup}
      * @param {RenderGroup} renderGroup - @see {Renderer.addRenderGroup}
@@ -339,6 +357,18 @@ export default class Commander {
     }
 
     /**
+     * Changes the specified render node name to the specified name
+     * @param {RenderNode} renderNode - specifies the render node
+     * @param {string} name - specifies the name
+     */
+    changeRenderNodeName(renderNode, name) {
+        const oldName = renderNode.name;
+        this.command(
+            () => { renderNode.name = name; renderNode.updateAll(); },
+            () => { renderNode.name = oldName; renderNode.updateAll(); }
+        );
+    }
+    /**
      * Changes the specified render node position to the specified position from the specified oldPosition
      * @param {RenderNode} renderNode - specifies the render node
      * @param {Array<number>} position - specifies the position
@@ -390,18 +420,6 @@ export default class Commander {
                     renderNode.updatePosition();
                 }
             }
-        );
-    }
-    /**
-     * Changes the specified render node name to the specified name
-     * @param {RenderNode} renderNode - specifies the render node
-     * @param {string} name - specifies the name
-     */
-    changeRenderNodeName(renderNode, name) {
-        const oldName = renderNode.name;
-        this.command(
-            () => { renderNode.name = name; renderNode.updateAll(); },
-            () => { renderNode.name = oldName; renderNode.updateAll(); }
         );
     }
 
