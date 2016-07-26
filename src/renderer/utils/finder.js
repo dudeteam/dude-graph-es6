@@ -11,16 +11,16 @@ export default class RenderNodeFinder {
     }
 
     /**
-     * Returns the nearest render point of the specified area
-     * @param {Array<number>} area - specifies the area
+     * Returns the nearest render blocks of the specified area
+     * @param {Array<Array<number>>} area - specifies the area
      * @returns {Array<RenderBlock>}
      */
     nearestRenderBlocks(area) {
         return this[_renderer].renderBlocks.filter((renderBlock) => {
-            if (renderBlock.position[0] + renderBlock.size[0] < area[0]) { return false; }
-            if (renderBlock.position[0] > area[0] + area[2]) { return false; }
-            if (renderBlock.position[1] + renderBlock.size[1] < area[1]) { return false; }
-            if (renderBlock.position[1] > area[1] + area[3]) { return false; }
+            if (renderBlock.position[0] + renderBlock.size[0] < area[0][0]) { return false; }
+            if (renderBlock.position[0] > area[1][0]) { return false; }
+            if (renderBlock.position[1] + renderBlock.size[1] < area[0][1]) { return false; }
+            if (renderBlock.position[1] > area[1][1]) { return false; }
             return true;
         });
     }

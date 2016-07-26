@@ -8,9 +8,9 @@ export const textBoundingBox = (text) => {
 };
 
 /**
- * Returns the rect (top left, bottom right) for the specified render nodes
+ * Returns the area covered by the specified render nodes
  * @param {Array<RenderNode>} renderNodes - specifies the render nodes
- * @param {boolean} [nullable=false] - Whether to return null or [[0, 0], [0, 0]]
+ * @param {boolean} [nullable=false] - specifies whether to return null or [[0, 0], [0, 0]]
  * @returns {Array<Array<number>>}
  */
 export const renderNodesBoundingBox = (renderNodes, nullable) => {
