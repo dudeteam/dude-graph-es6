@@ -1,15 +1,33 @@
-export {default as Graph}  from "./graph/graph";
-export {default as Variable} from "./graph/variable";
-export {default as Block} from "./graph/block";
-export {default as VariableBlock} from "./graph/blocks/variable";
-export {default as Point} from "./graph/point";
-export {default as PointPolicy} from "./graph/policy";
-export {default as Connection} from "./graph/connection";
+import {default as Graph} from "./graph/graph";
+import {default as Variable} from "./graph/variable";
+import {default as Block} from "./graph/block";
+import {default as VariableBlock} from "./graph/blocks/variable";
+import {default as Point} from "./graph/point";
+import {default as PointPolicy} from "./graph/policy";
+import {default as Connection} from "./graph/connection";
 
-export {default as Renderer} from "./renderer/renderer";
-export {default as RenderBlock} from "./renderer/nodes/block";
-export {default as RenderGroup} from "./renderer/nodes/group";
-export {default as RenderPoint} from "./renderer/nodes/point";
-export {default as RenderConnection} from "./renderer/nodes/connection";
+import {default as Renderer} from "./renderer/renderer";
+import {default as RenderBlock} from "./renderer/nodes/block";
+import {default as RenderGroup} from "./renderer/nodes/group";
+import {default as RenderPoint} from "./renderer/nodes/point";
+import {default as RenderConnection} from "./renderer/nodes/connection";
+import * as Measure from "./renderer/utils/measure";
 
-export {default as Commander} from "./commander/commander";
+import {default as Commander} from "./commander/commander";
+
+export {Graph};
+export {Variable};
+export {Block};
+export {VariableBlock};
+export {Point};
+export {PointPolicy};
+export {Connection};
+
+export {Renderer};
+export {RenderBlock};
+export {RenderGroup};
+export {RenderPoint};
+export {RenderConnection};
+export {Measure};
+
+export {Commander};

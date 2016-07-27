@@ -93,30 +93,30 @@ export default class Renderer extends EventClass {
      */
     get renderNodeFinder() { return this[_renderNodeFinder]; }
     /**
-     * Returns this renderer connections layer
-     * @returns {select}
+     * Returns this renderer svg element
+     * @returns {SVGSVGElement}
      */
-    get svgRoot() {return this[_svgRoot]; }
+    get svg() { return this[_svg].element; }
     /**
-     * Returns this renderer connections layer
-     * @returns {select}
+     * Returns this renderer svg root element
+     * @returns {SVGGElement}
      */
-    get svgGroups() {return this[_svgGroups]; }
+    get svgRoot() {return this[_svgRoot].element; }
     /**
-     * Returns this renderer connections layer
-     * @returns {select}
+     * Returns this renderer svg groups element
+     * @returns {SVGGElement}
      */
-    get svgBlocks() {return this[_svgBlocks]; }
+    get svgGroups() {return this[_svgGroups].element; }
     /**
-     * Returns this renderer connections layer
-     * @returns {select}
+     * Returns this renderer svg blocks element
+     * @returns {SVGGElement}
      */
-    get svgConnections() {return this[_svgConnections]; }
+    get svgBlocks() {return this[_svgBlocks].element; }
     /**
-     * Returns this renderer current zoom and pan
-     * @returns {{zoom: number, pan: Array<number>}}
+     * Returns this renderer svg connections element
+     * @returns {SVGGElement}
      */
-    get zoomPan() { return this[_zoom]; }
+    get svgConnections() {return this[_svgConnections].element; }
 
     /**
      * Adds the specified render block to this renderer
@@ -317,20 +317,5 @@ export default class Renderer extends EventClass {
                 return rc.inputRenderPoint === inputRenderPoint && rc.outputRenderPoint === outputRenderPoint;
             }) || null;
     }
-
-    /**
-     * Zooms and pans to the specified zoom and pan
-     * @param {number} zoom - specifies the zoom
-     * @param {Array<number>} pan - specifies the pan
-     */
-    zoom(zoom, pan) {
-        this[_zoom].zoom = zoom;
-        this[_zoom].pan = pan;
-        this[_svgRoot].attr("transform", "translate(" + pan + ")scale(" + zoom + ")");
-    }
-    /**
-     * Handles the renderer zoom
-     * @private
-     */
 
 }
