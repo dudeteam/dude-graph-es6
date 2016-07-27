@@ -94,29 +94,29 @@ export default class Renderer extends EventClass {
     get renderNodeFinder() { return this[_renderNodeFinder]; }
     /**
      * Returns this renderer svg element
-     * @returns {SVGSVGElement}
+     * @returns {HTMLWrapper}
      */
-    get svg() { return this[_svg].element; }
+    get svg() { return this[_svg]; }
     /**
      * Returns this renderer svg root element
-     * @returns {SVGGElement}
+     * @returns {HTMLWrapper}
      */
-    get svgRoot() {return this[_svgRoot].element; }
+    get svgRoot() {return this[_svgRoot]; }
     /**
      * Returns this renderer svg groups element
-     * @returns {SVGGElement}
+     * @returns {HTMLWrapper}
      */
-    get svgGroups() {return this[_svgGroups].element; }
+    get svgGroups() {return this[_svgGroups]; }
     /**
      * Returns this renderer svg blocks element
-     * @returns {SVGGElement}
+     * @returns {HTMLWrapper}
      */
-    get svgBlocks() {return this[_svgBlocks].element; }
+    get svgBlocks() {return this[_svgBlocks]; }
     /**
      * Returns this renderer svg connections element
-     * @returns {SVGGElement}
+     * @returns {HTMLWrapper}
      */
-    get svgConnections() {return this[_svgConnections].element; }
+    get svgConnections() {return this[_svgConnections]; }
 
     /**
      * Adds the specified render block to this renderer
