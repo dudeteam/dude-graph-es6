@@ -50,7 +50,8 @@
 </style>
 <body>
 <svg id="renderer"></svg>
-<script src="dist/dude-graph.js"></script>
+<button id="removeRenderBlock" style="position: absolute; top: 16px; right: 16px;">Remove render block</button>
+<script src="../dist/dude-graph.js"></script>
 <script>
     var graph = new dudeGraph.Graph();
     var renderer = new dudeGraph.Renderer(graph, document.getElementById("renderer"));
@@ -77,29 +78,56 @@
     renderBlock2.name = "Step";
 
     commander.transaction();
+    {
+        commander.addBlock(block1);
+        commander.addRenderBlock(renderBlock1);
+    }
+    commander.commit();
 
-    commander.addBlock(block1);
-    commander.addBlock(block2);
-    commander.addRenderBlock(renderBlock1);
-    commander.addRenderBlock(renderBlock2);
+    commander.transaction();
+    {
+        commander.addBlock(block2);
+        commander.addRenderBlock(renderBlock2);
+    }
+    commander.commit();
 
-    commander.addBlockPoint(block1, output1);
-    commander.addBlockPoint(block1, input1);
-    commander.addBlockPoint(block2, output2);
-    commander.addBlockPoint(block2, input2);
+    commander.transaction();
+    {
+        commander.addBlockPoint(block1, output1);
+        commander.addBlockPoint(block1, input1);
+        commander.addRenderBlockRenderPoint(renderBlock1, outputRender1);
+        commander.addRenderBlockRenderPoint(renderBlock1, inputRender1);
+    }
+    commander.commit();
 
-    commander.addRenderBlockRenderPoint(renderBlock1, outputRender1);
-    commander.addRenderBlockRenderPoint(renderBlock1, inputRender1);
-    commander.addRenderBlockRenderPoint(renderBlock2, outputRender2);
-    commander.addRenderBlockRenderPoint(renderBlock2, inputRender2);
+    commander.transaction();
+    {
+        commander.addBlockPoint(block2, output2);
+        commander.addBlockPoint(block2, input2);
+        commander.addRenderBlockRenderPoint(renderBlock2, outputRender2);
+        commander.addRenderBlockRenderPoint(renderBlock2, inputRender2);
+    }
+    commander.commit();
 
-    commander.addRenderGroup(renderGroup);
-    commander.addRenderGroupRenderBlock(renderGroup, renderBlock1);
-    commander.addRenderGroupRenderBlock(renderGroup, renderBlock2);
+    commander.transaction();
+    {
+        commander.addRenderGroup(renderGroup);
+    }
+    commander.commit();
 
-    commander.connectPoints(input2, output1);
-    commander.connectRenderPoints(inputRender2, outputRender1);
+    commander.transaction();
+    {
+        commander.addRenderGroupRenderBlock(renderGroup, renderBlock1);
+        commander.addRenderGroupRenderBlock(renderGroup, renderBlock2);
+    }
+    commander.commit();
 
+
+    commander.transaction();
+    {
+        commander.connectPoints(input2, output1);
+        commander.connectRenderPoints(inputRender2, outputRender1);
+    }
     commander.commit();
 
     renderBlock1.element.element.onmousedown = function () {
@@ -109,7 +137,19 @@
         renderBlock2.front();
     };
 
-    console.log(renderBlock1.inputByName("in").absolutePosition);
+    document.body.onkeydown = function (event) {
+        if (event.keyCode === 90 || event.which === 90) {
+            if (event.ctrlKey && !event.shiftKey) {
+                commander.undo();
+            } else if (event.ctrlKey && event.shiftKey) {
+                commander.redo();
+            }
+        }
+    };
+
+    document.getElementById("removeRenderBlock").onclick = function () {
+        commander.removeRenderBlock(renderBlock1);
+    };
 
 </script>
 </body>
