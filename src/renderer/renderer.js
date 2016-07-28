@@ -150,6 +150,9 @@ export default class Renderer extends EventClass {
         if (renderBlock.parent !== null) {
             throw new Error(this.fancyName + " cannot remove render block with a parent");
         }
+        if (renderBlock.renderPoints.length > 0) {
+            throw new Error(this.fancyName + " cannot remove render block with render points");
+        }
         renderBlock.removed();
         renderBlock.element.remove();
         this[_renderBlockIds][renderBlock.id] = undefined;

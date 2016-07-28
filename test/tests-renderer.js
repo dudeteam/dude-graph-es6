@@ -195,17 +195,17 @@ describe("dude-renderer API", () => {
         expect(renderBlock.inputByName("point")).to.be.equal(renderPoint);
     });
     it("should add render connections", () => {
-        let svg = document.getElementById("svg");
-        let graph = new Graph();
-        let block1 = new Block();
-        let block2 = new Block();
-        let outputPoint = new Point(false, {"name": "point", "valueType": "string"});
-        let inputPoint = new Point(true, {"name": "point", "valueType": "string"});
-        let renderer = new Renderer(graph, svg);
-        let renderBlock1 = new RenderBlock(block1);
-        let renderBlock2 = new RenderBlock(block2);
-        let outputRenderPoint = new RenderPoint(outputPoint);
-        let inputRenderPoint = new RenderPoint(inputPoint);
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const block1 = new Block();
+        const block2 = new Block();
+        const outputPoint = new Point(false, {"name": "point", "valueType": "string"});
+        const inputPoint = new Point(true, {"name": "point", "valueType": "string"});
+        const renderer = new Renderer(graph, svg);
+        const renderBlock1 = new RenderBlock(block1);
+        const renderBlock2 = new RenderBlock(block2);
+        const outputRenderPoint = new RenderPoint(outputPoint);
+        const inputRenderPoint = new RenderPoint(inputPoint);
         graph.addBlock(block1);
         graph.addBlock(block2);
         block1.addPoint(outputPoint);
@@ -227,7 +227,7 @@ describe("dude-renderer API", () => {
         expect(outputRenderPoint.renderConnections).to.have.lengthOf(0);
         expect(inputRenderPoint.renderConnections).to.have.lengthOf(0);
         expect(renderer.renderConnectionsForRenderPoints(inputRenderPoint, outputRenderPoint)).to.be.null;
-        let renderConnection = renderer.connect(inputRenderPoint, outputRenderPoint);
+        const renderConnection = renderer.connect(inputRenderPoint, outputRenderPoint);
         expect(outputRenderPoint.renderConnections).to.have.lengthOf(1);
         expect(inputRenderPoint.renderConnections).to.have.lengthOf(1);
         expect(renderer.renderConnectionsForRenderPoints(inputRenderPoint, outputRenderPoint)).to.be.equal(renderConnection);
@@ -238,17 +238,17 @@ describe("dude-renderer API", () => {
         }).to.throw();
     });
     it("should remove a render connections", () => {
-        let svg = document.getElementById("svg");
-        let graph = new Graph();
-        let block1 = new Block();
-        let block2 = new Block();
-        let outputPoint = new Point(false, {"name": "point", "valueType": "string"});
-        let inputPoint = new Point(true, {"name": "point", "valueType": "string"});
-        let renderer = new Renderer(graph, svg);
-        let renderBlock1 = new RenderBlock(block1);
-        let renderBlock2 = new RenderBlock(block2);
-        let outputRenderPoint = new RenderPoint(outputPoint);
-        let inputRenderPoint = new RenderPoint(inputPoint);
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const block1 = new Block();
+        const block2 = new Block();
+        const outputPoint = new Point(false, {"name": "point", "valueType": "string"});
+        const inputPoint = new Point(true, {"name": "point", "valueType": "string"});
+        const renderer = new Renderer(graph, svg);
+        const renderBlock1 = new RenderBlock(block1);
+        const renderBlock2 = new RenderBlock(block2);
+        const outputRenderPoint = new RenderPoint(outputPoint);
+        const inputRenderPoint = new RenderPoint(inputPoint);
         graph.addBlock(block1);
         graph.addBlock(block2);
         block1.addPoint(outputPoint);
@@ -272,6 +272,24 @@ describe("dude-renderer API", () => {
         expect(renderer.renderConnectionsForRenderPoints(inputRenderPoint, outputRenderPoint)).to.be.null;
         expect(outputRenderPoint.renderConnections).to.have.lengthOf(0);
         expect(inputRenderPoint.renderConnections).to.have.lengthOf(0);
+    });
+    it("should be impossible to remove a non empty render block", () => {
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const block = new Block();
+        const outputPoint = new Point(false, {"name": "point", "valueType": "string"});
+        const renderer = new Renderer(graph, svg);
+        const renderBlock = new RenderBlock(block);
+        const outputRenderPoint = new RenderPoint(outputPoint);
+        graph.addBlock(block);
+        block.addPoint(outputPoint);
+        renderer.addRenderBlock(renderBlock);
+        renderBlock.addRenderPoint(outputRenderPoint);
+        expect(() => {
+            renderer.removeRenderBlock(renderBlock);
+        }).to.throw();
+        renderBlock.removeRenderPoint(outputRenderPoint);
+        renderer.removeRenderBlock(renderBlock);
     });
 });
 describe("dude-renderer Events", () => {
