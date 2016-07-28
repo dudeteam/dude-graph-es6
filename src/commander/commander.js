@@ -231,6 +231,9 @@ export default class Commander {
         if (typeof oldValue === "undefined") {
             oldValue = point.value;
         }
+        if (value === oldValue) {
+            return;
+        }
         this.command(
             () => {
                 point.value = value;
