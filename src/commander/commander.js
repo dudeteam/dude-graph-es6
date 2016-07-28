@@ -38,14 +38,16 @@ export default class Commander {
     get renderer() { return this[_renderer]; }
 
     /**
-     * Adds a command in the commander
-     * @param {function} redo - the function to make/redo the command
-     * @param {function} undo - the function to undo the command
+     * Adds a command in the commander with the specified redo and undo functions
+     * @param {function} redo - specifies the redo function
+     * @param {function} undo - specifies the undo function
+     * @param {string} [label] - specifies the command name
      */
-    command(redo, undo) {
+    command(redo, undo, label) {
         const action = {
             "undo": undo,
-            "redo": redo
+            "redo": redo,
+            "label": label
         };
         if (this[_transactions].length > 0) {
             const transaction = this[_transactions].slice(-1)[0];
@@ -90,19 +92,20 @@ export default class Commander {
         if (this[_transactions].length === 0) {
             throw new Error("There is no transaction to commit");
         }
-        const actions = this[_transactions].pop();
-        if (actions.length > 0) {
+        const commands = this[_transactions].pop();
+        if (commands.length > 0) {
             this.command(
                 () => {
-                    for (const transaction of actions) {
-                        transaction.redo();
+                    for (const command of commands) {
+                        command.redo();
                     }
                 },
                 () => {
-                    for (let i = actions.length - 1; i >= 0; i--) {
-                        actions[i].undo();
+                    for (let i = commands.length - 1; i >= 0; i--) {
+                        commands[i].undo();
                     }
-                }
+                },
+                commands
             );
         }
     }
@@ -117,13 +120,46 @@ export default class Commander {
     }
 
     /**
+     * Describes this commander undo and redo stacks
+     */
+    describe() {
+        const undoes = this[_undo].map((u) => u.label);
+        const redoes = this[_redo].map((u) => u.label);
+        /*eslint-disable no-console */
+        console.group("Undo commands");
+        for (const undo of undoes) {
+            if (typeof undo === "string") {
+                console.log(undo);
+            } else {
+                console.group("Transaction");
+                console.log(undo.slice(0).reverse().map(u => u.label).join("\n"));
+                console.groupEnd();
+            }
+        }
+        console.groupEnd();
+        console.group("Redo commands");
+        for (const redo of redoes) {
+            if (typeof redo === "string") {
+                console.log(redo);
+            } else {
+                console.group("Transaction");
+                console.log(redo.map(u => u.label).join("\n"));
+                console.groupEnd();
+            }
+        }
+        console.groupEnd();
+        /*eslint-enable no-console */
+    }
+
+    /**
      * @see {Graph.addBlock}
      * @param {Block} block - @see {Graph.addBlock}
      */
     addBlock(block) {
         this.command(
             () => { this[_graph].addBlock(block); },
-            () => { this[_graph].removeBlock(block); }
+            () => { this[_graph].removeBlock(block); },
+            `addBlock ${block.name}`
         );
     }
     /**
@@ -133,7 +169,8 @@ export default class Commander {
     removeBlock(block) {
         this.command(
             () => { this[_graph].removeBlock(block); },
-            () => { this[_graph].addBlock(block); }
+            () => { this[_graph].addBlock(block); },
+            `removeBlock ${block.name}`
         );
     }
     /**
@@ -144,7 +181,8 @@ export default class Commander {
     addBlockPoint(block, point) {
         this.command(
             () => { block.addPoint(point); },
-            () => { block.removePoint(point); }
+            () => { block.removePoint(point); },
+            `addBlockPoint ${block.name} ${point.name}`
         );
     }
     /**
@@ -155,7 +193,8 @@ export default class Commander {
     removeBlockPoint(block, point) {
         this.command(
             () => { block.removePoint(point); },
-            () => { block.addPoint(point); }
+            () => { block.addPoint(point); },
+            `removeBlockPoint ${block.name} ${point.name}`
         );
     }
     /**
@@ -166,7 +205,8 @@ export default class Commander {
     connectPoints(inputPoint, outputPoint) {
         this.command(
             () => { inputPoint.connect(outputPoint); },
-            () => { inputPoint.disconnect(outputPoint); }
+            () => { inputPoint.disconnect(outputPoint); },
+            `connectPoints ${inputPoint.name} => ${outputPoint.name}`
         );
     }
     /**
@@ -177,7 +217,8 @@ export default class Commander {
     disconnectPoints(inputPoint, outputPoint) {
         this.command(
             () => { inputPoint.disconnect(outputPoint); },
-            () => { inputPoint.connect(outputPoint); }
+            () => { inputPoint.connect(outputPoint); },
+            `disconnectPoints ${inputPoint.name} => ${outputPoint.name}`
         );
     }
     /**
@@ -198,7 +239,8 @@ export default class Commander {
             () => {
                 point.value = oldValue;
                 this[_renderer].renderPoints.filter(rp => rp.point === point).forEach(rp => rp.updateData());
-            }
+            },
+            `changePointValue ${point.name} to ${value}, was ${oldValue}]`
         );
     }
 
@@ -209,7 +251,8 @@ export default class Commander {
     addRenderBlock(renderBlock) {
         this.command(
             () => { this[_renderer].addRenderBlock(renderBlock); renderBlock.updateAll(); },
-            () => { this[_renderer].removeRenderBlock(renderBlock); }
+            () => { this[_renderer].removeRenderBlock(renderBlock); },
+            `addRenderBlock ${renderBlock.fancyName}`
         );
     }
     /**
@@ -224,7 +267,8 @@ export default class Commander {
             }
             this.command(
                 () => { this[_renderer].removeRenderBlock(renderBlock); },
-                () => { this[_renderer].addRenderBlock(renderBlock); renderBlock.updateAll(); }
+                () => { this[_renderer].addRenderBlock(renderBlock); renderBlock.updateAll(); },
+                `removeRenderBlock ${renderBlock.fancyName}`
             );
         }
         this.commit();
@@ -246,7 +290,8 @@ export default class Commander {
                 this[_renderer].disconnect(inputRenderPoint, outputRenderPoint);
                 inputRenderPoint.updateData();
                 outputRenderPoint.updateData();
-            }
+            },
+            `connectRenderPoints ${inputRenderPoint.fancyName} => ${outputRenderPoint.fancyName}`
         );
     }
     /**
@@ -266,7 +311,8 @@ export default class Commander {
                 outputRenderPoint.updateData();
                 inputRenderPoint.updateData();
                 renderConnection.updateAll();
-            }
+            },
+            `disconnectRenderPoints ${inputRenderPoint.fancyName} => ${outputRenderPoint.fancyName}`
         );
     }
     /**
@@ -284,7 +330,8 @@ export default class Commander {
                     otherRenderPoint.updatePosition();
                 }
             },
-            () => { renderBlock.removeRenderPoint(renderPoint); renderBlock.updateSize(); }
+            () => { renderBlock.removeRenderPoint(renderPoint); renderBlock.updateSize(); },
+            `addRenderBlockRenderPoint ${renderBlock.fancyName} => ${renderPoint.fancyName}`
         );
     }
     /**
@@ -302,7 +349,8 @@ export default class Commander {
                 for (const otherRenderPoint of renderBlock.renderPoints) {
                     otherRenderPoint.updatePosition();
                 }
-            }
+            },
+            `removeRenderBlockRenderPoint ${renderBlock.fancyName} => ${renderPoint.fancyName}`
         );
     }
     /**
@@ -313,7 +361,8 @@ export default class Commander {
     addRenderGroup(renderGroup) {
         return this.command(
             () => { this[_renderer].addRenderGroup(renderGroup); renderGroup.updateAll(); },
-            () => { this[_renderer].removeRenderGroup(renderGroup); }
+            () => { this[_renderer].removeRenderGroup(renderGroup); },
+            `addRenderGroup ${renderGroup.fancyName}`
         );
     }
     /**
@@ -328,7 +377,8 @@ export default class Commander {
             }
             this.command(
                 () => { this[_renderer].removeRenderGroup(renderGroup); },
-                () => { this[_renderer].addRenderGroup(renderGroup); renderGroup.updateAll(); }
+                () => { this[_renderer].addRenderGroup(renderGroup); renderGroup.updateAll(); },
+                `removeRenderGroup ${renderGroup.fancyName}`
             );
         }
         this.commit();
@@ -341,7 +391,8 @@ export default class Commander {
     addRenderGroupRenderBlock(renderGroup, renderBlock) {
         this.command(
             () => { renderGroup.addRenderBlock(renderBlock); renderGroup.updateAll(); },
-            () => { renderGroup.removeRenderBlock(renderBlock); renderGroup.updateAll(); }
+            () => { renderGroup.removeRenderBlock(renderBlock); renderGroup.updateAll(); },
+            `addRenderGroupRenderBlock ${renderGroup.fancyName} => ${renderBlock.fancyName}`
         );
     }
     /**
@@ -352,7 +403,8 @@ export default class Commander {
     removeRenderGroupRenderBlock(renderGroup, renderBlock) {
         this.command(
             () => { renderGroup.removeRenderBlock(renderBlock); renderGroup.updateAll(); },
-            () => { renderGroup.addRenderBlock(renderBlock); renderGroup.updateAll(); }
+            () => { renderGroup.addRenderBlock(renderBlock); renderGroup.updateAll(); },
+            `removeRenderGroupRenderBlock ${renderGroup.fancyName} => ${renderBlock.fancyName}`
         );
     }
 
@@ -365,7 +417,8 @@ export default class Commander {
         const oldName = renderNode.name;
         this.command(
             () => { renderNode.name = name; renderNode.updateAll(); },
-            () => { renderNode.name = oldName; renderNode.updateAll(); }
+            () => { renderNode.name = oldName; renderNode.updateAll(); },
+            `changeRenderNodeName ${renderNode.fancyName} => ${name}, was ${oldName}`
         );
     }
     /**
@@ -419,7 +472,8 @@ export default class Commander {
                     renderNode.position = oldPosition;
                     renderNode.updatePosition();
                 }
-            }
+            },
+            `changeRenderNodePosition ${renderNode.fancyName} => ${position}, was ${oldPosition}`
         );
     }
 

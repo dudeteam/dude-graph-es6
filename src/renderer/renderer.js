@@ -8,7 +8,6 @@ import RenderConnection from "./nodes/connection";
 
 const _graph = Symbol("graph");
 const _config = Symbol("config");
-const _zoom = Symbol("zoomPan");
 const _renderGroups = Symbol("renderGroups");
 const _renderBlocks = Symbol("renderBlocks");
 const _renderConnections = Symbol("renderConnections");
@@ -33,7 +32,6 @@ export default class Renderer extends EventClass {
 
         this[_graph] = graph;
         this[_config] = config;
-        this[_zoom] = {"zoom": 1, "pan": [0, 0]};
         this[_renderGroups] = [];
         this[_renderBlocks] = [];
         this[_renderConnections] = [];
