@@ -412,9 +412,15 @@ export default class Commander {
      * Changes the specified render node name to the specified name
      * @param {RenderNode} renderNode - specifies the render node
      * @param {string} name - specifies the name
+     * @param {string} [oldName=renderNode.name] - specifies the old name
      */
-    changeRenderNodeName(renderNode, name) {
-        const oldName = renderNode.name;
+    changeRenderNodeName(renderNode, name, oldName) {
+        if (typeof oldName === "undefined") {
+            oldName = renderNode.name;
+        }
+        if (name === oldName) {
+            return;
+        }
         this.command(
             () => { renderNode.name = name; renderNode.updateAll(); },
             () => { renderNode.name = oldName; renderNode.updateAll(); },
