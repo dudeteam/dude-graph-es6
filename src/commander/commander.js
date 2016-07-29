@@ -30,16 +30,12 @@ export default class Commander {
      * Returns this commander graph
      * @returns {Graph}
      */
-    get graph() {
-        return this[_graph];
-    }
+    get graph() { return this[_graph]; }
     /**
      * Returns this commander renderer
      * @returns {Renderer}
      */
-    get renderer() {
-        return this[_renderer];
-    }
+    get renderer() { return this[_renderer]; }
 
     /**
      * Adds a command in the commander with the specified redo and undo functions
@@ -82,6 +78,7 @@ export default class Commander {
             redo.redo();
         }
     }
+
     /**
      * Starts a transaction of commands that will be grouped under a single command
      */
@@ -121,6 +118,7 @@ export default class Commander {
         }
         this[_transactions].pop();
     }
+
     /**
      * Describes this commander undo and redo stacks
      */
@@ -159,12 +157,8 @@ export default class Commander {
      */
     addBlock(block) {
         this.command(
-            () => {
-                this._addBlock(block);
-            },
-            () => {
-                this._removeBlock(block);
-            },
+            () => { this[_graph].addBlock(block); },
+            () => { this[_graph].removeBlock(block); },
             `addBlock ${block.name}`
         );
     }
@@ -173,15 +167,21 @@ export default class Commander {
      * @param {Block} block - @see {Graph.removeBlock}
      */
     removeBlock(block) {
-        this.command(
-            () => {
-                this._removeBlock(block);
-            },
-            () => {
-                this._addBlock(block);
-            },
-            `removeBlock ${block.name}`
-        );
+        this.transaction();
+        {
+            for (const point of block.points) {
+                this.removeBlockPoint(block, point);
+            }
+            this.command(
+                () => {
+                    this[_graph].removeBlock(block);
+                },
+                () => {
+                    this[_graph].addBlock(block);
+                },
+                `removeBlock ${block.name}`
+            );
+        }
     }
     /**
      * @see {Block.addPoint}
@@ -190,12 +190,8 @@ export default class Commander {
      */
     addBlockPoint(block, point) {
         this.command(
-            () => {
-                this._addBlockPoint(block, point);
-            },
-            () => {
-                this._removeBlockPoint(block, point);
-            },
+            () => { block.addPoint(point); },
+            () => { block.removePoint(point); },
             `addBlockPoint ${block.name} ${point.name}`
         );
     }
@@ -205,15 +201,21 @@ export default class Commander {
      * @param {Point} point - @see {Block.removePoint}
      */
     removeBlockPoint(block, point) {
-        this.command(
-            () => {
-                this._removeBlockPoint(block, point);
-            },
-            () => {
-                this._addBlockPoint(block, point);
-            },
-            `removeBlockPoint ${block.name} ${point.name}`
-        );
+        this.transaction();
+        {
+            for (const connection of point.connections) {
+                this.disconnectPoints(connection.inputPoint, connection.outputPoint);
+            }
+            this.command(
+                () => {
+                    block.removePoint(point);
+                },
+                () => {
+                    block.addPoint(point);
+                },
+                `removeBlockPoint ${block.name} ${point.name}`
+            );
+        }
     }
     /**
      * @see {Graph.connect}
@@ -222,12 +224,8 @@ export default class Commander {
      */
     connectPoints(inputPoint, outputPoint) {
         this.command(
-            () => {
-                this._connectPoints(inputPoint, outputPoint);
-            },
-            () => {
-                this._disconnectPoints(inputPoint, outputPoint);
-            },
+            () => { inputPoint.connect(outputPoint); },
+            () => { inputPoint.disconnect(outputPoint); },
             `connectPoints ${inputPoint.name} => ${outputPoint.name}`
         );
     }
@@ -238,12 +236,8 @@ export default class Commander {
      */
     disconnectPoints(inputPoint, outputPoint) {
         this.command(
-            () => {
-                this._disconnectPoints(inputPoint, outputPoint);
-            },
-            () => {
-                this._connectPoints(inputPoint, outputPoint);
-            },
+            () => { inputPoint.disconnect(outputPoint); },
+            () => { inputPoint.connect(outputPoint); },
             `disconnectPoints ${inputPoint.name} => ${outputPoint.name}`
         );
     }
@@ -262,10 +256,12 @@ export default class Commander {
         }
         this.command(
             () => {
-                this._changePointValue(point, value);
+                point.value = value;
+                this[_renderer].renderPoints.filter(rp => rp.point === point).forEach(rp => rp.updateData());
             },
             () => {
-                this._changePointValue(point, oldValue);
+                point.value = oldValue;
+                this[_renderer].renderPoints.filter(rp => rp.point === point).forEach(rp => rp.updateData());
             },
             `changePointValue ${point.name} to ${value}, was ${oldValue}]`
         );
@@ -277,12 +273,8 @@ export default class Commander {
      */
     addRenderBlock(renderBlock) {
         this.command(
-            () => {
-                this._addRenderBlock(renderBlock);
-            },
-            () => {
-                this._removeRenderBlock(renderBlock);
-            },
+            () => { this[_renderer].addRenderBlock(renderBlock); renderBlock.updateAll(); },
+            () => { this[_renderer].removeRenderBlock(renderBlock); },
             `addRenderBlock ${renderBlock.fancyName}`
         );
     }
@@ -294,15 +286,14 @@ export default class Commander {
         this.transaction();
         {
             if (renderBlock.parent !== null) {
-                this._removeRenderGroupRenderBlock(renderBlock.parent, renderBlock);
+                this.removeRenderGroupRenderBlock(renderBlock.parent, renderBlock);
+            }
+            for (const renderPoint of renderBlock.renderPoints) {
+                this.removeRenderBlockRenderPoint(renderBlock, renderPoint);
             }
             this.command(
-                () => {
-                    this._removeRenderBlock(renderBlock);
-                },
-                () => {
-                    this._addRenderBlock(renderBlock);
-                },
+                () => { this[_renderer].removeRenderBlock(renderBlock); },
+                () => { this[_renderer].addRenderBlock(renderBlock); renderBlock.updateAll(); },
                 `removeRenderBlock ${renderBlock.fancyName}`
             );
         }
@@ -316,10 +307,15 @@ export default class Commander {
     connectRenderPoints(inputRenderPoint, outputRenderPoint) {
         this.command(
             () => {
-                this._connectRenderPoints(inputRenderPoint, outputRenderPoint);
+                const renderConnection = this[_renderer].connect(inputRenderPoint, outputRenderPoint);
+                inputRenderPoint.updateData();
+                outputRenderPoint.updateData();
+                renderConnection.updateAll();
             },
             () => {
-                this._disconnectRenderPoints(inputRenderPoint, outputRenderPoint);
+                this[_renderer].disconnect(inputRenderPoint, outputRenderPoint);
+                inputRenderPoint.updateData();
+                outputRenderPoint.updateData();
             },
             `connectRenderPoints ${inputRenderPoint.fancyName} => ${outputRenderPoint.fancyName}`
         );
@@ -332,10 +328,15 @@ export default class Commander {
     disconnectRenderPoints(inputRenderPoint, outputRenderPoint) {
         this.command(
             () => {
-                this._disconnectRenderPoints(inputRenderPoint, outputRenderPoint);
+                this[_renderer].disconnect(inputRenderPoint, outputRenderPoint);
+                inputRenderPoint.updateData();
+                outputRenderPoint.updateData();
             },
             () => {
-                this._connectRenderPoints(inputRenderPoint, outputRenderPoint);
+                const renderConnection = this[_renderer].connect(inputRenderPoint, outputRenderPoint);
+                outputRenderPoint.updateData();
+                inputRenderPoint.updateData();
+                renderConnection.updateAll();
             },
             `disconnectRenderPoints ${inputRenderPoint.fancyName} => ${outputRenderPoint.fancyName}`
         );
@@ -348,12 +349,14 @@ export default class Commander {
     addRenderBlockRenderPoint(renderBlock, renderPoint) {
         this.command(
             () => {
-    this._addRenderBlockRenderPoint(renderBlock, renderPoint);
+                renderBlock.addRenderPoint(renderPoint);
+                renderPoint.updateAll();
+                renderBlock.updateSize();
+                for (const otherRenderPoint of renderBlock.renderPoints) {
+                    otherRenderPoint.updatePosition();
+                }
             },
-            () => {
-                this._removeRenderBlockRenderPoint(renderBlock, renderPoint);
-
-            },
+            () => { renderBlock.removeRenderPoint(renderPoint); renderBlock.updateSize(); },
             `addRenderBlockRenderPoint ${renderBlock.fancyName} => ${renderPoint.fancyName}`
         );
     }
@@ -363,30 +366,38 @@ export default class Commander {
      * @param {RenderPoint} renderPoint - @see {RenderBlock.removeRenderPoint}
      */
     removeRenderBlockRenderPoint(renderBlock, renderPoint) {
-        this.command(
-            () => {
-                this._removeRenderBlockRenderPoint(renderBlock, renderPoint);
-
-            },
-            () => {
-                this._addRenderBlockRenderPoint(renderBlock, renderPoint);
-
-            },
-            `removeRenderBlockRenderPoint ${renderBlock.fancyName} => ${renderPoint.fancyName}`
-        );
+        this.transaction();
+        {
+            for (const renderConnection of renderPoint.renderConnections) {
+                this.disconnectRenderPoints(renderConnection.inputRenderPoint, renderConnection.outputRenderPoint);
+            }
+            this.command(
+                () => {
+                    renderBlock.removeRenderPoint(renderPoint);
+                    renderBlock.updateSize();
+                },
+                () => {
+                    renderBlock.addRenderPoint(renderPoint);
+                    renderPoint.updateAll();
+                    renderBlock.updateSize();
+                    for (const otherRenderPoint of renderBlock.renderPoints) {
+                        otherRenderPoint.updatePosition();
+                    }
+                },
+                `removeRenderBlockRenderPoint ${renderBlock.fancyName} => ${renderPoint.fancyName}`
+            );
+        }
+        this.commit();
     }
     /**
      * @see {Renderer.addRenderGroup}
      * @param {RenderGroup} renderGroup - @see {Renderer.addRenderGroup}
+     * @returns {RenderGroup}
      */
     addRenderGroup(renderGroup) {
-        this.command(
-            () => {
-                this._addRenderGroup(renderGroup);
-            },
-            () => {
-                this._removeRenderGroup(renderGroup);
-            },
+        return this.command(
+            () => { this[_renderer].addRenderGroup(renderGroup); renderGroup.updateAll(); },
+            () => { this[_renderer].removeRenderGroup(renderGroup); },
             `addRenderGroup ${renderGroup.fancyName}`
         );
     }
@@ -397,16 +408,12 @@ export default class Commander {
     removeRenderGroup(renderGroup) {
         this.transaction();
         {
-            for (let i = renderGroup.renderBlocks.length - 1; i >= 0; i--) {
-                this.removeRenderGroupRenderBlock(renderGroup, renderGroup.renderBlocks[i]);
+            for (const renderBlock of renderGroup.renderBlocks) {
+                this.removeRenderGroupRenderBlock(renderGroup, renderBlock);
             }
             this.command(
-                () => {
-                    this._removeRenderGroup(renderGroup);
-                },
-                () => {
-                    this._addRenderGroup(renderGroup);
-                },
+                () => { this[_renderer].removeRenderGroup(renderGroup); },
+                () => { this[_renderer].addRenderGroup(renderGroup); renderGroup.updateAll(); },
                 `removeRenderGroup ${renderGroup.fancyName}`
             );
         }
@@ -419,12 +426,8 @@ export default class Commander {
      */
     addRenderGroupRenderBlock(renderGroup, renderBlock) {
         this.command(
-            () => {
-               this._addRenderGroupRenderBlock(renderGroup, renderBlock);
-            },
-            () => {
-                this._removeRenderGroupRenderBlock(renderGroup, renderBlock);
-            },
+            () => { renderGroup.addRenderBlock(renderBlock); renderGroup.updateAll(); },
+            () => { renderGroup.removeRenderBlock(renderBlock); renderGroup.updateAll(); },
             `addRenderGroupRenderBlock ${renderGroup.fancyName} => ${renderBlock.fancyName}`
         );
     }
@@ -435,16 +438,11 @@ export default class Commander {
      */
     removeRenderGroupRenderBlock(renderGroup, renderBlock) {
         this.command(
-            () => {
-                this._removeRenderGroupRenderBlock(renderGroup, renderBlock);
-            },
-            () => {
-                this._addRenderGroupRenderBlock(renderGroup, renderBlock);
-            },
+            () => { renderGroup.removeRenderBlock(renderBlock); renderGroup.updateAll(); },
+            () => { renderGroup.addRenderBlock(renderBlock); renderGroup.updateAll(); },
             `removeRenderGroupRenderBlock ${renderGroup.fancyName} => ${renderBlock.fancyName}`
         );
     }
-
     /**
      * Changes the specified render node name to the specified name
      * @param {RenderNode} renderNode - specifies the render node
@@ -459,12 +457,8 @@ export default class Commander {
             return;
         }
         this.command(
-            () => {
-               this._changeRenderNodeName(renderNode, name);
-            },
-            () => {
-                this._changeRenderNodeName(renderNode, oldName);
-            },
+            () => { renderNode.name = name; renderNode.updateAll(); },
+            () => { renderNode.name = oldName; renderNode.updateAll(); },
             `changeRenderNodeName ${renderNode.fancyName} => ${name}, was ${oldName}`
         );
     }
@@ -483,215 +477,45 @@ export default class Commander {
         }
         this.command(
             () => {
-                this._changeRenderNodePosition(renderNode, position);
+                if (renderNode instanceof RenderBlock) {
+                    renderNode.position = position;
+                    renderNode.updatePosition();
+                    if (renderNode.parent !== null) {
+                        renderNode.parent.updatePosition();
+                        renderNode.parent.updateSize();
+                    }
+                } else if (renderNode instanceof RenderGroup) {
+                    const diff = [position[0] - renderNode.position[0], position[1] - renderNode.position[1]];
+                    for (const renderBlock of renderNode.renderBlocks) {
+                        renderBlock.position[0] += diff[0];
+                        renderBlock.position[1] += diff[1];
+                        renderBlock.updatePosition();
+                    }
+                    renderNode.position = position;
+                    renderNode.updatePosition();
+                }
             },
             () => {
-                this._changeRenderNodePosition(renderNode, oldPosition);
+                if (renderNode instanceof RenderBlock) {
+                    renderNode.position = oldPosition;
+                    renderNode.updatePosition();
+                    if (renderNode.parent !== null) {
+                        renderNode.parent.updatePosition();
+                        renderNode.parent.updateSize();
+                    }
+                } else if (renderNode instanceof RenderGroup) {
+                    const diff = [oldPosition[0] - renderNode.position[0], oldPosition[1] - renderNode.position[1]];
+                    for (const renderBlock of renderNode.renderBlocks) {
+                        renderBlock.position[0] += diff[0];
+                        renderBlock.position[1] += diff[1];
+                        renderBlock.updatePosition();
+                    }
+                    renderNode.position = oldPosition;
+                    renderNode.updatePosition();
+                }
             },
             `changeRenderNodePosition ${renderNode.fancyName} => ${position}, was ${oldPosition}`
         );
-    }
-
-    /**
-     * @see {Graph.addBlock}
-     * @param {Block} block - @see {Graph.addBlock}
-     * @private
-     */
-    _addBlock(block) {
-        this[_graph].addBlock(block);
-    }
-    /**
-     * @see {Graph.removeBlock}
-     * @param {Block} block - @see {Graph.removeBlock}
-     * @private
-     */
-    _removeBlock(block) {
-        this[_graph].removeBlock(block);
-    }
-    /**
-     * @see {Block.addPoint}
-     * @param {Block} block - @see {Block.addPoint}
-     * @param {Point} point - @see {Block.addPoint}
-     * @private
-     */
-    _addBlockPoint(block, point) {
-        block.addPoint(point);
-    }
-    /**
-     * @see {Block.removePoint}
-     * @param {Block} block - @see {Block.removePoint}
-     * @param {Point} point - @see {Block.removePoint}
-     * @private
-     */
-    _removeBlockPoint(block, point) {
-        block.removePoint(point);
-    }
-    /**
-     * @see {Graph.connect}
-     * @param {Point} inputPoint - @see {Graph.connect}
-     * @param {Point} outputPoint - @see {Graph.connect}
-     * @private
-     */
-    _connectPoints(inputPoint, outputPoint) {
-        inputPoint.connect(outputPoint);
-    }
-    /**
-     * @see {Graph.disconnect}
-     * @param {Point} inputPoint - @see {Graph.disconnect}
-     * @param {Point} outputPoint - @see {Graph.disconnect}
-     * @private
-     */
-    _disconnectPoints(inputPoint, outputPoint) {
-        inputPoint.disconnect(outputPoint);
-    }
-    /**
-     * @see {Point.changeValue}
-     * @param {Point} point - @see {Point.changeValue}
-     * @param {*|null} value - @see {Point.changeValue}
-     * @param {*|null} [oldValue=point.value] - @see {Point.changeValue}
-     * @private
-     */
-    _changePointValue(point, value) {
-        point.value = value;
-        this[_renderer].renderPoints.filter(rp => rp.point === point).forEach(rp => rp.updateData());
-    }
-
-    /**
-     * @see {Renderer.addRenderBlock}
-     * @param {RenderBlock} renderBlock - @see {Renderer.addRenderBlock}
-     * @private
-     */
-    _addRenderBlock(renderBlock) {
-        this[_renderer].addRenderBlock(renderBlock);
-        renderBlock.updateAll();
-    }
-    /**
-     * @see {Renderer.removeRenderBlock}
-     * @param {RenderBlock} renderBlock - @see {Renderer.removeRenderBlock}
-     * @private
-     */
-    _removeRenderBlock(renderBlock) {
-        this[_renderer].removeRenderBlock(renderBlock);
-    }
-    /**
-     * @see {Renderer.connect}
-     * @param {RenderPoint} inputRenderPoint - @see {Renderer.connect}
-     * @param {RenderPoint} outputRenderPoint - @see {Renderer.connect}
-     * @private
-     */
-    _connectRenderPoints(inputRenderPoint, outputRenderPoint) {
-        const renderConnection = this[_renderer].connect(inputRenderPoint, outputRenderPoint);
-        inputRenderPoint.updateData();
-        outputRenderPoint.updateData();
-        renderConnection.updateAll();
-    }
-    /**
-     * @see {Renderer.disconnect}
-     * @param {RenderPoint} inputRenderPoint - @see {Renderer.disconnect}
-     * @param {RenderPoint} outputRenderPoint - @see {Renderer.disconnect}
-     * @private
-     */
-    _disconnectRenderPoints(inputRenderPoint, outputRenderPoint) {
-        this[_renderer].disconnect(inputRenderPoint, outputRenderPoint);
-        inputRenderPoint.updateData();
-        outputRenderPoint.updateData();
-    }
-    /**
-     * @see {RenderBlock.addRenderPoint}
-     * @param {RenderBlock} renderBlock - @see {RenderBlock.addRenderPoint}
-     * @param {RenderPoint} renderPoint - @see {RenderBlock.addRenderPoint}
-     * @private
-     */
-    _addRenderBlockRenderPoint(renderBlock, renderPoint) {
-        renderBlock.addRenderPoint(renderPoint);
-        renderPoint.updateAll();
-        renderBlock.updateSize();
-        for (const otherRenderPoint of renderBlock.renderPoints) {
-            otherRenderPoint.updatePosition();
-        }
-    }
-    /**
-     * @see {RenderBlock.removeRenderPoint}
-     * @param {RenderBlock} renderBlock - @see {RenderBlock.removeRenderPoint}
-     * @param {RenderPoint} renderPoint - @see {RenderBlock.removeRenderPoint}
-     * @private
-     */
-    _removeRenderBlockRenderPoint(renderBlock, renderPoint) {
-        renderBlock.removeRenderPoint(renderPoint);
-        renderBlock.updateSize();
-    }
-    /**
-     * @see {Renderer.addRenderGroup}
-     * @param {RenderGroup} renderGroup - @see {Renderer.addRenderGroup}
-     * @private
-     */
-    _addRenderGroup(renderGroup) {
-        this[_renderer].addRenderGroup(renderGroup);
-        renderGroup.updateAll();
-    }
-    /**
-     * @see {Renderer.addRenderGroup}
-     * @param {RenderGroup} renderGroup - @see {Renderer.addRenderGroup}
-     * @private
-     */
-    _removeRenderGroup(renderGroup) {
-        this[_renderer].removeRenderGroup(renderGroup);
-    }
-    /**
-     * @see {RenderGroup.addRenderBlock}
-     * @param {RenderGroup} renderGroup - @see {RenderGroup.addRenderBlock}
-     * @param {RenderBlock} renderBlock - @see {RenderGroup.addRenderBlock}
-     * @private
-     */
-    _addRenderGroupRenderBlock(renderGroup, renderBlock) {
-        renderGroup.addRenderBlock(renderBlock);
-        renderGroup.updateAll();
-    }
-    /**
-     * @see {RenderGroup.removeRenderBlock}
-     * @param {RenderGroup} renderGroup - @see {RenderGroup.removeRenderBlock}
-     * @param {RenderBlock} renderBlock - @see {RenderGroup.removeRenderBlock}
-     * @private
-     */
-    _removeRenderGroupRenderBlock(renderGroup, renderBlock) {
-        renderGroup.removeRenderBlock(renderBlock);
-        renderGroup.updateAll();
-    }
-
-    /**
-     * Changes the specified render node name to the specified name
-     * @param {RenderNode} renderNode - specifies the render node
-     * @param {string} name - specifies the name
-     * @private
-     */
-    _changeRenderNodeName(renderNode, name) {
-        renderNode.name = name;
-        renderNode.updateAll();
-    }
-    /**
-     * Changes the specified render node position to the specified position from the specified oldPosition
-     * @param {RenderNode} renderNode - specifies the render node
-     * @param {Array<number>} position - specifies the position
-     * @private
-     */
-    _changeRenderNodePosition(renderNode, position) {
-        if (renderNode instanceof RenderBlock) {
-            renderNode.position = position;
-            renderNode.updatePosition();
-            if (renderNode.parent !== null) {
-                renderNode.parent.updatePosition();
-                renderNode.parent.updateSize();
-            }
-        } else if (renderNode instanceof RenderGroup) {
-            const diff = [position[0] - renderNode.position[0], position[1] - renderNode.position[1]];
-            for (const renderBlock of renderNode.renderBlocks) {
-                renderBlock.position[0] += diff[0];
-                renderBlock.position[1] += diff[1];
-                renderBlock.updatePosition();
-            }
-            renderNode.position = position;
-            renderNode.updatePosition();
-        }
     }
 
 }

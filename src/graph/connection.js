@@ -1,7 +1,7 @@
 import EventClass from "event-class-es6";
 
-const _connectionInputPoint = Symbol("inputPoint");
-const _connectionOutputPoint = Symbol("outputPoint");
+const _inputPoint = Symbol("inputPoint");
+const _outputPoint = Symbol("outputPoint");
 
 export default class Connection extends EventClass {
 
@@ -13,25 +13,25 @@ export default class Connection extends EventClass {
     constructor(inputPoint, outputPoint) {
         super();
 
-        this[_connectionInputPoint] = inputPoint;
-        this[_connectionOutputPoint] = outputPoint;
+        this[_inputPoint] = inputPoint;
+        this[_outputPoint] = outputPoint;
     }
 
     /**
      * Returns this connection fancy name
      * @returns {string}
      */
-    get fancyName() { return this[_connectionOutputPoint].fancyName + " => " + this[_connectionInputPoint].fancyName; }
+    get fancyName() { return this[_outputPoint].fancyName + " => " + this[_inputPoint].fancyName; }
     /**
      * Returns this connection input point
      * @returns {Point}
      */
-    get connectionInputPoint() { return this[_connectionInputPoint]; }
+    get inputPoint() { return this[_inputPoint]; }
     /**
      * Returns this connection output point
      * @returns {Point}
      */
-    get connectionOutputPoint() { return this[_connectionOutputPoint]; }
+    get outputPoint() { return this[_outputPoint]; }
 
     /**
      * Returns the corresponding point connected to the specified point
@@ -39,10 +39,10 @@ export default class Connection extends EventClass {
      * @returns {Point}
      */
     other(point) {
-        if (point === this[_connectionInputPoint]) {
-            return this[_connectionOutputPoint];
-        } else if (point === this[_connectionOutputPoint]) {
-            return this[_connectionInputPoint];
+        if (point === this[_inputPoint]) {
+            return this[_outputPoint];
+        } else if (point === this[_outputPoint]) {
+            return this[_inputPoint];
         }
         throw new Error(this.fancyName + " has no point " + point.fancyName);
     }

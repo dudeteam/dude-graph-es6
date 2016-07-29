@@ -406,8 +406,8 @@ describe("dude-graph API", () => {
         expect(graph.connections[0]).to.be.equal(connection);
         expect(outputPoint1.connections[0]).to.be.equal(connection);
         expect(inputPoint1.connections[0]).to.be.equal(connection);
-        expect(connection.connectionOutputPoint).to.be.equal(outputPoint1);
-        expect(connection.connectionInputPoint).to.be.equal(inputPoint1);
+        expect(connection.outputPoint).to.be.equal(outputPoint1);
+        expect(connection.inputPoint).to.be.equal(inputPoint1);
         expect(graph.connectionForPoints(inputPoint1, outputPoint1)).to.be.equal(connection);
     });
     it("should disconnect points of same type", () => {
@@ -700,8 +700,8 @@ describe("dude-graph API", () => {
         expect(graph.connections[0]).to.be.equal(connection);
         expect(outputPoint1.connections[0]).to.be.equal(connection);
         expect(inputPoint2.connections[0]).to.be.equal(connection);
-        expect(connection.connectionOutputPoint).to.be.equal(outputPoint1);
-        expect(connection.connectionInputPoint).to.be.equal(inputPoint2);
+        expect(connection.outputPoint).to.be.equal(outputPoint1);
+        expect(connection.inputPoint).to.be.equal(inputPoint2);
         block1.removePoint(outputPoint1);
         expect(graph.connections).to.have.lengthOf(0);
         expect(inputPoint2.connections).to.have.lengthOf(0);

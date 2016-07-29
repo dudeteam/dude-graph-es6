@@ -4,8 +4,8 @@ import {renderBlockPreferredSize} from "../utils/measure";
 const _block = Symbol("block");
 const _parent = Symbol("parent");
 const _renderPoints = Symbol("renderPoints");
-const _svgBackground = Symbol("svgRect1");
-const _svgContent = Symbol("svgRect2");
+const _svgBackground = Symbol("svgBackground");
+const _svgContent = Symbol("svgContent");
 const _svgName = Symbol("svgName");
 const _svgPoints = Symbol("svgPoints");
 

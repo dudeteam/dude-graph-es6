@@ -371,7 +371,7 @@ export default class Graph extends EventClass {
      */
     connectionForPoints(inputPoint, outputPoint) {
         return this[_connections].find((connection) => {
-                return connection.connectionInputPoint === inputPoint && connection.connectionOutputPoint === outputPoint;
+                return connection.inputPoint === inputPoint && connection.outputPoint === outputPoint;
             }) || null;
     }
     /**
@@ -380,8 +380,8 @@ export default class Graph extends EventClass {
      * @private
      */
     _addConnection (connection) {
-        const inputPoint = connection.connectionInputPoint;
-        const outputPoint = connection.connectionOutputPoint;
+        const inputPoint = connection.inputPoint;
+        const outputPoint = connection.outputPoint;
         if (inputPoint.connections.includes(connection)) {
             throw new Error(inputPoint.fancyName + " cannot redefine " + connection.fancyName);
         }
@@ -398,16 +398,16 @@ export default class Graph extends EventClass {
      * @private
      */
     _removeConnection (connection) {
-        const inputPoint = connection.connectionInputPoint;
-        const outputPoint = connection.connectionOutputPoint;
+        const inputPoint = connection.inputPoint;
+        const outputPoint = connection.outputPoint;
         if (!inputPoint.connections.includes(connection)) {
             throw new Error(inputPoint.fancyName + " has no connection " + connection.fancyName);
         }
         if (!outputPoint.connections.includes(connection)) {
             throw new Error(outputPoint.fancyName + " has no connection " + connection.fancyName);
         }
-        connection.connectionInputPoint.connections.splice(connection.connectionInputPoint.connections.indexOf(connection), 1);
-        connection.connectionOutputPoint.connections.splice(connection.connectionOutputPoint.connections.indexOf(connection), 1);
+        connection.inputPoint.connections.splice(connection.inputPoint.connections.indexOf(connection), 1);
+        connection.outputPoint.connections.splice(connection.outputPoint.connections.indexOf(connection), 1);
         this[_connections].splice(this[_connections].indexOf(connection), 1);
     }
 

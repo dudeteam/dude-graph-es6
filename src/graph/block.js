@@ -72,6 +72,11 @@ export default class Block extends EventClass {
      */
     get outputs() { return this[_outputs]; }
     /**
+     * Returns this block input and output points
+     * @returns {Array<Point>}
+     */
+    get points() { return this[_inputs].concat(this[_outputs]); }
+    /**
      * Returns this block templates
      * @returns {Object<string, Block.templateTypedef>}
      */
