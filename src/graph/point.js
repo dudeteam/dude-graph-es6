@@ -26,7 +26,7 @@ export default class Point extends EventClass {
         this[_input] = input;
         this[_template] = defaultValue(pointData.template, null);
         this[_valueType] = defaultValue(pointData.valueType, null);
-        this[_pointValue] = defaultValue(pointData.pointValue, null);
+        this[_pointValue] = defaultValue(pointData.value, null);
         this[_policy] = PointPolicy.NONE;
         this[_block] = null;
         this[_connections] = [];

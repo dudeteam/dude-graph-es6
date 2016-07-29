@@ -110,7 +110,7 @@ describe("dude-graph API", () => {
         const inputPoint = new Point(true, {
             "name": "input",
             "valueType": "WhateverAgain", // valueType is enforced only when adding to a block
-            "pointValue": {"whatever": true}, // value is enforced to valueType only when adding to a block,
+            "value": {"whatever": true}, // value is enforced to valueType only when adding to a block,
             "policy": ["VALUE", "CONVERSION"]
         });
         expect(inputPoint.block).to.be.null;
@@ -180,7 +180,7 @@ describe("dude-graph API", () => {
             block.addPoint(new Point(true, {
                 "name": "input2",
                 "valueType": "string",
-                "pointValue": Object
+                "value": Object
             }));
         }).to.throw();
         expect(() => {
@@ -301,7 +301,7 @@ describe("dude-graph API", () => {
         const inputPoint2 = new Point(false, {
             "name": "in2",
             "valueType": "string",
-            "pointValue": 42 // 42 =~=> `String`
+            "value": 42 // 42 =~=> `String`
         });
         block.addPoint(inputPoint2);
         expect(inputPoint2.value).to.be.equal("42");
@@ -313,7 +313,7 @@ describe("dude-graph API", () => {
             block.addPoint(new Point(true, {
                 "name": "in2",
                 "valueType": "number",
-                "pointValue": "NaN" // "NaN" =/=> `Number`
+                "value": "NaN" // "NaN" =/=> `Number`
             }));
         }).to.throw();
     });
@@ -1027,10 +1027,10 @@ describe("dude-graph API", () => {
                 }
             }
         });
-        const point1 = new Point(true, {"name": "in1", "template": "TemplateName", "pointValue": 2});
-        const point2 = new Point(true, {"name": "in2", "template": "TemplateName", "pointValue": 0});
-        const point3 = new PPoint(true, {"name": "in3", "template": "TemplateName", "pointValue": 1});
-        const point4 = new Point(false, {"name": "out1", "template": "TemplateName", "pointValue": 4});
+        const point1 = new Point(true, {"name": "in1", "template": "TemplateName", "value": 2});
+        const point2 = new Point(true, {"name": "in2", "template": "TemplateName", "value": 0});
+        const point3 = new PPoint(true, {"name": "in3", "template": "TemplateName", "value": 1});
+        const point4 = new Point(false, {"name": "out1", "template": "TemplateName", "value": 4});
 
         graph.addBlock(block);
         block.addPoint(point1);
@@ -1280,7 +1280,7 @@ describe("dude-graph API", () => {
         sinon.assert.calledWith(blockPointAddedSpy, assignationBlock.inputByName("in"));
 
         assignationBlock.addPoint(new Point(true, {"name": "variable", "valueType": "number"}));
-        assignationBlock.addPoint(new Point(true, {"name": "value", "valueType": "number", "pointValue": 2}));
+        assignationBlock.addPoint(new Point(true, {"name": "value", "valueType": "number", "value": 2}));
         expect(() => {
             assignationBlock.validatePoints();
         }).to.throw();

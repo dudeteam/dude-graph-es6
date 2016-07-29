@@ -12,7 +12,7 @@
   "description": "Generic tool to visually represent a graph of connected blocks.",
   "scripts": {
     "test": "mocha --compilers js:babel-core/register --require ./test/helper.js test/tests-*.js",
-    "cover": "istanbul cover ./node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register --require ./test/helper.js test/tests-*.js",
+    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register --require ./test/helper.js test/tests-*.js",
     "prepublish": "npm run test && gulp build"
   },
   "directories": {

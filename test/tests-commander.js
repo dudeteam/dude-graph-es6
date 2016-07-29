@@ -17,7 +17,9 @@ describe("dude-commander API", () => {
         const svg = document.getElementById("svg");
         const graph = new Graph();
         const renderer = new Renderer(graph, svg);
-        new Commander(graph, renderer);
+        const commander = new Commander(graph, renderer);
+        expect(commander.graph).to.be.equal(graph);
+        expect(commander.renderer).to.be.equal(renderer);
     });
     it("should add an command and undo/redo it", () => {
         const svg = document.getElementById("svg");
@@ -128,6 +130,12 @@ describe("dude-commander API", () => {
         const redoSpy2 = sinon.spy();
         const undoSpy1 = sinon.spy();
         const undoSpy2 = sinon.spy();
+        expect(() => {
+            commander.commit(); // there is no transaction to commit
+        }).to.throw();
+        expect(() => {
+           commander.rollback(); // there is no transaction to rollback
+        }).to.throw();
         commander.transaction();
         commander.command(redoSpy1, undoSpy1);
         commander.command(redoSpy2, undoSpy2);
@@ -269,5 +277,22 @@ describe("dude-commander graph API", () => {
         expect(graph.connectionForPoints(input, output)).to.be.not.null;
         commander.redo();
         expect(graph.connectionForPoints(input, output)).to.be.null;
+    });
+    it("should assign a point value", () => {
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const commander = new Commander(graph, renderer);
+        const block = new Block();
+        const point = new Point(true, {"name": "in", "valueType": "number"});
+        commander.addBlock(block);
+        commander.addBlockPoint(block, point);
+        expect(point.value).to.be.equal(null);
+        commander.changePointValue(point, 42);
+        expect(point.value).to.be.equal(42);
+        commander.undo();
+        expect(point.value).to.be.equal(null);
+        commander.redo();
+        expect(point.value).to.be.equal(42);
     });
 });
