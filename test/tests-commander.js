@@ -2,9 +2,9 @@ import sinon from "sinon";
 import gjsdom from "jsdom-global";
 import {expect} from "chai";
 
-import {Renderer} from "../src/dude-graph";
 import {Commander} from "../src/dude-graph";
 import {Graph, Block, Point} from "../src/dude-graph";
+import {Renderer, RenderBlock, RenderPoint} from "../src/dude-graph";
 
 describe("dude-commander API", () => {
     beforeEach(function () {
@@ -294,5 +294,104 @@ describe("dude-commander graph API", () => {
         expect(point.value).to.be.equal(null);
         commander.redo();
         expect(point.value).to.be.equal(42);
+    });
+});
+describe("dude-commander renderer API", () => {
+    beforeEach(function () {
+        this.jsdom = gjsdom(`<html><body><svg id="svg"></svg></body></html>`);
+    });
+    afterEach(function () {
+        this.jsdom();
+    });
+    it("should add/remove a render block with no render points", () => {
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const commander = new Commander(graph, renderer);
+        const block = new Block();
+        const renderBlock = new RenderBlock(block);
+        commander.addBlock(block);
+        expect(renderer.renderBlocks).to.have.lengthOf(0);
+        commander.addRenderBlock(renderBlock);
+        expect(renderer.renderBlocks).to.have.lengthOf(1);
+        commander.undo();
+        expect(renderer.renderBlocks).to.have.lengthOf(0);
+        commander.redo();
+        expect(renderer.renderBlocks).to.have.lengthOf(1);
+        commander.removeRenderBlock(renderBlock);
+        expect(renderer.renderBlocks).to.have.lengthOf(0);
+        commander.undo();
+        expect(renderer.renderBlocks).to.have.lengthOf(1);
+        commander.redo();
+        expect(renderer.renderBlocks).to.have.lengthOf(0);
+    });
+    it("should add/remove render points", () => {
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const commander = new Commander(graph, renderer);
+        const block = new Block();
+        const point = new Point(true, {"name": "in", "valueType": "number"});
+        const renderBlock = new RenderBlock(block);
+        const renderPoint = new RenderPoint(point);
+        commander.addBlock(block);
+        commander.addBlockPoint(block, point);
+        commander.addRenderBlock(renderBlock);
+        expect(renderBlock.renderPoints).to.have.lengthOf(0);
+        commander.addRenderBlockRenderPoint(renderBlock, renderPoint);
+        expect(renderBlock.renderPoints).to.have.lengthOf(1);
+        commander.undo();
+        expect(renderBlock.renderPoints).to.have.lengthOf(0);
+        commander.redo();
+        expect(renderBlock.renderPoints).to.have.lengthOf(1);
+        commander.removeRenderBlockRenderPoint(renderBlock, renderPoint);
+        expect(renderBlock.renderPoints).to.have.lengthOf(0);
+        commander.undo();
+        expect(renderBlock.renderPoints).to.have.lengthOf(1);
+        commander.redo();
+        expect(renderBlock.renderPoints).to.have.lengthOf(0);
+    });
+    it("should connect/disconnect render points", () => {
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const commander = new Commander(graph, renderer);
+        const block1 = new Block();
+        const block2 = new Block();
+        const input = new Point(true, {"name": "in", "valueType": "number"});
+        const output = new Point(false, {"name": "out", "valueType": "number"});
+        const renderBlock1 = new RenderBlock(block1);
+        const renderBlock2 = new RenderBlock(block2);
+        const inputRenderPoint = new RenderPoint(input);
+        const outputRenderPoint = new RenderPoint(output);
+        commander.addBlock(block1);
+        commander.addBlock(block2);
+        commander.addBlockPoint(block1, input);
+        commander.addBlockPoint(block2, output);
+        commander.connectPoints(input, output);
+        commander.addRenderBlock(renderBlock1);
+        commander.addRenderBlock(renderBlock2);
+        commander.addRenderBlockRenderPoint(renderBlock1, inputRenderPoint);
+        commander.addRenderBlockRenderPoint(renderBlock2, outputRenderPoint);
+        expect(inputRenderPoint.renderConnections).to.have.lengthOf(0);
+        expect(outputRenderPoint.renderConnections).to.have.lengthOf(0);
+        commander.connectRenderPoints(inputRenderPoint, outputRenderPoint);
+        expect(inputRenderPoint.renderConnections).to.have.lengthOf(1);
+        expect(outputRenderPoint.renderConnections).to.have.lengthOf(1);
+        commander.undo();
+        expect(inputRenderPoint.renderConnections).to.have.lengthOf(0);
+        expect(outputRenderPoint.renderConnections).to.have.lengthOf(0);
+        commander.redo();
+        expect(inputRenderPoint.renderConnections).to.have.lengthOf(1);
+        expect(outputRenderPoint.renderConnections).to.have.lengthOf(1);
+        commander.disconnectRenderPoints(inputRenderPoint, outputRenderPoint);
+        expect(inputRenderPoint.renderConnections).to.have.lengthOf(0);
+        expect(outputRenderPoint.renderConnections).to.have.lengthOf(0);
+        commander.undo();
+        expect(inputRenderPoint.renderConnections).to.have.lengthOf(1);
+        expect(outputRenderPoint.renderConnections).to.have.lengthOf(1);
+        commander.redo();
+        expect(inputRenderPoint.renderConnections).to.have.lengthOf(0);
+        expect(outputRenderPoint.renderConnections).to.have.lengthOf(0);
     });
 });
