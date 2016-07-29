@@ -262,7 +262,7 @@ export default class Point extends EventClass {
  * @typedef {Object} Point.pointDataTypedef
  * @property {string} name
  * @property {string|null} [template=null]
- * @property {string} [valueType=null]
+ * @property {string|null} [valueType=null]
  * @property {*|null} [value=null]
  * @property {Array<string>} [policy=["VALUE", "SINGLE_CONNECTION", "CONVERSION"]]
  */

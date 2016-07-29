@@ -22,11 +22,11 @@ describe("dude-graph API", () => {
         const graph = new Graph();
         expect(graph.blocks).to.have.lengthOf(0);
         expect(graph.connections).to.have.lengthOf(0);
-        expect(graph.valueTypeByName("number")).to.be.not.null;
-        expect(graph.valueTypeByName("string")).to.be.not.null;
-        expect(graph.valueTypeByName("boolean")).to.be.not.null;
-        expect(graph.valueTypeByName("object")).to.be.not.null;
-        expect(graph.valueTypeByName("array")).to.be.not.null;
+        expect(graph.valueTypeByName("number")).to.be.not.equal(null);
+        expect(graph.valueTypeByName("string")).to.be.not.equal(null);
+        expect(graph.valueTypeByName("boolean")).to.be.not.equal(null);
+        expect(graph.valueTypeByName("object")).to.be.not.equal(null);
+        expect(graph.valueTypeByName("array")).to.be.not.equal(null);
     });
     it("should create blocks", () => {
         const block = new Block({
@@ -80,9 +80,9 @@ describe("dude-graph API", () => {
     it("should add blocks to a graph", () => {
         const graph = new Graph();
         const block = new Block();
-        expect(block.id).to.be.null;
+        expect(block.id).to.be.equal(null);
         graph.addBlock(block);
-        expect(block.id).to.be.not.null;
+        expect(block.id).to.be.not.equal(null);
         expect(graph.blocks[0]).to.be.equal(block);
         // Cannot add the same block again
         expect(() => {
@@ -98,31 +98,31 @@ describe("dude-graph API", () => {
             "name": "output",
             "valueType": "Whatever" // valueType is enforced only when adding to a block
         });
-        expect(outputPoint.block).to.be.null;
-        expect(outputPoint.output).to.be.true;
+        expect(outputPoint.block).to.be.equal(null);
+        expect(outputPoint.output).to.be.equal(true);
         expect(outputPoint.type).to.be.equal("Point");
         expect(outputPoint.name).to.be.equal("output");
         expect(outputPoint.valueType).to.be.equal("Whatever");
-        expect(outputPoint.hasPolicy(PointPolicy.VALUE)).to.be.true;
-        expect(outputPoint.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.true;
-        expect(outputPoint.hasPolicy(PointPolicy.MULTIPLE_CONNECTIONS)).to.be.false;
-        expect(outputPoint.hasPolicy(PointPolicy.CONVERSION)).to.be.true;
+        expect(outputPoint.hasPolicy(PointPolicy.VALUE)).to.be.equal(true);
+        expect(outputPoint.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.equal(true);
+        expect(outputPoint.hasPolicy(PointPolicy.MULTIPLE_CONNECTIONS)).to.be.equal(false);
+        expect(outputPoint.hasPolicy(PointPolicy.CONVERSION)).to.be.equal(true);
         const inputPoint = new Point(true, {
             "name": "input",
             "valueType": "WhateverAgain", // valueType is enforced only when adding to a block
             "value": {"whatever": true}, // value is enforced to valueType only when adding to a block,
             "policy": ["VALUE", "CONVERSION"]
         });
-        expect(inputPoint.block).to.be.null;
-        expect(inputPoint.output).to.be.false;
+        expect(inputPoint.block).to.be.equal(null);
+        expect(inputPoint.output).to.be.equal(false);
         expect(inputPoint.type).to.be.equal("Point");
         expect(inputPoint.name).to.be.equal("input");
         expect(inputPoint.valueType).to.be.equal("WhateverAgain");
         expect(inputPoint.value).to.be.eql({"whatever": true});
-        expect(inputPoint.hasPolicy(PointPolicy.VALUE)).to.be.true;
-        expect(inputPoint.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.false;
-        expect(inputPoint.hasPolicy(PointPolicy.MULTIPLE_CONNECTIONS)).to.be.false;
-        expect(inputPoint.hasPolicy(PointPolicy.CONVERSION)).to.be.true;
+        expect(inputPoint.hasPolicy(PointPolicy.VALUE)).to.be.equal(true);
+        expect(inputPoint.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.equal(false);
+        expect(inputPoint.hasPolicy(PointPolicy.MULTIPLE_CONNECTIONS)).to.be.equal(false);
+        expect(inputPoint.hasPolicy(PointPolicy.CONVERSION)).to.be.equal(true);
         // Ill-formed points
         expect(() => {
             //noinspection JSCheckFunctionSignatures
@@ -282,7 +282,7 @@ describe("dude-graph API", () => {
         inputPoint.value = NaN;
         expect(inputPoint.value).to.be.NaN;
         inputPoint.value = null;
-        expect(inputPoint.value).to.be.null;
+        expect(inputPoint.value).to.be.equal(null);
         inputPoint.value = Infinity;
         expect(inputPoint.value).to.be.equal(Infinity);
         inputPoint.value = -Infinity;
@@ -626,13 +626,13 @@ describe("dude-graph API", () => {
             "pointSingleConnection": false,
             "policy": ["VALUE", "MULTIPLE_CONNECTIONS", "CONVERSION"]
         });
-        expect(outputPoint1.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.false;
+        expect(outputPoint1.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.equal(false);
         const outputPoint2 = new Point(false, {
             "name": "out2",
             "valueType": "number",
             "policy": ["VALUE", "SINGLE_CONNECTION", "CONVERSION"]
         });
-        expect(outputPoint2.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.true;
+        expect(outputPoint2.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.equal(true);
         graph.addBlock(block1);
         block1.addPoint(outputPoint1);
         const block2 = new Block();
@@ -640,12 +640,12 @@ describe("dude-graph API", () => {
             "name": "in",
             "valueType": "number"
         });
-        expect(inputPoint1.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.true;
+        expect(inputPoint1.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.equal(true);
         const inputPoint2 = new Point(true, {
             "name": "in2",
             "valueType": "number"
         });
-        expect(inputPoint2.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.true;
+        expect(inputPoint2.hasPolicy(PointPolicy.SINGLE_CONNECTION)).to.be.equal(true);
         graph.addBlock(block2);
         block2.addPoint(inputPoint1);
         block2.addPoint(inputPoint2);
@@ -1062,10 +1062,10 @@ describe("dude-graph API", () => {
     });
     it("should test PointPolicy", () => {
         const policy = PointPolicy.deserialize(["VALUE", "MULTIPLE_CONNECTIONS"]);
-        expect(PointPolicy.has(policy, PointPolicy.VALUE)).to.be.true;
-        expect(PointPolicy.has(policy, PointPolicy.SINGLE_CONNECTION)).to.be.false;
-        expect(PointPolicy.has(policy, PointPolicy.MULTIPLE_CONNECTIONS)).to.be.true;
-        expect(PointPolicy.has(policy, PointPolicy.CONVERSION)).to.be.false;
+        expect(PointPolicy.has(policy, PointPolicy.VALUE)).to.be.equal(true);
+        expect(PointPolicy.has(policy, PointPolicy.SINGLE_CONNECTION)).to.be.equal(false);
+        expect(PointPolicy.has(policy, PointPolicy.MULTIPLE_CONNECTIONS)).to.be.equal(true);
+        expect(PointPolicy.has(policy, PointPolicy.CONVERSION)).to.be.equal(false);
         const policyLabels = PointPolicy.serialize(policy);
         expect(policyLabels).to.include("VALUE");
         expect(policyLabels).to.not.include("SINGLE_CONNECTION");
@@ -1210,7 +1210,7 @@ describe("dude-graph API", () => {
         expect(outputPoint2.connections).to.have.lengthOf(1);
         graph.removeBlock(block1);
         expect(graph.blocks).to.have.lengthOf(1);
-        expect(graph.blockById(block1.id)).to.be.null;
+        expect(graph.blockById(block1.id)).to.be.equal(null);
         expect(graph.blockById(block2.id)).to.be.equals(block2);
         expect(graph.connections).to.have.lengthOf(0);
         expect(block1.inputs).to.have.lengthOf(0);
@@ -1324,7 +1324,7 @@ describe("dude-graph API", () => {
             graph.removeVariable(variable); // Already removed
         }).to.throw();
         expect(graph.variables).to.have.lengthOf(0);
-        expect(graph.variableByName("Hello")).to.be.null;
+        expect(graph.variableByName("Hello")).to.be.equal(null);
         expect(() => {
             //noinspection JSCheckFunctionSignatures
             graph.addVariable(new Variable({
@@ -1404,7 +1404,7 @@ describe("dude-graph API", () => {
             }));
         }).to.throw();
         graph.removeBlock(block);
-        expect(variable.block).to.be.null;
+        expect(variable.block).to.be.equal(null);
         expect(graph.blocks).to.have.lengthOf(0);
         block = new VariableBlock({
             "name": "Hello"

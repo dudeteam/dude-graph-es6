@@ -264,19 +264,19 @@ describe("dude-commander graph API", () => {
         commander.addBlockPoint(block1, input);
         commander.addBlockPoint(block2, output);
         commander.commit();
-        expect(graph.connectionForPoints(input, output)).to.be.null;
+        expect(graph.connectionForPoints(input, output)).to.be.equal(null);
         commander.connectPoints(input, output);
-        expect(graph.connectionForPoints(input, output)).to.be.not.null;
+        expect(graph.connectionForPoints(input, output)).to.be.not.equal(null);
         commander.undo();
-        expect(graph.connectionForPoints(input, output)).to.be.null;
+        expect(graph.connectionForPoints(input, output)).to.be.equal(null);
         commander.redo();
-        expect(graph.connectionForPoints(input, output)).to.be.not.null;
+        expect(graph.connectionForPoints(input, output)).to.be.not.equal(null);
         commander.disconnectPoints(input, output);
-        expect(graph.connectionForPoints(input, output)).to.be.null;
+        expect(graph.connectionForPoints(input, output)).to.be.equal(null);
         commander.undo();
-        expect(graph.connectionForPoints(input, output)).to.be.not.null;
+        expect(graph.connectionForPoints(input, output)).to.be.not.equal(null);
         commander.redo();
-        expect(graph.connectionForPoints(input, output)).to.be.null;
+        expect(graph.connectionForPoints(input, output)).to.be.equal(null);
     });
     it("should assign a point value", () => {
         const svg = document.getElementById("svg");

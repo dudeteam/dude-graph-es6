@@ -13,7 +13,7 @@ describe("dude-renderer API", () => {
         this.jsdom();
     });
     it("should sets up a basic DOM with a svg tag", () => {
-        expect(document.getElementById("svg")).to.be.not.null;
+        expect(document.getElementById("svg")).to.be.not.equal(null);
     });
     it("should create a renderer and create svg layers", () => {
         const svg = document.getElementById("svg");
@@ -188,7 +188,7 @@ describe("dude-renderer API", () => {
         renderer.addRenderBlock(renderBlock);
         expect(renderBlock.renderPoints).to.have.lengthOf(0);
         expect(renderBlock.element.select(".dude-graph-block-points").element.childElementCount).to.be.equal(0);
-        expect(renderBlock.inputByName("point")).to.be.null;
+        expect(renderBlock.inputByName("point")).to.be.equal(null);
         renderBlock.addRenderPoint(renderPoint);
         expect(renderBlock.renderPoints).to.have.lengthOf(1);
         expect(renderBlock.element.select(".dude-graph-block-points").element.childElementCount).to.be.equal(1);
@@ -226,7 +226,7 @@ describe("dude-renderer API", () => {
         outputPoint.connect(inputPoint);
         expect(outputRenderPoint.renderConnections).to.have.lengthOf(0);
         expect(inputRenderPoint.renderConnections).to.have.lengthOf(0);
-        expect(renderer.renderConnectionsForRenderPoints(inputRenderPoint, outputRenderPoint)).to.be.null;
+        expect(renderer.renderConnectionsForRenderPoints(inputRenderPoint, outputRenderPoint)).to.be.equal(null);
         const renderConnection = renderer.connect(inputRenderPoint, outputRenderPoint);
         expect(outputRenderPoint.renderConnections).to.have.lengthOf(1);
         expect(inputRenderPoint.renderConnections).to.have.lengthOf(1);
@@ -265,11 +265,11 @@ describe("dude-renderer API", () => {
         expect(() => {
             renderer.disconnect(outputRenderPoint, inputRenderPoint); // 1st parameter must be the input point
         }).to.throw();
-        expect(renderer.renderConnectionsForRenderPoints(inputRenderPoint, outputRenderPoint)).to.be.not.null;
+        expect(renderer.renderConnectionsForRenderPoints(inputRenderPoint, outputRenderPoint)).to.be.not.equal(null);
         expect(outputRenderPoint.renderConnections).to.have.lengthOf(1);
         expect(inputRenderPoint.renderConnections).to.have.lengthOf(1);
         renderer.disconnect(inputRenderPoint, outputRenderPoint);
-        expect(renderer.renderConnectionsForRenderPoints(inputRenderPoint, outputRenderPoint)).to.be.null;
+        expect(renderer.renderConnectionsForRenderPoints(inputRenderPoint, outputRenderPoint)).to.be.equal(null);
         expect(outputRenderPoint.renderConnections).to.have.lengthOf(0);
         expect(inputRenderPoint.renderConnections).to.have.lengthOf(0);
     });
