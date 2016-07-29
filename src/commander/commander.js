@@ -182,6 +182,7 @@ export default class Commander {
                 `removeBlock ${block.name}`
             );
         }
+        this.commit();
     }
     /**
      * @see {Block.addPoint}
@@ -216,6 +217,7 @@ export default class Commander {
                 `removeBlockPoint ${block.name} ${point.name}`
             );
         }
+        this.commit();
     }
     /**
      * @see {Graph.connect}

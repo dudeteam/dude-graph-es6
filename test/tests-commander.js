@@ -1,15 +1,29 @@
-import {expect} from "chai";
 import sinon from "sinon";
+import gjsdom from "jsdom-global";
+import {expect} from "chai";
 
+import {Renderer} from "../src/dude-graph";
 import {Commander} from "../src/dude-graph";
 import {Graph, Block, Point} from "../src/dude-graph";
 
 describe("dude-commander API", () => {
+    beforeEach(function () {
+        this.jsdom = gjsdom(`<html><body><svg id="svg"></svg></body></html>`);
+    });
+    afterEach(function () {
+        this.jsdom();
+    });
     it("should create a commander", () => {
-        new Commander(null, null);
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        new Commander(graph, renderer);
     });
     it("should add an command and undo/redo it", () => {
-        const commander = new Commander(null, null);
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const commander = new Commander(graph, renderer);
         const redoSpy = sinon.spy();
         const undoSpy = sinon.spy();
         commander.command(redoSpy, undoSpy);
@@ -32,7 +46,10 @@ describe("dude-commander API", () => {
         sinon.assert.calledTwice(undoSpy);
     });
     it("should add 3 actions and undo/redo them", () => {
-        const commander = new Commander(null, null);
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const commander = new Commander(graph, renderer);
         const redoSpy1 = sinon.spy();
         const redoSpy2 = sinon.spy();
         const redoSpy3 = sinon.spy();
@@ -77,7 +94,10 @@ describe("dude-commander API", () => {
         sinon.assert.calledOnce(undoSpy1);
     });
     it("should clear redo stack if a new command is pushed after an undo", () => {
-        const commander = new Commander(null, null);
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const commander = new Commander(graph, renderer);
         const redoSpy = sinon.spy();
         const undoSpy = sinon.spy();
         commander.command(redoSpy, undoSpy); // [action1], []
@@ -100,7 +120,10 @@ describe("dude-commander API", () => {
         sinon.assert.calledTwice(undoSpy);
     });
     it("should create a transaction", () => {
-        const commander = new Commander(null, null);
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const commander = new Commander(graph, renderer);
         const redoSpy1 = sinon.spy();
         const redoSpy2 = sinon.spy();
         const undoSpy1 = sinon.spy();
@@ -136,7 +159,10 @@ describe("dude-commander API", () => {
         sinon.assert.calledOnce(undoSpy2);
     });
     it("should create nested transactions", () => {
-        const commander = new Commander(null, null);
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const commander = new Commander(graph, renderer);
         const redoSpy1 = sinon.spy();
         const redoSpy2 = sinon.spy();
         const redoSpy3 = sinon.spy();
@@ -167,10 +193,18 @@ describe("dude-commander API", () => {
     });
 });
 describe("dude-commander graph API", () => {
+    beforeEach(function () {
+        this.jsdom = gjsdom(`<html><body><svg id="svg"></svg></body></html>`);
+    });
+    afterEach(function () {
+        this.jsdom();
+    });
     it("should add/remove a block", () => {
+        const svg = document.getElementById("svg");
         const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const commander = new Commander(graph, renderer);
         const block = new Block();
-        const commander = new Commander(graph, null);
         expect(graph.blocks).have.lengthOf(0);
         commander.addBlock(block);
         expect(graph.blocks).have.lengthOf(1);
@@ -186,32 +220,36 @@ describe("dude-commander graph API", () => {
         expect(graph.blocks).have.lengthOf(0);
     });
     it("should add/remove a point into a block", () => {
+        const svg = document.getElementById("svg");
         const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const commander = new Commander(graph, renderer);
         const block = new Block();
-        const point = new Point(false, {"name": "out", "valueType": "number"});
-        const commander = new Commander(graph, null);
+        const point = new Point(true, {"name": "out", "valueType": "number"});
         commander.addBlock(block);
-        expect(block.outputs).have.lengthOf(0);
+        expect(block.points).have.lengthOf(0);
         commander.addBlockPoint(block, point);
-        expect(block.outputs).have.lengthOf(1);
+        expect(block.points).have.lengthOf(1);
         commander.undo();
-        expect(block.outputs).have.lengthOf(0);
+        expect(block.points).have.lengthOf(0);
         commander.redo();
-        expect(block.outputs).have.lengthOf(1);
+        expect(block.points).have.lengthOf(1);
         commander.removeBlockPoint(block, point);
-        expect(block.outputs).have.lengthOf(0);
+        expect(block.points).have.lengthOf(0);
         commander.undo();
-        expect(block.outputs).have.lengthOf(1);
+        expect(block.points).have.lengthOf(1);
         commander.redo();
-        expect(block.outputs).have.lengthOf(0);
+        expect(block.points).have.lengthOf(0);
     });
     it("should connect/disconnect points", () => {
+        const svg = document.getElementById("svg");
         const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const commander = new Commander(graph, renderer);
         const block1 = new Block();
         const block2 = new Block();
         const input = new Point(true, {"name": "in", "valueType": "number"});
         const output = new Point(false, {"name": "out", "valueType": "number"});
-        const commander = new Commander(graph, null);
         commander.transaction();
         commander.addBlock(block1);
         commander.addBlock(block2);
