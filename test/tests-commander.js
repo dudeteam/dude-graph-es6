@@ -207,7 +207,7 @@ describe("dude-commander graph API", () => {
     afterEach(function () {
         this.jsdom();
     });
-    it("should add/remove a block", () => {
+    it("should add/remove a block with no points", () => {
         const svg = document.getElementById("svg");
         const graph = new Graph();
         const renderer = new Renderer(graph, svg);
@@ -294,6 +294,48 @@ describe("dude-commander graph API", () => {
         expect(point.value).to.be.equal(null);
         commander.redo();
         expect(point.value).to.be.equal(42);
+    });
+    it("should remove a block with connected points", () => {
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const commander = new Commander(graph, renderer);
+        const block1 = new Block();
+        const block2 = new Block();
+        const input = new Point(true, {"name": "in", "valueType": "number"});
+        const output = new Point(false, {"name": "out", "valueType": "number"});
+        commander.addBlock(block1);
+        commander.addBlock(block2);
+        commander.addBlockPoint(block1, input);
+        commander.addBlockPoint(block2, output);
+        commander.connectPoints(input, output);
+        expect(graph.blocks).to.have.lengthOf(2);
+        expect(block1.points).to.have.lengthOf(1);
+        expect(block2.points).to.have.lengthOf(1);
+        expect(graph.connections).to.have.lengthOf(1);
+        expect(input.connections).to.have.lengthOf(1);
+        expect(output.connections).to.have.lengthOf(1);
+        commander.removeBlock(block1);
+        expect(graph.blocks).to.have.lengthOf(1);
+        expect(block1.points).to.have.lengthOf(0);
+        expect(block2.points).to.have.lengthOf(1);
+        expect(graph.connections).to.have.lengthOf(0);
+        expect(input.connections).to.have.lengthOf(0);
+        expect(output.connections).to.have.lengthOf(0);
+        commander.undo();
+        expect(graph.blocks).to.have.lengthOf(2);
+        expect(block1.points).to.have.lengthOf(1);
+        expect(block2.points).to.have.lengthOf(1);
+        expect(graph.connections).to.have.lengthOf(1);
+        expect(input.connections).to.have.lengthOf(1);
+        expect(output.connections).to.have.lengthOf(1);
+        commander.redo();
+        expect(graph.blocks).to.have.lengthOf(1);
+        expect(block1.points).to.have.lengthOf(0);
+        expect(block2.points).to.have.lengthOf(1);
+        expect(graph.connections).to.have.lengthOf(0);
+        expect(input.connections).to.have.lengthOf(0);
+        expect(output.connections).to.have.lengthOf(0);
     });
 });
 describe("dude-commander renderer API", () => {

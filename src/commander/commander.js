@@ -156,11 +156,18 @@ export default class Commander {
      * @param {Block} block - @see {Graph.addBlock}
      */
     addBlock(block) {
-        this.command(
-            () => { this[_graph].addBlock(block); },
-            () => { this[_graph].removeBlock(block); },
-            `addBlock ${block.name}`
-        );
+        this.transaction();
+        {
+            for (const point of block.points) {
+                this.removeBlockPoint(block, point);
+            }
+            this.command(
+                () => { this[_graph].addBlock(block); },
+                () => { this[_graph].removeBlock(block); },
+                `addBlock ${block.name}`
+            );
+        }
+        this.commit();
     }
     /**
      * @see {Graph.removeBlock}
