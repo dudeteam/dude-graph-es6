@@ -100,6 +100,14 @@ export default class RenderBlock extends RenderNode {
         this.renderer.emit("render-point-remove", this, renderPoint);
     }
     /**
+     * Returns the render point corresponding to the specified point
+     * @param {Point} point - specifies the point
+     * @returns {RenderPoint|null}
+     */
+    renderPointByPoint(point) {
+        return this.renderPoints.find(rp => rp.point === point) || null;
+    }
+    /**
      * Returns the corresponding input point for the specified render point name
      * @param {string} pointName - specifies the render point name
      * @returns {RenderPoint|null}
