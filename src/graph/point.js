@@ -149,7 +149,7 @@ export default class Point extends EventClass {
         }
         this[_pointValue] = assignValue;
         this[_block].pointValueChanged(this, assignValue, oldValue);
-        if (!ignoreEmit) {
+        if (!ignoreEmit && value !== oldValue) {
             this.emit("value-change", assignValue, oldValue);
             this[_block].graph.emit("point-value-change", this, assignValue, oldValue);
         }
@@ -171,7 +171,7 @@ export default class Point extends EventClass {
         }
         const oldValueType = this[_valueType];
         this[_valueType] = valueType;
-        if (!ignoreEmit) {
+        if (!ignoreEmit && valueType !== oldValueType) {
             this.emit("value-type-change", valueType, oldValueType);
             this[_block].graph.emit("point-value-type-change", this, valueType, oldValueType);
         }

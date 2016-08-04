@@ -1474,6 +1474,9 @@ describe("dude-graph Events", () => {
         point.valueType = "string";
         sinon.assert.calledWith(graphSpy, point, "string", "number");
         sinon.assert.calledWith(pointSpy, "string", "number");
+        point.valueType = "string";
+        sinon.assert.calledOnce(graphSpy);
+        sinon.assert.calledOnce(pointSpy);
     });
     it("should test point-value-change", () => {
         const graphSpy = sinon.spy();
@@ -1481,13 +1484,18 @@ describe("dude-graph Events", () => {
         const graph = new Graph();
         const block = new Block();
         const point = new Point(false, {"name": "out", "valueType": "number"});
-        graph.addBlock(block);
-        block.addPoint(point);
         graph.on("point-value-change", graphSpy);
         point.on("value-change", pointSpy);
+        graph.addBlock(block);
+        block.addPoint(point);
+        sinon.assert.notCalled(graphSpy);
+        sinon.assert.notCalled(pointSpy);
         point.value = 42;
         sinon.assert.calledWith(graphSpy, point, 42, null);
         sinon.assert.calledWith(pointSpy, 42, null);
+        point.value = 42;
+        sinon.assert.calledOnce(graphSpy);
+        sinon.assert.calledOnce(pointSpy);
     });
     it("should test point-connect", () => {
         const graphSpy = sinon.spy();
