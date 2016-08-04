@@ -148,10 +148,12 @@ export default class Point extends EventClass {
                 " is not compatible with type " + this[_valueType]);
         }
         this[_pointValue] = assignValue;
-        this[_block].pointValueChanged(this, assignValue, oldValue);
-        if (!ignoreEmit && value !== oldValue) {
-            this.emit("value-change", assignValue, oldValue);
-            this[_block].graph.emit("point-value-change", this, assignValue, oldValue);
+        if (value !== oldValue) {
+            this[_block].pointValueChanged(this, assignValue, oldValue);
+            if (!ignoreEmit) {
+                this.emit("value-change", assignValue, oldValue);
+                this[_block].graph.emit("point-value-change", this, assignValue, oldValue);
+            }
         }
     }
     /**
@@ -171,9 +173,12 @@ export default class Point extends EventClass {
         }
         const oldValueType = this[_valueType];
         this[_valueType] = valueType;
-        if (!ignoreEmit && valueType !== oldValueType) {
-            this.emit("value-type-change", valueType, oldValueType);
-            this[_block].graph.emit("point-value-type-change", this, valueType, oldValueType);
+        if (valueType !== oldValueType) {
+            this[_block].pointValueTypeChanged(this, valueType, oldValueType);
+            if (!ignoreEmit) {
+                this.emit("value-type-change", valueType, oldValueType);
+                this[_block].graph.emit("point-value-type-change", this, valueType, oldValueType);
+            }
         }
         this.changeValue(this[_pointValue], !!ignoreEmit);
     }

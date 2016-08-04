@@ -1230,6 +1230,7 @@ describe("dude-graph API", () => {
         const blockPointAddedSpy = sinon.spy();
         const blockPointConnectedSpy = sinon.spy();
         const blockPointValueChangedSpy = sinon.spy();
+        const blockPointValueTypeChangedSpy = sinon.spy();
         const blockPointDisconnectedSpy = sinon.spy();
         const blockPointRemovedSpy = sinon.spy();
 
@@ -1245,6 +1246,7 @@ describe("dude-graph API", () => {
             pointAdded() { blockPointAddedSpy.apply(this, arguments); }
             pointConnected() { blockPointConnectedSpy.apply(this, arguments); }
             pointValueChanged() { blockPointValueChangedSpy.apply(this, arguments); }
+            pointValueTypeChanged() { blockPointValueTypeChangedSpy.apply(this, arguments); }
             pointDisconnected() { blockPointDisconnectedSpy.apply(this, arguments); }
             pointRemoved() { blockPointRemovedSpy.apply(this, arguments); }
             validatePoints() {
@@ -1289,6 +1291,9 @@ describe("dude-graph API", () => {
 
         assignationBlock.inputByName("value").value = 4;
         sinon.assert.calledWith(blockPointValueChangedSpy, assignationBlock.inputByName("in"), 4, 2);
+
+        assignationBlock.inputByName("value").valueType = "string";
+        sinon.assert.calledWith(blockPointValueTypeChangedSpy, assignationBlock.inputByName("in"), "string", "number");
 
         assignationBlock.inputByName("in").connect(block.outputByName("out"));
         sinon.assert.calledWith(pointConnectedSpy, block.outputByName("out"));

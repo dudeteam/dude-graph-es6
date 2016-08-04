@@ -115,6 +115,13 @@ export default class Block extends EventClass {
      */
     pointValueChanged(point, value, oldValue) {}
     /**
+     * Called when the specified point of this block changed its value type
+     * @param {Point} point - specifies the point
+     * @param {string} valueType - specifies the value type
+     * @param {string} oldValueType - specifies the previous value type
+     */
+    pointValueTypeChanged(point, valueType, oldValueType) {}
+    /**
      * Called when the specified point of this block disconnected from another point
      * @param {Point} blockPoint - specifies the point of this block
      * @param {Point} otherPoint - specifies the other point
