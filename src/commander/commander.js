@@ -49,13 +49,13 @@ export default class Commander {
             "undo": undo,
             "label": label,
         };
+        redo(); // exception safety: does not add a command if the redo fails
         if (this[_transactions].length > 0) {
             this[_transactions][this[_transactions].length - 1].push(command);
         } else {
             this[_undo].push(command);
             this[_redo] = [];
         }
-        redo();
     }
     /**
      * Undoes the last command
@@ -66,8 +66,8 @@ export default class Commander {
         }
         const command = this[_undo].pop();
         if (typeof command !== "undefined") {
+            command.undo(); // exception safety: does not add a command if the undo fails
             this[_redo].push(command);
-            command.undo();
         }
     }
     /**
@@ -75,12 +75,12 @@ export default class Commander {
      */
     redo() {
         if (this[_transactions].length !== 0) {
-            throw new Error("Cannot undo while the transaction is not committed or rolled back");
+            throw new Error("Cannot redo while the transaction is not committed or rolled back");
         }
         const command = this[_redo].pop();
         if (typeof command !== "undefined") {
+            command.redo(); // exception safety: does not add a command if the redo fails
             this[_undo].push(command);
-            command.redo();
         }
     }
     /**
