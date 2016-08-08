@@ -44,41 +44,45 @@ export default class Commander {
      * @param {string} [label] - specifies the command name
      */
     command(redo, undo, label) {
-        const action = {
-            "undo": undo,
+        const command = {
             "redo": redo,
-            "label": label
+            "undo": undo,
+            "label": label,
         };
         if (this[_transactions].length > 0) {
-            const transaction = this[_transactions].slice(-1)[0];
-            transaction.push(action);
+            this[_transactions][this[_transactions].length - 1].push(command);
         } else {
-            this[_undo].splice(0, 0, action);
+            this[_undo].push(command);
             this[_redo] = [];
-            redo();
         }
+        redo();
     }
     /**
      * Undoes the last command
      */
     undo() {
-        const undo = this[_undo].shift();
-        if (typeof undo !== "undefined") {
-            this[_redo].splice(0, 0, undo);
-            undo.undo();
+        if (this[_transactions].length !== 0) {
+            throw new Error("Cannot undo while the transaction is not committed or rolled back");
+        }
+        const command = this[_undo].pop();
+        if (typeof command !== "undefined") {
+            this[_redo].push(command);
+            command.undo();
         }
     }
     /**
      * Redoes the last undone command
      */
     redo() {
-        const redo = this[_redo].shift();
-        if (typeof redo !== "undefined") {
-            this[_undo].splice(0, 0, redo);
-            redo.redo();
+        if (this[_transactions].length !== 0) {
+            throw new Error("Cannot undo while the transaction is not committed or rolled back");
+        }
+        const command = this[_redo].pop();
+        if (typeof command !== "undefined") {
+            this[_undo].push(command);
+            command.redo();
         }
     }
-
     /**
      * Starts a transaction of commands that will be grouped under a single command
      */
@@ -89,34 +93,40 @@ export default class Commander {
      * Commits the latest transaction into a single command
      */
     commit() {
-        if (this[_transactions].length === 0) {
-            throw new Error("There is no transaction to commit");
+        const transaction = this[_transactions].pop();
+        if (typeof transaction === "undefined") {
+            throw new Error("No transaction to commit");
         }
-        const commands = this[_transactions].pop();
-        if (commands.length > 0) {
-            this.command(
-                () => {
-                    for (const command of commands) {
-                        command.redo();
-                    }
-                },
-                () => {
-                    for (let i = commands.length - 1; i >= 0; i--) {
-                        commands[i].undo();
-                    }
-                },
-                commands
-            );
+        const command = {
+            "redo": () => {
+                for (const command of transaction) {
+                    command.redo();
+                }
+            },
+            "undo": () => {
+                for (let i = transaction.length - 1; i >= 0; i--) {
+                    transaction[i].undo();
+                }
+            },
+            "label": transaction.map(c => c.label),
+        };
+        if (this[_transactions].length > 0) {
+            this[_transactions][this[_transactions].length - 1].push(command);
+        } else {
+            this[_undo].push(command);
         }
     }
     /**
      * Cancels the latest transaction
      */
     rollback() {
-        if (this[_transactions].length === 0) {
-            throw new Error("There is no transaction to rollback");
+        const transaction = this[_transactions].pop();
+        if (typeof transaction === "undefined") {
+            throw new Error("No transaction to rollback");
         }
-        this[_transactions].pop();
+        for (const command of transaction) {
+            command.undo();
+        }
     }
 
     /**
@@ -124,7 +134,7 @@ export default class Commander {
      */
     describe() {
         const undoes = this[_undo].map((u) => u.label);
-        const redoes = this[_redo].map((u) => u.label);
+        const redoes = this[_redo].map((r) => r.label);
         /*eslint-disable no-console */
         console.group("Undo commands");
         for (const undo of undoes) {
@@ -132,7 +142,7 @@ export default class Commander {
                 console.log(undo);
             } else {
                 console.group("Transaction");
-                console.log(undo.slice(0).reverse().map(u => u.label).join("\n"));
+                console.log(undo.slice(0).reverse().join("\n"));
                 console.groupEnd();
             }
         }
@@ -143,7 +153,7 @@ export default class Commander {
                 console.log(redo);
             } else {
                 console.group("Transaction");
-                console.log(redo.map(u => u.label).join("\n"));
+                console.log(redo.join("\n"));
                 console.groupEnd();
             }
         }
