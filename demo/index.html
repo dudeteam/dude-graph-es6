@@ -147,12 +147,7 @@
     };
 
     document.getElementById("removeRenderBlock").onclick = function () {
-        commander.transaction();
-        {
-            commander.removeRenderBlock(renderBlock1);
-            commander.removeBlock(renderBlock1.block);
-        }
-        commander.commit();
+        commander.removeRenderBlock(renderBlock1);
     };
 
 </script>

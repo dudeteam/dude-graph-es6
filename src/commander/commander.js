@@ -300,15 +300,19 @@ export default class Commander {
     /**
      * @see {Renderer.removeRenderBlock}
      * @param {RenderBlock} renderBlock - @see {Renderer.removeRenderBlock}
+     * @param {boolean} [removeBlock=false] - whether to remove the render block's block if it was the last referenced
      */
-    removeRenderBlock(renderBlock) {
+    removeRenderBlock(renderBlock, removeBlock) {
         this.transaction();
         {
             if (renderBlock.parent !== null) {
                 this.removeRenderGroupRenderBlock(renderBlock.parent, renderBlock);
             }
-            for (const renderPoint of renderBlock.renderPoints) {
-                this.removeRenderBlockRenderPoint(renderBlock, renderPoint);
+            for (let i = renderBlock.renderPoints.length - 1; i >= 0; i--) {
+                this.removeRenderBlockRenderPoint(renderBlock, renderBlock.renderPoints[i]);
+            }
+            if (removeBlock === true && this[_renderer].renderBlocksByBlock(renderBlock.block).length === 0) {
+                this.removeBlock(renderBlock.block);
             }
             this.command(
                 () => { this[_renderer].removeRenderBlock(renderBlock); },
