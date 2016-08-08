@@ -62,10 +62,25 @@ export default class Renderer extends EventClass {
      */
     set config(config) { this[_config] = config; }
     /**
+     * Returns this renderer render blocks
+     * @returns {Array<RenderBlock>}
+     */
+    get renderBlocks() { return this[_renderBlocks]; }
+    /**
      * Returns this renderer render groups
      * @returns {Array<RenderGroup>}
      */
     get renderGroups() { return this[_renderGroups]; }
+    /**
+     * Returns this renderer render nodes
+     * @returns {Array<RenderNode>}
+     */
+    get renderNodes() { return this[_renderBlocks].concat(this[_renderGroups]); }
+    /**
+     * Returns this renderer render groups
+     * @returns {Array<RenderConnection>}
+     */
+    get renderConnections() { return this[_renderConnections]; }
     /**
      * Returns this renderer render points
      * @returns {Array<RenderPoint>}
@@ -75,16 +90,6 @@ export default class Renderer extends EventClass {
         this[_renderBlocks].forEach(rb => rb.renderPoints.forEach(rp => renderPoints.push(rp)));
         return renderPoints;
     }
-    /**
-     * Returns this renderer render blocks
-     * @returns {Array<RenderBlock>}
-     */
-    get renderBlocks() { return this[_renderBlocks]; }
-    /**
-     * Returns this renderer render groups
-     * @returns {Array<RenderConnection>}
-     */
-    get renderConnections() { return this[_renderConnections]; }
     /**
      * Returns this renderer render node finder
      * @returns {RenderNodeFinder}
