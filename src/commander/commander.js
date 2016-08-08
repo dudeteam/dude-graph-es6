@@ -186,8 +186,8 @@ export default class Commander {
     removeBlock(block) {
         this.transaction();
         {
-            for (const point of block.points) {
-                this.removeBlockPoint(block, point);
+            for (let i = block.points.length - 1; i >= 0; i--) {
+                this.removeBlockPoint(block, block.points[i]);
             }
             this.command(
                 () => {
@@ -221,7 +221,8 @@ export default class Commander {
     removeBlockPoint(block, point) {
         this.transaction();
         {
-            for (const connection of point.connections) {
+            for (let i = point.connections.length - 1; i >= 0; i--) {
+                const connection = point.connections[i];
                 this.disconnectPoints(connection.inputPoint, connection.outputPoint);
             }
             this.command(
@@ -391,7 +392,8 @@ export default class Commander {
     removeRenderBlockRenderPoint(renderBlock, renderPoint) {
         this.transaction();
         {
-            for (const renderConnection of renderPoint.renderConnections) {
+            for (let i = renderPoint.renderConnections.length - 1; i >= 0; i--) {
+                const renderConnection = renderPoint.renderConnections[i];
                 this.disconnectRenderPoints(renderConnection.inputRenderPoint, renderConnection.outputRenderPoint);
             }
             this.command(
@@ -431,8 +433,8 @@ export default class Commander {
     removeRenderGroup(renderGroup) {
         this.transaction();
         {
-            for (const renderBlock of renderGroup.renderBlocks) {
-                this.removeRenderGroupRenderBlock(renderGroup, renderBlock);
+            for (let i = renderGroup.renderBlocks.length - 1; i >= 0; i--) {
+                this.removeRenderGroupRenderBlock(renderGroup, renderGroup.renderBlocks[i]);
             }
             this.command(
                 () => { this[_renderer].removeRenderGroup(renderGroup); },
