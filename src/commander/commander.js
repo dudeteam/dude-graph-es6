@@ -124,8 +124,8 @@ export default class Commander {
         if (typeof transaction === "undefined") {
             throw new Error("No transaction to rollback");
         }
-        for (const command of transaction) {
-            command.undo();
+        for (let i = transaction.length - 1; i >= 0; i--) {
+            transaction[i].undo();
         }
     }
 
