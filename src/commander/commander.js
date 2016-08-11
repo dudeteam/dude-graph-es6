@@ -1,3 +1,4 @@
+/* */
 import RenderBlock from "../renderer/nodes/block";
 import RenderGroup from "../renderer/nodes/group";
 
@@ -482,8 +483,24 @@ export default class Commander {
             return;
         }
         this.command(
-            () => { renderNode.name = name; renderNode.updateAll(); },
-            () => { renderNode.name = oldName; renderNode.updateAll(); },
+            () => {
+                renderNode.name = name;
+                renderNode.updateAll();
+                if (renderNode instanceof RenderBlock) {
+                    for (const renderPoint of renderNode.renderPoints) {
+                        renderPoint.updateAll();
+                    }
+                }
+            },
+            () => {
+                renderNode.name = oldName;
+                renderNode.updateAll();
+                if (renderNode instanceof RenderBlock) {
+                    for (const renderPoint of renderNode.renderPoints) {
+                        renderPoint.updateAll();
+                    }
+                }
+            },
             `changeRenderNodeName ${renderNode.fancyName} => ${name}, was ${oldName}`
         );
     }
