@@ -145,7 +145,6 @@ export default class RenderBlock extends RenderNode {
      * @override
      */
     updateData() {
-        this.element.attr("class", "dude-graph-block dude-graph-block-name-" + this[_block].name);
         this[_svgName].text(this.name);
     }
     /**
