@@ -1,7 +1,5 @@
 import {default as Graph} from "./graph/graph";
-import {default as Variable} from "./graph/variable";
 import {default as Block} from "./graph/block";
-import {default as VariableBlock} from "./graph/blocks/variable";
 import {default as Point} from "./graph/point";
 import {default as PointPolicy} from "./graph/policy";
 import {default as Connection} from "./graph/connection";
@@ -16,9 +14,7 @@ import * as Measure from "./renderer/utils/measure";
 import {default as Commander} from "./commander/commander";
 
 export {Graph};
-export {Variable};
 export {Block};
-export {VariableBlock};
 export {Point};
 export {PointPolicy};
 export {Connection};

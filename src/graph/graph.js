@@ -9,7 +9,6 @@ import uuid from "./utils/uuid";
 const _errno = Symbol("errno");
 const _blocks = Symbol("blocks");
 const _blockIds = Symbol("blockIds");
-const _variables = Symbol("variables");
 const _valueTypes = Symbol("valueTypes");
 const _connections = Symbol("connections");
 
@@ -21,7 +20,6 @@ export default class Graph extends EventClass {
         this[_errno] = null;
         this[_blocks] = [];
         this[_blockIds] = {};
-        this[_variables] = [];
         this[_valueTypes] = valueTypes;
         this[_connections] = [];
     }
@@ -36,11 +34,6 @@ export default class Graph extends EventClass {
      * @returns {Array<Block>}
      */
     get blocks() { return this[_blocks]; }
-    /**
-     * Returns this graph variables
-     * @returns {Array<Variable>}
-     */
-    get variables() { return this[_variables]; }
     /**
      * Returns this graph connections
      * @returns {Array<Connection>}
@@ -120,45 +113,6 @@ export default class Graph extends EventClass {
      */
     blocksByType(type) {
         return this[_blocks].filter(block => block.type === type || block instanceof type);
-    }
-
-    /**
-     * Adds the specified variable to this graph
-     * @param {Variable} variable - specifies the variable
-     */
-    addVariable(variable) {
-        if (variable.graph !== null) {
-            throw new Error(variable.fancyName + " cannot redefine graph");
-        }
-        if (this.variableByName(variable.name) !== null) {
-            throw new Error(this.fancyName + " cannot redefine variable name " + variable.name);
-        }
-        variable.graph = this;
-        variable.added();
-        this[_variables].push(variable);
-        this.emit("variable-add", variable);
-    }
-    /**
-     * Removes the specified variable from this graph
-     * @param {Variable} variable - specifies the variable
-     */
-    removeVariable(variable) {
-        if (variable.graph !== this || this.variableByName(variable.name) === null) {
-            throw new Error(this.fancyName + " has no variable " + variable.fancyName);
-        }
-        if (variable.block !== null) {
-            this.removeBlock(variable.block);
-        }
-        this[_variables].splice(this[_variables].indexOf(variable), 1);
-        this.emit("variable-remove", variable);
-    }
-    /**
-     * Returns the variable corresponding to the specified variable name
-     * @param {string} name - specifies the variable name
-     * @returns {Variable|null}
-     */
-    variableByName(name) {
-        return this[_variables].find(variable => variable.name === name) || null;
     }
 
     /**
