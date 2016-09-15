@@ -293,6 +293,21 @@ describe("dude-renderer API", () => {
         renderBlock.removeRenderPoint(outputRenderPoint);
         renderer.removeRenderBlock(renderBlock);
     });
+    it("should handle render nodes with null text", () => {
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const block = new Block();
+        const renderer = new Renderer(graph, svg);
+        const renderBlock = new RenderBlock(block);
+        const renderGroup = new RenderGroup();
+        graph.addBlock(block);
+        renderer.addRenderBlock(renderBlock);
+        renderer.addRenderGroup(renderGroup);
+        renderBlock.name = null;
+        renderBlock.updateAll();
+        renderGroup.name = null;
+        renderGroup.updateAll();
+    });
 });
 describe("dude-renderer Events", () => {
     beforeEach(function () {

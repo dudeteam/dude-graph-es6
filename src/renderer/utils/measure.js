@@ -55,7 +55,7 @@ export const renderBlockPreferredSize = (renderBlock) => {
             }
         }
     }
-    const nameWidth = textBoundingBox(renderBlock.name)[0];
+    const nameWidth = textBoundingBox(renderBlock.name || "")[0];
     const inputWidth = widerInput === null ? 0 : widerInput.size[0];
     const outputWidth = widerOutput === null ? 0 : widerOutput.size[0];
     const tallerRenderPoints = renderBlock.renderInputPoints.length >= renderBlock.renderOutputPoints.length ? renderBlock.renderInputPoints : renderBlock.renderOutputPoints;
@@ -83,7 +83,7 @@ export const renderGroupPreferredSize = (renderGroup) => {
     }
     size[0] = Math.max(size[0], renderGroup.renderer.config.group.minSize[0] + renderGroup.renderer.config.group.padding * 2);
     size[1] = Math.max(size[1], renderGroup.renderer.config.group.minSize[1] + renderGroup.renderer.config.group.padding * 2 + renderGroup.renderer.config.group.header);
-    size[0] = Math.max(size[0], textBoundingBox(renderGroup.name)[0] + renderGroup.renderer.config.group.padding * 2);
+    size[0] = Math.max(size[0], textBoundingBox(renderGroup.name || "")[0] + renderGroup.renderer.config.group.padding * 2);
     return size;
 };
 

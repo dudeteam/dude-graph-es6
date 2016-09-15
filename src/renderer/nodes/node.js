@@ -60,12 +60,12 @@ export default class RenderNode extends EventClass {
     set id(id) { this[_id] = id; }
     /**
      * Returns this render node name
-     * @returns {string}
+     * @returns {string|null}
      */
     get name() { return this[_name]; }
     /**
      * Sets this node name to the specified name
-     * @param {string} name - specifies the name
+     * @param {string|null} name - specifies the name
      */
     set name(name) { this[_name] = name; }
     /**
