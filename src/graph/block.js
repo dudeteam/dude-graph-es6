@@ -334,7 +334,7 @@ export default class Block extends EventClass {
         if (blockPoint.block !== this) {
             throw new Error(this.fancyName + " has no point " + blockPoint.name);
         }
-        return otherPoint === otherPoint;
+        return blockPoint !== otherPoint;
     }
 
 }

@@ -1221,6 +1221,7 @@ describe("dude-graph API", () => {
         // TODO: test acceptConnect
         const pointAddedSpy = sinon.spy();
         const pointConnectedSpy = sinon.spy();
+        const pointAcceptConnectSpy = sinon.spy();
         const pointDisconnectedSpy = sinon.spy();
         const pointRemovedSpy = sinon.spy();
 
@@ -1233,10 +1234,12 @@ describe("dude-graph API", () => {
         const blockPointValueTypeChangedSpy = sinon.spy();
         const blockPointDisconnectedSpy = sinon.spy();
         const blockPointRemovedSpy = sinon.spy();
+        const blockAcceptConnectSpy = sinon.spy();
 
         class StreamPoint extends Point {
             added() { pointAddedSpy.apply(this, arguments); }
             connected() { pointConnectedSpy.apply(this, arguments); }
+            acceptConnect() { pointAcceptConnectSpy.apply(this, arguments); return true; }
             disconnected() { pointDisconnectedSpy.apply(this, arguments); }
             removed() { pointRemovedSpy.apply(this, arguments); }
         }
@@ -1249,6 +1252,7 @@ describe("dude-graph API", () => {
             pointValueTypeChanged() { blockPointValueTypeChangedSpy.apply(this, arguments); }
             pointDisconnected() { blockPointDisconnectedSpy.apply(this, arguments); }
             pointRemoved() { blockPointRemovedSpy.apply(this, arguments); }
+            acceptConnect() { blockAcceptConnectSpy.apply(this, arguments); return true; }
             validatePoints() {
                 if (!(this.inputByName("in") instanceof StreamPoint)) {
                     throw new Error("`" + this.fancyName + "` must have an input `in` of type `Stream`");
@@ -1298,6 +1302,10 @@ describe("dude-graph API", () => {
         assignationBlock.inputByName("in").connect(block.outputByName("out"));
         sinon.assert.calledWith(pointConnectedSpy, block.outputByName("out"));
         sinon.assert.calledWith(blockPointConnectedSpy, assignationBlock.inputByName("in"), block.outputByName("out"));
+        sinon.assert.calledWith(pointAcceptConnectSpy, block.outputByName("out"));
+        sinon.assert.calledTwice(pointAcceptConnectSpy);
+        sinon.assert.calledWith(blockAcceptConnectSpy, assignationBlock.inputByName("in"), block.outputByName("out"));
+        sinon.assert.calledOnce(blockAcceptConnectSpy);
 
         assignationBlock.inputByName("in").disconnect(block.outputByName("out"));
         sinon.assert.calledWith(pointDisconnectedSpy, block.outputByName("out"));

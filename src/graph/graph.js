@@ -184,23 +184,21 @@ export default class Graph extends EventClass {
             return false;
         }
 
-        if (inputPoint.valueType === outputPoint.valueType) {
-            return true;
-        }
+        if (inputPoint.valueType !== outputPoint.valueType) {
+            if (!inputPoint.hasPolicy(PointPolicy.CONVERSION)) {
+                this.errno(new Error(inputPoint.fancyName + " cannot be converted"));
+                return false;
+            }
+            if (!outputPoint.hasPolicy(PointPolicy.CONVERSION)) {
+                this.errno(new Error(outputPoint.fancyName + " cannot be converted"));
+                return false;
+            }
 
-        if (!inputPoint.hasPolicy(PointPolicy.CONVERSION)) {
-            this.errno(new Error(inputPoint.fancyName + " cannot be converted"));
-            return false;
-        }
-        if (!outputPoint.hasPolicy(PointPolicy.CONVERSION)) {
-            this.errno(new Error(outputPoint.fancyName + " cannot be converted"));
-            return false;
-        }
-
-        if (!inputValueType.typeCompatibles.includes(outputPoint.valueType)) {
-            this.errno(new Error(inputPoint.valueType + " is not compatible with " +
-                outputPoint.valueType));
-            return false;
+            if (!inputValueType.typeCompatibles.includes(outputPoint.valueType)) {
+                this.errno(new Error(inputPoint.valueType + " is not compatible with " +
+                    outputPoint.valueType));
+                return false;
+            }
         }
 
         let previousErrno = this[_errno];
