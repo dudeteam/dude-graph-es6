@@ -1,12 +1,14 @@
 const gulp = require("gulp");
-const babel = require("rollup-plugin-babel");
-const rollup = require("gulp-rollup");
 const eslint = require("gulp-eslint");
 const uglify = require("gulp-uglify");
 const notify = require("gulp-notify");
 const plumber = require("gulp-plumber");
 const sourcemaps = require("gulp-sourcemaps");
+const rollup = require("rollup-stream");
+const babel = require("rollup-plugin-babel");
 const nodeResolve = require("rollup-plugin-node-resolve");
+const source = require("vinyl-source-stream");
+const buffer = require("vinyl-buffer");
 
 const sources = ["src/*.js", "src/**/*.js"];
 
@@ -28,24 +30,24 @@ gulp.task("lint", () => {
 });
 
 gulp.task("build", ["lint"], () => {
-    return gulp.src("src/dude-graph.js")
-        .pipe(rollup({
-            "rollup": require("rollup"),
-            "format": "umd",
-            "sourceMap": true,
-            "moduleName": "dudeGraph",
-            "plugins": [
-                babel({
-                    "babelrc": false,
-                    "presets": ["es2015-rollup"]
-                }),
-                nodeResolve({"jsnext": true})
-            ],
-            "acorn":{
-                "allowReserved": true
-            }
-        }))
+    return rollup({
+        "entry": "./src/dude-graph.js",
+        "sourceMap": true,
+        "format": "umd",
+        "moduleName": "dudeGraph",
+        "plugins": [
+            babel({
+                "babelrc": false,
+                "presets": [["es2015", {"modules": false}]],
+                "plugins": ["external-helpers"]
+            }),
+            nodeResolve({"jsnext": true})
+        ]
+    })
+        .pipe(source("dude-graph.js", "src"))
+        .pipe(buffer())
+        .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(uglify())
         .pipe(sourcemaps.write("."))
-        .pipe(gulp.dest("dist/"));
+        .pipe(gulp.dest("dist"));
 });
