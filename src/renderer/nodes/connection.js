@@ -101,6 +101,20 @@ export default class RenderConnection {
     }
 
     /**
+     * Returns the corresponding render point connected to the specified render point
+     * @param {RenderPoint} renderPoint - specifies the render point
+     * @returns {RenderPoint}
+     */
+    other(renderPoint) {
+        if (renderPoint === this[_inputRenderPoint]) {
+            return this[_outputRenderPoint];
+        } else if (renderPoint === this[_outputRenderPoint]) {
+            return this[_inputRenderPoint];
+        }
+        throw new Error(this.fancyName + " has no render point " + renderPoint.fancyName);
+    }
+
+    /**
      * Returns the preferred path between the specified output position and the specified input position
      * @param {Renderer} renderer - specifies the renderer
      * @param {Array<number>} from - specifies the output position
