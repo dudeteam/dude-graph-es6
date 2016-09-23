@@ -199,6 +199,38 @@ describe("dude-commander API", () => {
         sinon.assert.calledOnce(undoSpy2);
         sinon.assert.calledOnce(undoSpy3);
     });
+    it("should ensure strong exception safety", () => {
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const commander = new Commander(graph, renderer);
+        const block = new class extends Block {
+            added() {
+                throw new Error("throw for no reason");
+            }
+        };
+        const redoSpy1 = sinon.spy();
+        const undoSpy1 = sinon.spy();
+        commander.command(redoSpy1, undoSpy1);
+        sinon.assert.calledOnce(redoSpy1);
+        expect(() => {
+            commander.addBlock(block);
+        }).to.throw();
+        commander.undo();
+        sinon.assert.calledOnce(undoSpy1);
+        commander.redo();
+        sinon.assert.calledTwice(redoSpy1);
+        commander.transaction();
+        expect(() => {
+            commander.removeBlock(null);
+        }).to.throw();
+        commander.commit();
+        commander.undo(); // undo the blank transaction
+        commander.undo();
+        sinon.assert.calledTwice(undoSpy1);
+        commander.redo();
+        sinon.assert.calledThrice(redoSpy1);
+    });
 });
 describe("dude-commander graph API", () => {
     beforeEach(function () {

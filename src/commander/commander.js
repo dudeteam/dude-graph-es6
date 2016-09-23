@@ -168,7 +168,7 @@ export default class Commander {
      */
     addBlock(block) {
         this.transaction();
-        {
+        try {
             for (const point of block.points) {
                 this.removeBlockPoint(block, point);
             }
@@ -177,8 +177,11 @@ export default class Commander {
                 () => { this[_graph].removeBlock(block); },
                 `addBlock ${block.name}`
             );
+            this.commit();
+        } catch (e) {
+            this.rollback();
+            throw e;
         }
-        this.commit();
     }
     /**
      * @see {Graph.removeBlock}
@@ -186,7 +189,7 @@ export default class Commander {
      */
     removeBlock(block) {
         this.transaction();
-        {
+        try {
             for (let i = block.points.length - 1; i >= 0; i--) {
                 this.removeBlockPoint(block, block.points[i]);
             }
@@ -199,8 +202,11 @@ export default class Commander {
                 },
                 `removeBlock ${block.name}`
             );
+            this.commit();
+        } catch (e) {
+            this.rollback();
+            throw e;
         }
-        this.commit();
     }
     /**
      * @see {Block.addPoint}
@@ -221,7 +227,7 @@ export default class Commander {
      */
     removeBlockPoint(block, point) {
         this.transaction();
-        {
+        try {
             for (let i = point.connections.length - 1; i >= 0; i--) {
                 const connection = point.connections[i];
                 this.disconnectPoints(connection.inputPoint, connection.outputPoint);
@@ -235,8 +241,11 @@ export default class Commander {
                 },
                 `removeBlockPoint ${block.name} ${point.name}`
             );
+            this.commit();
+        } catch (e) {
+            this.rollback();
+            throw e;
         }
-        this.commit();
     }
     /**
      * @see {Graph.connect}
@@ -306,7 +315,7 @@ export default class Commander {
      */
     removeRenderBlock(renderBlock, removeBlock) {
         this.transaction();
-        {
+        try {
             if (renderBlock.parent !== null) {
                 this.removeRenderGroupRenderBlock(renderBlock.parent, renderBlock);
             }
@@ -321,8 +330,11 @@ export default class Commander {
                 () => { this[_renderer].addRenderBlock(renderBlock); renderBlock.updateAll(); },
                 `removeRenderBlock ${renderBlock.fancyName}`
             );
+            this.commit();
+        } catch (e) {
+            this.rollback();
+            throw e;
         }
-        this.commit();
     }
     /**
      * @see {Renderer.connect}
@@ -392,7 +404,7 @@ export default class Commander {
      */
     removeRenderBlockRenderPoint(renderBlock, renderPoint) {
         this.transaction();
-        {
+        try {
             for (let i = renderPoint.renderConnections.length - 1; i >= 0; i--) {
                 const renderConnection = renderPoint.renderConnections[i];
                 this.disconnectRenderPoints(renderConnection.inputRenderPoint, renderConnection.outputRenderPoint);
@@ -412,8 +424,11 @@ export default class Commander {
                 },
                 `removeRenderBlockRenderPoint ${renderBlock.fancyName} => ${renderPoint.fancyName}`
             );
+            this.commit();
+        } catch (e) {
+            this.rollback();
+            throw e;
         }
-        this.commit();
     }
     /**
      * @see {Renderer.addRenderGroup}
@@ -433,7 +448,7 @@ export default class Commander {
      */
     removeRenderGroup(renderGroup) {
         this.transaction();
-        {
+        try {
             for (let i = renderGroup.renderBlocks.length - 1; i >= 0; i--) {
                 this.removeRenderGroupRenderBlock(renderGroup, renderGroup.renderBlocks[i]);
             }
@@ -442,8 +457,11 @@ export default class Commander {
                 () => { this[_renderer].addRenderGroup(renderGroup); renderGroup.updateAll(); },
                 `removeRenderGroup ${renderGroup.fancyName}`
             );
+            this.commit();
+        } catch (e) {
+            this.rollback();
+            throw e;
         }
-        this.commit();
     }
     /**
      * @see {RenderGroup.addRenderBlock}
