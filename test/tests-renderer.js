@@ -33,48 +33,50 @@ describe("dude-renderer API", () => {
         const renderer = new Renderer(graph, svg);
         const block = new Block();
         expect(() => {
-            renderer.addRenderBlock(new RenderBlock(block)); // block not bound to graph
+            renderer.addRenderBlock(new RenderBlock(block)); // cannot add render block when the block is not bound to graph
         }).to.throw();
         const renderBlock = new RenderBlock(block);
         graph.addBlock(block);
         renderer.addRenderBlock(renderBlock);
+        expect(renderBlock.id).to.be.equal(block.id);
+        expect(renderer.renderBlockById(block.id)).to.be.equal(renderBlock);
+        expect(renderer.renderBlockById(renderBlock.id)).to.be.equal(renderBlock);
+        expect(renderer.renderBlockByBlock(block)).to.be.equal(renderBlock);
+        expect(renderBlock.element.element.childElementCount).to.be.equal(4);
+        expect(svg.getElementsByClassName("dude-graph-blocks")[0].childElementCount).to.be.equal(1);
+        expect(svg.getElementsByClassName("dude-graph-blocks")[0].children[0]).to.be.equal(renderBlock.element.element);
         expect(() => {
             renderer.addRenderBlock(renderBlock); // cannot add the same renderBlock twice
         }).to.throw();
-        expect(renderer.renderBlocksByBlock(block)).to.have.lengthOf(1);
-        expect(svg.getElementsByClassName("dude-graph-blocks")[0].childElementCount).to.be.equal(1);
-        expect(svg.getElementsByClassName("dude-graph-blocks")[0].children[0]).to.be.equal(renderBlock.element.element);
-        expect(renderBlock.element.element.childElementCount).to.be.equal(4);
-        expect(renderer.renderBlockById(renderBlock.id)).to.be.equal(renderBlock);
+        expect(() => {
+            renderer.addRenderBlock(new RenderBlock(block)); // only one render block by block
+        }).to.throw();
     });
     it("should remove render blocks", () => {
         const svg = document.getElementById("svg");
         const graph = new Graph();
         const renderer = new Renderer(graph, svg);
-        const block = new Block();
-        const renderBlock = new RenderBlock(block);
-        const renderBlock2 = new RenderBlock(block);
-        graph.addBlock(block);
-        renderer.addRenderBlock(renderBlock);
+        const block1 = new Block();
+        const block2 = new Block();
+        const renderBlock1 = new RenderBlock(block1);
+        const renderBlock2 = new RenderBlock(block2);
+        graph.addBlock(block1);
+        graph.addBlock(block2);
+        renderer.addRenderBlock(renderBlock1);
         renderer.addRenderBlock(renderBlock2);
-        expect(renderer.renderBlocksByBlock(block)).to.have.lengthOf(2);
+        expect(renderer.renderBlocks).to.have.lengthOf(2);
         expect(svg.getElementsByClassName("dude-graph-blocks")[0].childElementCount).to.be.equal(2);
-        renderer.removeRenderBlock(renderBlock);
-        expect(renderer.renderBlocksByBlock(block)).to.have.lengthOf(1);
+        renderer.removeRenderBlock(renderBlock1);
+        expect(renderer.renderBlocks).to.have.lengthOf(1);
         expect(svg.getElementsByClassName("dude-graph-blocks")[0].childElementCount).to.be.equal(1);
         expect(svg.getElementsByClassName("dude-graph-blocks")[0].children[0]).to.be.equal(renderBlock2.element.element);
         expect(() => {
-            renderer.removeRenderBlock(renderBlock); // cannot remove the same renderBlock twice
+            renderer.removeRenderBlock(renderBlock1); // cannot remove the same renderBlock twice
         }).to.throw();
-        expect(() => {
-            renderBlock.id = renderBlock2.id;
-            renderer.addRenderBlock(renderBlock); // cannot have twice the same id
-        }).to.throw();
-        renderBlock.id = null;
-        renderer.addRenderBlock(renderBlock);
-        expect(renderer.renderBlocksByBlock(block)).to.have.lengthOf(2);
+        renderer.addRenderBlock(renderBlock1);
+        expect(renderer.renderBlocks).to.have.lengthOf(2);
         expect(svg.getElementsByClassName("dude-graph-blocks")[0].childElementCount).to.be.equal(2);
-        expect(renderBlock.id).to.be.not.equal(renderBlock2.id);
+        expect(renderBlock1.id).to.be.not.equal(renderBlock2.id);
         renderer.removeRenderBlock(renderBlock2);
         expect(svg.getElementsByClassName("dude-graph-blocks")[0].childElementCount).to.be.equal(1);
     });
@@ -195,6 +197,13 @@ describe("dude-renderer API", () => {
         expect(renderBlock.element.select(".dude-graph-block-points").element.childElementCount).to.be.equal(1);
         expect(renderBlock.inputByName("point")).to.be.equal(renderPoint);
         expect(renderBlock.renderPointByPoint(point)).to.be.equal(renderPoint);
+        expect(() => {
+            const otherBlock = new Block();
+            const otherPoint = new Point(true, {"name": "point", "valueType": "string"});
+            graph.addBlock(otherBlock);
+            block.addPoint(otherPoint);
+            renderBlock.addRenderPoint(new RenderPoint(otherPoint)); // otherPoint is not in the render block's block
+        }).to.throw();
     });
     it("should add render connections", () => {
         const svg = document.getElementById("svg");
@@ -235,6 +244,9 @@ describe("dude-renderer API", () => {
         expect(renderer.renderConnectionsForRenderPoints(inputRenderPoint, outputRenderPoint)).to.be.equal(renderConnection);
         expect(renderConnection.outputRenderPoint).to.be.equal(outputRenderPoint);
         expect(renderConnection.inputRenderPoint).to.be.equal(inputRenderPoint);
+        expect(renderConnection.other(inputRenderPoint)).to.be.equal(outputRenderPoint);
+        expect(renderConnection.other(outputRenderPoint)).to.be.equal(inputRenderPoint);
+
         expect(() => {
             renderer.connect(inputRenderPoint, outputRenderPoint); // already connected
         }).to.throw();
@@ -275,7 +287,7 @@ describe("dude-renderer API", () => {
         expect(outputRenderPoint.renderConnections).to.have.lengthOf(0);
         expect(inputRenderPoint.renderConnections).to.have.lengthOf(0);
     });
-    it("should be impossible to remove a non empty render block", () => {
+    it("should be impossible to remove a non empty render block (with render points)", () => {
         const svg = document.getElementById("svg");
         const graph = new Graph();
         const block = new Block();

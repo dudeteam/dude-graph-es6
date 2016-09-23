@@ -11,8 +11,6 @@ const _config = Symbol("config");
 const _renderGroups = Symbol("renderGroups");
 const _renderBlocks = Symbol("renderBlocks");
 const _renderConnections = Symbol("renderConnections");
-const _renderGroupIds = Symbol("renderGroupIds");
-const _renderBlockIds = Symbol("renderBlockIds");
 const _renderNodeFinder = Symbol("renderNodeFinder");
 const _svg = Symbol("svg");
 const _svgRoot = Symbol("svgRoot");
@@ -35,8 +33,6 @@ export default class Renderer extends EventClass {
         this[_renderGroups] = [];
         this[_renderBlocks] = [];
         this[_renderConnections] = [];
-        this[_renderGroupIds] = {};
-        this[_renderBlockIds] = {};
         this[_renderNodeFinder] = new RenderNodeFinder(this);
         this[_svg] = new htmlw(svg);
         this[_svgRoot] = this[_svg].append("svg:g");
@@ -126,17 +122,16 @@ export default class Renderer extends EventClass {
      * @param {RenderBlock} renderBlock - specifies the render block
      */
     addRenderBlock(renderBlock) {
+        if (renderBlock.block.graph === null) {
+            throw new Error(this.fancyName + " cannot add a renderBlock when the block is not bound to a graph");
+        }
         if (renderBlock.block.graph !== this[_graph]) {
             throw new Error(this.fancyName + " cannot add a renderBlock bound to another graph");
         }
-        if (renderBlock.id !== null && typeof this[_renderBlockIds][renderBlock.id] !== "undefined") {
+        if (this.renderBlockById(renderBlock.block.id) !== null) {
             throw new Error(this.fancyName + " cannot redefine id " + renderBlock.id);
         }
-        if (renderBlock.id === null) {
-            renderBlock.id = renderBlock.block.id + "#" + uuid();
-        }
         this[_renderBlocks].push(renderBlock);
-        this[_renderBlockIds][renderBlock.id] = renderBlock;
         renderBlock.renderer = this;
         renderBlock.element = this[_svgBlocks].append("svg:g");
         renderBlock.element.attr("id", "bid-" + renderBlock.id);
@@ -160,7 +155,6 @@ export default class Renderer extends EventClass {
         }
         renderBlock.removed();
         renderBlock.element.remove();
-        this[_renderBlockIds][renderBlock.id] = undefined;
         this[_renderBlocks].splice(this[_renderBlocks].indexOf(renderBlock), 1);
         this.emit("render-block-remove", renderBlock);
     }
@@ -173,12 +167,12 @@ export default class Renderer extends EventClass {
         return this[_renderBlocks].find(renderBlock => renderBlock.id === renderBlockId) || null;
     }
     /**
-     * Returns the corresponding render blocks for the specified block
+     * Returns the corresponding render block for the specified block
      * @param {Block} block - specifies the block
-     * @returns {Array<RenderBlock>}
+     * @returns {RenderBlock|null}
      */
-    renderBlocksByBlock(block) {
-        return this[_renderBlocks].filter(renderBlock => renderBlock.block === block);
+    renderBlockByBlock(block) {
+        return this[_renderBlocks].find(renderBlock => renderBlock.block === block) || null;
     }
 
     /**
@@ -186,15 +180,14 @@ export default class Renderer extends EventClass {
      * @param {RenderGroup} renderGroup - specifies the render group
      */
     addRenderGroup(renderGroup) {
-        if (renderGroup.id !== null && typeof this[_renderGroupIds][renderGroup.id] !== "undefined") {
+        if (renderGroup.id !== null && this.renderGroupById(renderGroup.id) !== null) {
             throw new Error(this.fancyName + " cannot redefine id " + renderGroup.id);
         }
         if (renderGroup.id === null) {
             renderGroup.id = uuid();
         }
-        renderGroup.renderer = this;
         this[_renderGroups].push(renderGroup);
-        this[_renderGroupIds][renderGroup.id] = renderGroup;
+        renderGroup.renderer = this;
         renderGroup.element = this[_svgGroups].append("svg:g");
         renderGroup.element.attr("id", "gid-" + renderGroup.id);
         renderGroup.element.attr("class", "dude-graph-group");
@@ -214,7 +207,6 @@ export default class Renderer extends EventClass {
         }
         renderGroup.removed();
         renderGroup.element.remove();
-        this[_renderGroupIds][renderGroup.id] = undefined;
         this[_renderGroups].splice(this[_renderGroups].indexOf(renderGroup), 1);
         this.emit("render-group-remove", renderGroup);
     }

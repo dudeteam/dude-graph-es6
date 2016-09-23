@@ -33,6 +33,12 @@ export default class RenderBlock extends RenderNode {
      * @returns {string}
      */
     get fancyName() { return this[_block].fancyName; }
+
+    /**
+     * Returns this render block id
+     * @returns {string}
+     */
+    get id() { return this[_block].id; }
     /**
      * Returns this render block block
      * @returns {Block}
@@ -71,6 +77,9 @@ export default class RenderBlock extends RenderNode {
     addRenderPoint(renderPoint) {
         if (this.renderer === null) {
             throw new Error(this.fancyName + " cannot add renderPoint when not bound to a renderer");
+        }
+        if (renderPoint.point.block !== this[_block]) {
+            throw new Error(this.fancyName + " has no point " + renderPoint.fancyName);
         }
         if (renderPoint.element !== null || this[_renderPoints].some(rp => rp.point === renderPoint.point)) {
             throw new Error(this.fancyName + " cannot redefine render point " + renderPoint.fancyName);

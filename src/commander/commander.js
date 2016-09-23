@@ -10,7 +10,7 @@ const _redo = Symbol("redo");
 
 /**
  * This class handles add the possible commands on the graph and renderer
- * It also takes care of undoing/redoing these commands
+ * All commands are undoable/redoable
  */
 export default class Commander {
 
@@ -311,7 +311,7 @@ export default class Commander {
     /**
      * @see {Renderer.removeRenderBlock}
      * @param {RenderBlock} renderBlock - @see {Renderer.removeRenderBlock}
-     * @param {boolean} [removeBlock=false] - whether to remove the render block's block if it was the last referenced
+     * @param {boolean} [removeBlock=false] - whether to remove the render block's block
      */
     removeRenderBlock(renderBlock, removeBlock) {
         this.transaction();
@@ -322,14 +322,14 @@ export default class Commander {
             for (let i = renderBlock.renderPoints.length - 1; i >= 0; i--) {
                 this.removeRenderBlockRenderPoint(renderBlock, renderBlock.renderPoints[i]);
             }
-            if (removeBlock === true && this[_renderer].renderBlocksByBlock(renderBlock.block).length === 0) {
-                this.removeBlock(renderBlock.block);
-            }
             this.command(
                 () => { this[_renderer].removeRenderBlock(renderBlock); },
                 () => { this[_renderer].addRenderBlock(renderBlock); renderBlock.updateAll(); },
                 `removeRenderBlock ${renderBlock.fancyName}`
             );
+            if (removeBlock === true) {
+                this.removeBlock(renderBlock.block);
+            }
             this.commit();
         } catch (e) {
             this.rollback();
