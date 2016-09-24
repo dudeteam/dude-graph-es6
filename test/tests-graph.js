@@ -1217,35 +1217,7 @@ describe("dude-graph API", () => {
         expect(block2.outputs).to.have.lengthOf(1);
         expect(outputPoint2.connections).to.have.lengthOf(0);
     });
-    it("should test point accept connect", () => {
-        class VariableBlock extends Block {}
-        class VariablePoint extends Point {
-            acceptConnect(point) {
-                return this.output || point instanceof VariablePoint;
-            }
-        }
-        const graph = new Graph();
-        const block1 = new VariableBlock();
-        const block2 = new VariableBlock();
-        const point1_1 = new VariablePoint(false, {"name": "out1", "valueType": "boolean"});
-        const point1_2 = new Point(false, {"name": "out2", "valueType": "boolean"});
-        const point2_1 = new Point(true, {"name": "input1", "valueType": "boolean"});
-        const point2_2 = new VariablePoint(true, {"name": "input2", "valueType": "boolean"});
-        graph.addBlock(block1);
-        graph.addBlock(block2);
-        block1.addPoint(point1_1);
-        block1.addPoint(point1_2);
-        block2.addPoint(point2_1);
-        block2.addPoint(point2_2);
-        point1_1.connect(point2_1);
-        expect(() => {
-            point2_2.connect(point1_2); // acceptConnect would return false because point2_2 is an input and point1_2 not a VariablePoint
-        }).to.throw();
-        expect(() => {
-            point1_2.connect(point2_2); // commutativity of acceptConnect
-        }).to.throw();
-    });
-    it("should create custom block and custom point and test their callbacks", () => {
+    it("should test custom block and custom point callbacks", () => {
         // TODO: test acceptConnect
         const pointAddedSpy = sinon.spy();
         const pointConnectedSpy = sinon.spy();
@@ -1347,6 +1319,67 @@ describe("dude-graph API", () => {
         graph.removeBlock(assignationBlock);
         sinon.assert.called(blockRemovedSpy);
         graph.removeBlock(block);
+    });
+    it("should test point accept connect", () => {
+        class VariableBlock extends Block {}
+        class VariablePoint extends Point {
+            acceptConnect(point) {
+                return this.output || point instanceof VariablePoint;
+            }
+        }
+        const graph = new Graph();
+        const block1 = new VariableBlock();
+        const block2 = new VariableBlock();
+        const point1_1 = new VariablePoint(false, {"name": "out1", "valueType": "boolean"});
+        const point1_2 = new Point(false, {"name": "out2", "valueType": "boolean"});
+        const point2_1 = new Point(true, {"name": "input1", "valueType": "boolean"});
+        const point2_2 = new VariablePoint(true, {"name": "input2", "valueType": "boolean"});
+        graph.addBlock(block1);
+        graph.addBlock(block2);
+        block1.addPoint(point1_1);
+        block1.addPoint(point1_2);
+        block2.addPoint(point2_1);
+        block2.addPoint(point2_2);
+        point1_1.connect(point2_1);
+        expect(() => {
+            point2_2.connect(point1_2); // acceptConnect would return false because point2_2 is an input and point1_2 not a VariablePoint
+        }).to.throw();
+        expect(() => {
+            point1_2.connect(point2_2); // commutativity of acceptConnect
+        }).to.throw();
+    });
+    it("should test point accept connect with templates", () => {
+        // Issue #21 - While connecting points, changeTemplate supersedes connectionPossible errors
+        class VariableBlock extends Block {}
+        class VariablePoint extends Point {
+            acceptConnect(point) {
+                return this.output || point instanceof VariablePoint;
+            }
+        }
+        const graph = new Graph();
+        const block1 = new VariableBlock({
+            "templates": {
+                "VariableTemplate": {"valueType": "string", "templates": ["string", "number", "boolean"]}
+            }
+        });
+        const block2 = new VariableBlock();
+        const point1_1 = new VariablePoint(false, {"name": "out1", "template": "VariableTemplate"});
+        const point1_2 = new Point(false, {"name": "out2", "template": "VariableTemplate"});
+        const point2_1 = new Point(true, {"name": "input1", "valueType": "boolean"});
+        const point2_2 = new VariablePoint(true, {"name": "input2", "valueType": "boolean"});
+        graph.addBlock(block1);
+        graph.addBlock(block2);
+        block1.addPoint(point1_1);
+        block1.addPoint(point1_2);
+        block2.addPoint(point2_1);
+        block2.addPoint(point2_2);
+        point1_1.connect(point2_1);
+        expect(() => {
+            point2_2.connect(point1_2); // acceptConnect would return false because point2_2 is an input and point1_2 not a VariablePoint
+        }).to.throw();
+        expect(() => {
+            point1_2.connect(point2_2); // commutativity of acceptConnect
+        }).to.throw();
     });
 });
 describe("dude-graph Events", () => {

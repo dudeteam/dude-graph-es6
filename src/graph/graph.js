@@ -135,12 +135,12 @@ export default class Graph extends EventClass {
         return valueTypeInfo.typeConvert(value);
     }
     /**
-     * Returns whether the connection can be converted from the specified output point to the specified input point
+     * Returns whether the connection is possible from the specified output point to the specified input point
      * @param {Point} outputPoint - specifies the output point
      * @param {Point} inputPoint - specifies the input point
      * @returns {boolean}
      */
-    convertConnection(outputPoint, inputPoint) {
+    connectionPossible(outputPoint, inputPoint) {
         const inputValueType = this.valueTypeByName(inputPoint.valueType);
 
         if (inputValueType === null) {
@@ -249,8 +249,7 @@ export default class Graph extends EventClass {
         if (!outputPoint.output) {
             throw new Error(outputPoint.fancyName + " is not an output");
         }
-        if (!this.convertConnection(outputPoint, inputPoint)) {
-            const connectionError = this[_errno] || {};
+        if (!this.connectionPossible(outputPoint, inputPoint)) {
             if (outputPoint.template !== null || inputPoint.template !== null) {
                 try {
                     outputPoint.block.changeTemplate(outputPoint.template, inputPoint.valueType);
@@ -259,9 +258,10 @@ export default class Graph extends EventClass {
                         inputPoint.block.changeTemplate(inputPoint.template, outputPoint.valueType);
                     }
                 }
-            } else {
+            }
+            if (!this.connectionPossible(outputPoint, inputPoint)) {
                 throw new Error(this.fancyName + " cannot connect " +
-                    outputPoint.fancyName + " to " + inputPoint.fancyName + ": " + connectionError.message);
+                    outputPoint.fancyName + " to " + inputPoint.fancyName + ": " + this[_errno].message);
             }
         }
         const connectionFound = this.connectionForPoints(inputPoint, outputPoint);
