@@ -28,7 +28,7 @@ export default class RenderNodeFinder {
     /**
      * Returns the nearest render groups of the specified area
      * @param {RenderBlock} renderBlock - the render group
-     * @returns {RenderGroup}
+     * @returns {RenderGroup|null}
      */
     nearestRenderGroup(renderBlock) {
         const groups = this[_renderer].renderGroups.filter((renderGroup) => {
@@ -38,9 +38,12 @@ export default class RenderNodeFinder {
             if (renderGroup.position[1] + renderGroup.size[1] < renderBlock.position[1]) { return false; }
             return true;
         }).sort((rg1, rg2) => {
-            const index1 = Array.prototype.indexOf.call(this[_renderer].svgGroups.element.childNodes, rg1.element.element);
-            const index2 = Array.prototype.indexOf.call(this[_renderer].svgGroups.element.childNodes, rg2.element.element);
-            return index1 < index2 ? 1 : -1;
+            if (renderBlock.parent === rg1) {
+                return -1; // Always favorite the parent group
+            } else if (renderBlock.parent === rg2) {
+                return 1; // Always favorite the parent group
+            }
+            return rg1.element.index < rg2.element.index ? 1 : -1;
         });
         return groups.length > 0 ? groups[0] : null;
     }
