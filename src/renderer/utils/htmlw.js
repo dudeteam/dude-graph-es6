@@ -32,6 +32,12 @@ export default class HTMLWrapper {
     get element() { return this[_element]; }
 
     /**
+     * Returns this element index in its parent
+     * @returns {number}
+     */
+    get index() { return Array.prototype.indexOf.call(this[_element].parentNode.childNodes, this[_element]); }
+
+    /**
      * Returns the child element corresponding to the specified selector
      * @param {string} selector - specifies the selector
      * @returns {HTMLWrapper|undefined}
