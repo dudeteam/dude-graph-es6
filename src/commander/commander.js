@@ -17,11 +17,11 @@ export default class Commander {
     /**
      * Creates a commander for the specified graph and the specified renderer
      * @param {Graph} graph - specifies the graph
-     * @param {Renderer} renderer - specifies the renderer
+     * @param {Renderer|null} renderer - specifies the renderer
      */
     constructor(graph, renderer) {
         this[_graph] = graph;
-        this[_renderer] = renderer;
+        this[_renderer] = renderer || null;
         this[_transactions] = [];
         this[_undo] = [];
         this[_redo] = [];
@@ -285,14 +285,8 @@ export default class Commander {
             return;
         }
         this.command(
-            () => {
-                point.value = value;
-                this[_renderer].renderPoints.filter(rp => rp.point === point).forEach(rp => rp.updateData());
-            },
-            () => {
-                point.value = oldValue;
-                this[_renderer].renderPoints.filter(rp => rp.point === point).forEach(rp => rp.updateData());
-            },
+            () => { point.value = value; },
+            () => { point.value = oldValue; },
             `changePointValue ${point.name} to ${value}, was ${oldValue}]`
         );
     }
