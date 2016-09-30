@@ -34,7 +34,7 @@ export default class Commander {
     get graph() { return this[_graph]; }
     /**
      * Returns this commander renderer
-     * @returns {Renderer}
+     * @returns {Renderer|null}
      */
     get renderer() { return this[_renderer]; }
 
