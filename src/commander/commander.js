@@ -285,8 +285,20 @@ export default class Commander {
             return;
         }
         this.command(
-            () => { point.value = value; },
-            () => { point.value = oldValue; },
+            () => {
+                point.value = value;
+                if (this[_renderer] !== null) {
+                    const renderBlock = this[_renderer].renderBlockByBlock(point.block);
+                    renderBlock && renderBlock.renderPointByPoint(point).updateData();
+                }
+            },
+            () => {
+                point.value = oldValue;
+                if (this[_renderer] !== null) {
+                    const renderBlock = this[_renderer].renderBlockByBlock(point.block);
+                    renderBlock && renderBlock.renderPointByPoint(point).updateData();
+                }
+            },
             `changePointValue ${point.name} to ${value}, was ${oldValue}]`
         );
     }
