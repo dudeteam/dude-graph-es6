@@ -399,7 +399,13 @@ export default class Commander {
                     otherRenderPoint.updatePosition();
                 }
             },
-            () => { renderBlock.removeRenderPoint(renderPoint); renderBlock.updateSize(); },
+            () => {
+                renderBlock.removeRenderPoint(renderPoint);
+                renderBlock.updateSize();
+                for (const otherRenderPoint of renderBlock.renderPoints) {
+                    otherRenderPoint.updatePosition();
+                }
+            },
             `addRenderBlockRenderPoint ${renderBlock.fancyName} => ${renderPoint.fancyName}`
         );
     }
@@ -419,6 +425,9 @@ export default class Commander {
                 () => {
                     renderBlock.removeRenderPoint(renderPoint);
                     renderBlock.updateSize();
+                    for (const otherRenderPoint of renderBlock.renderPoints) {
+                        otherRenderPoint.updatePosition();
+                    }
                 },
                 () => {
                     renderBlock.addRenderPoint(renderPoint);
