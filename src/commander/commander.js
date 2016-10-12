@@ -440,10 +440,9 @@ export default class Commander {
     /**
      * @see {Renderer.addRenderGroup}
      * @param {RenderGroup} renderGroup - @see {Renderer.addRenderGroup}
-     * @returns {RenderGroup}
      */
     addRenderGroup(renderGroup) {
-        return this.command(
+        this.command(
             () => { this[_renderer].addRenderGroup(renderGroup); renderGroup.updateAll(); },
             () => { this[_renderer].removeRenderGroup(renderGroup); },
             `addRenderGroup ${renderGroup.fancyName}`
