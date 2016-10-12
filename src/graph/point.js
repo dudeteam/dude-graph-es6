@@ -148,12 +148,10 @@ export default class Point extends EventClass {
                 " is not compatible with type " + this[_valueType]);
         }
         this[_pointValue] = assignValue;
-        if (value !== oldValue) {
-            this[_block].pointValueChanged(this, assignValue, oldValue);
-            if (!ignoreEmit) {
-                this.emit("value-change", assignValue, oldValue);
-                this[_block].graph.emit("point-value-change", this, assignValue, oldValue);
-            }
+        this[_block].pointValueChanged(this, assignValue, oldValue);
+        if (!ignoreEmit) {
+            this.emit("value-change", assignValue, oldValue);
+            this[_block].graph.emit("point-value-change", this, assignValue, oldValue);
         }
     }
     /**

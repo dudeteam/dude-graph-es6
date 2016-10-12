@@ -1460,8 +1460,8 @@ describe("dude-graph Events", () => {
         sinon.assert.calledWith(graphSpy, point, 42, null);
         sinon.assert.calledWith(pointSpy, 42, null);
         point.value = 42;
-        sinon.assert.calledOnce(graphSpy);
-        sinon.assert.calledOnce(pointSpy);
+        sinon.assert.calledTwice(graphSpy);
+        sinon.assert.calledTwice(pointSpy);
     });
     it("should test point-connect", () => {
         const graphSpy = sinon.spy();
