@@ -74,6 +74,13 @@ export default class Commander {
         }
     }
     /**
+     * Returns whether there is a command left to undo
+     * @returns {boolean}
+     */
+    canUndo() {
+        return this[_undo].length > 0;
+    }
+    /**
      * Redoes the last undone command
      */
     redo() {
@@ -87,6 +94,13 @@ export default class Commander {
         } else {
             throw new Error("There is nothing to redo");
         }
+    }
+    /**
+     * Returns whether there is a command left to redo
+     * @returns {boolean}
+     */
+    canRedo() {
+        return this[_redo].length > 0;
     }
     /**
      * Starts a transaction of commands that will be grouped under a single command
@@ -103,9 +117,6 @@ export default class Commander {
             throw new Error("No transaction to commit");
         }
         if (transaction.length === 0) {
-            /*eslint-disable no-console */
-            console.warn("An empty transaction was committed, discarding...");
-            /*eslint-enable no-console */
             return;
         }
         const command = {

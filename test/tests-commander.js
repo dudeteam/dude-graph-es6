@@ -233,6 +233,33 @@ describe("dude-commander API", () => {
         commander.redo();
         sinon.assert.calledThrice(redoSpy1);
     });
+    it("should test commander canUndo/canRedo", () => {
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const commander = new Commander(graph, renderer);
+        const times = 8;
+        let undoes = 0;
+        let redoes = 0;
+        for (let i = 0; i < times; i++) {
+            commander.command(
+                () => {
+
+                },
+                () => {
+
+                }
+            );
+        }
+        for (; commander.canUndo(); undoes++) {
+            commander.undo();
+        }
+        expect(undoes).to.be.equal(times);
+        for (; commander.canRedo(); redoes++) {
+            commander.redo();
+        }
+        expect(redoes).to.be.equal(times);
+    });
 });
 describe("dude-commander graph API", () => {
     beforeEach(function () {
