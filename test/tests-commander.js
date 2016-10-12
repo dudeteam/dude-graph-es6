@@ -37,15 +37,15 @@ describe("dude-commander API", () => {
         commander.redo();
         sinon.assert.calledTwice(redoSpy);
         sinon.assert.calledOnce(undoSpy);
-        commander.redo();
-        sinon.assert.calledTwice(redoSpy);
-        sinon.assert.calledOnce(undoSpy);
+        expect(() => {
+            commander.redo(); // There is nothing to redo
+        }).to.throw();
         commander.undo();
         sinon.assert.calledTwice(redoSpy);
         sinon.assert.calledTwice(undoSpy);
-        commander.undo();
-        sinon.assert.calledTwice(redoSpy);
-        sinon.assert.calledTwice(undoSpy);
+        expect(() => {
+            commander.undo(); // There is nothing to undo
+        }).to.throw();
     });
     it("should add 3 actions and undo/redo them", () => {
         const svg = document.getElementById("svg");
@@ -224,11 +224,12 @@ describe("dude-commander API", () => {
         expect(() => {
             commander.removeBlock(null);
         }).to.throw();
-        expect(() => {
-            commander.commit(); // Cannot commit an empty transaction
-        }).to.throw();
+        commander.commit(); // Empty transaction is discarded
         commander.undo();
         sinon.assert.calledTwice(undoSpy1);
+        expect(() => {
+            commander.undo(); // Empty transaction is discarded, cannot be undone
+        }).to.throw();
         commander.redo();
         sinon.assert.calledThrice(redoSpy1);
     });

@@ -69,6 +69,8 @@ export default class Commander {
         if (typeof command !== "undefined") {
             command.undo(); // exception safety: does not add a command if the undo fails
             this[_redo].push(command);
+        } else {
+            throw new Error("There is nothing to undo");
         }
     }
     /**
@@ -82,6 +84,8 @@ export default class Commander {
         if (typeof command !== "undefined") {
             command.redo(); // exception safety: does not add a command if the redo fails
             this[_undo].push(command);
+        } else {
+            throw new Error("There is nothing to redo");
         }
     }
     /**
@@ -99,7 +103,10 @@ export default class Commander {
             throw new Error("No transaction to commit");
         }
         if (transaction.length === 0) {
-            throw new Error("Cannot commit an empty transaction");
+            /*eslint-disable no-console */
+            console.warn("An empty transaction was committed, discarding...");
+            /*eslint-enable no-console */
+            return;
         }
         const command = {
             "redo": () => {
