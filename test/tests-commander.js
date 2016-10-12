@@ -224,8 +224,9 @@ describe("dude-commander API", () => {
         expect(() => {
             commander.removeBlock(null);
         }).to.throw();
-        commander.commit();
-        commander.undo(); // undo the blank transaction
+        expect(() => {
+            commander.commit(); // Cannot commit an empty transaction
+        }).to.throw();
         commander.undo();
         sinon.assert.calledTwice(undoSpy1);
         commander.redo();

@@ -98,6 +98,9 @@ export default class Commander {
         if (typeof transaction === "undefined") {
             throw new Error("No transaction to commit");
         }
+        if (transaction.length === 0) {
+            throw new Error("Cannot commit an empty transaction");
+        }
         const command = {
             "redo": () => {
                 for (const command of transaction) {
@@ -291,7 +294,7 @@ export default class Commander {
                     renderBlock && renderBlock.renderPointByPoint(point).updateData();
                 }
             },
-            `changePointValue ${point.name} to ${value}, was ${oldValue}]`
+            `changePointValue ${point.name} to ${value}, was ${oldValue}`
         );
     }
 
