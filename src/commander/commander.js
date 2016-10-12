@@ -134,30 +134,25 @@ export default class Commander {
      * Describes this commander undo and redo stacks
      */
     describe() {
-        const undoes = this[_undo].map((u) => u.label);
-        const redoes = this[_redo].map((r) => r.label);
         /*eslint-disable no-console */
-        console.group("Undo commands");
-        for (const undo of undoes) {
-            if (typeof undo === "string") {
-                console.log(undo);
+        const logger = (label) => {
+            if (typeof label === "string") {
+                console.log(label);
             } else {
                 console.group("Transaction");
-                console.log(undo.slice(0).reverse().join("\n"));
+                label.forEach(l => logger(l));
                 console.groupEnd();
             }
-        }
+        };
+        console.group("Undo commands");
+        this[_undo].forEach((u) => {
+            logger(u.label);
+        });
         console.groupEnd();
         console.group("Redo commands");
-        for (const redo of redoes) {
-            if (typeof redo === "string") {
-                console.log(redo);
-            } else {
-                console.group("Transaction");
-                console.log(redo.join("\n"));
-                console.groupEnd();
-            }
-        }
+        this[_redo].forEach((r) => {
+            logger(r.label);
+        });
         console.groupEnd();
         /*eslint-enable no-console */
     }
