@@ -1,4 +1,3 @@
-/*eslint no-unused-vars: "off"*/
 import EventClass from "event-class-es6";
 
 import defaultValue from "./utils/default";
@@ -14,14 +13,11 @@ export default class Block extends EventClass {
 
     /**
      * Creates a block from the specified block data
-     * @param {Block.blockDataTypedef} [blockData={}] - specifies the block data
+     * @param {Block.blockDataTypedef} blockData - specifies the block data
      */
-    constructor(blockData) {
+    constructor(blockData = {}) {
         super();
 
-        if (typeof blockData === "undefined") {
-            blockData = {};
-        }
         this[_id] = defaultValue(blockData.id, null);
         this[_name] = defaultValue(blockData.name, this.type);
         this[_inputs] = [];
@@ -92,6 +88,7 @@ export default class Block extends EventClass {
      */
     set graph(graph) { this[_graph] = graph; }
 
+    /*eslint-disable no-unused-vars */
     /**
      * Called when this block is added to a graph
      */
@@ -136,6 +133,7 @@ export default class Block extends EventClass {
      * Called when this block is removed from the graph
      */
     removed() {}
+    /*eslint-enable no-unused-vars */
 
     /**
      * Called when the static points are created
@@ -146,9 +144,9 @@ export default class Block extends EventClass {
      * Changes this template value type corresponding to the specified template name to the specified value type
      * @param {string} templateName - specifies the template name
      * @param {string} valueType - specifies the value type
-     * @param {boolean} [ignoreEmit=false] - whether to emit events
+     * @param {boolean} ignoreEmit - whether to emit events
      */
-    changeTemplate(templateName, valueType, ignoreEmit) {
+    changeTemplate(templateName, valueType, ignoreEmit = false) {
         if (this[_graph] === null) {
             throw new Error(this.fancyName + " cannot manipulate templates when not bound to a graph");
         }
@@ -230,9 +228,9 @@ export default class Block extends EventClass {
     /**
      * Adds the specified point to this block
      * @param {Point} point - specifies the point
-     * @param {number} [position] - the position of the point in the block
+     * @param {number} position - the position of the point in the block
      */
-    addPoint(point, position) {
+    addPoint(point, position = point.input ? this[_inputs].length : this[_outputs].length) {
         if (this[_graph] === null) {
             throw new Error(this.fancyName + " cannot add point when not bound to a graph");
         }
@@ -261,9 +259,6 @@ export default class Block extends EventClass {
         }
         this.pointAdded(point);
         point.added();
-        if (typeof position === "undefined") {
-            position = point.input ? this[_inputs].length : this[_outputs].length;
-        }
         if (point.input) {
             this[_inputs].splice(position, 0, point);
         } else {

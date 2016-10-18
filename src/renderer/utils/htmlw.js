@@ -123,10 +123,10 @@ export default class HTMLWrapper {
     /**
      * Adds a class to this element of the specified class name
      * @param {string} className - specifies the class name
-     * @param {boolean} [classed=true] - specifies whether to add the specified class name
+     * @param {boolean} classed - specifies whether to add or remove the specified class name
      * @returns {HTMLWrapper} - returns this for chained method calls
      */
-    classed(className, classed) {
+    classed(className, classed = true) {
         if (typeof classed === "undefined" || classed === true) {
             this[_element].classList.add(className);
         } else if (classed === false) {

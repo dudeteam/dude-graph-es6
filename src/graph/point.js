@@ -1,4 +1,3 @@
-/*eslint no-unused-vars: "off"*/
 import EventClass from "event-class-es6";
 
 import PointPolicy from "./policy";
@@ -129,9 +128,9 @@ export default class Point extends EventClass {
     /**
      * Changes this point value to the specified value
      * @param {*|null} value - specifies the value
-     * @param {boolean} [ignoreEmit=false] - whether to emit events
+     * @param {boolean} ignoreEmit - whether to emit events
      */
-    changeValue(value, ignoreEmit) {
+    changeValue(value, ignoreEmit = false) {
         if (this[_block] === null) {
             throw new Error(this.fancyName + " cannot change value when not bound to a block");
         }
@@ -157,9 +156,9 @@ export default class Point extends EventClass {
     /**
      * Changes this point value type to the specified value type
      * @param {*|null} valueType - specifies the value type
-     * @param {boolean} [ignoreEmit=false] - whether to emit events
+     * @param {boolean} ignoreEmit - whether to emit events
      */
-    changeValueType(valueType, ignoreEmit) {
+    changeValueType(valueType, ignoreEmit = false) {
         if (this[_block] === null) {
             throw new Error(this.fancyName + " cannot change value type when not bound to a block");
         }
@@ -234,6 +233,7 @@ export default class Point extends EventClass {
         }
     }
 
+    /*eslint-disable no-unused-vars */
     /**
      * Called when this point is added to a block
      */
@@ -258,6 +258,7 @@ export default class Point extends EventClass {
      * Called when this point is removed from the block
      */
     removed() {}
+    /*eslint-enable no-unused-vars */
 
 }
 

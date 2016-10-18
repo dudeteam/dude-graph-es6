@@ -10,10 +10,10 @@ export const textBoundingBox = (text) => {
 /**
  * Returns the area covered by the specified render nodes
  * @param {Array<RenderNode>} renderNodes - specifies the render nodes
- * @param {boolean} [nullable=false] - specifies whether to return null or [[0, 0], [0, 0]]
+ * @param {boolean} nullable - specifies whether to return null or [[0, 0], [0, 0]]
  * @returns {Array<Array<number>>}
  */
-export const renderNodesBoundingBox = (renderNodes, nullable) => {
+export const renderNodesBoundingBox = (renderNodes, nullable = false) => {
     const topLeft = [Infinity, Infinity];
     const bottomRight = [-Infinity, -Infinity];
     for (const renderNode of renderNodes) {

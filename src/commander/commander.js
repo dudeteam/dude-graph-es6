@@ -42,9 +42,9 @@ export default class Commander {
      * Adds a command in the commander with the specified redo and undo functions
      * @param {function} redo - specifies the redo function
      * @param {function} undo - specifies the undo function
-     * @param {string} [label] - specifies the command name
+     * @param {string} label - specifies the command name
      */
-    command(redo, undo, label) {
+    command(redo, undo, label = "command without label") {
         const command = {
             "redo": redo,
             "undo": undo,
@@ -291,12 +291,9 @@ export default class Commander {
      * @see {Point.changeValue}
      * @param {Point} point - @see {Point.changeValue}
      * @param {*|null} value - @see {Point.changeValue}
-     * @param {*|null} [oldValue=point.value] - @see {Point.changeValue}
+     * @param {*|null} oldValue - @see {Point.changeValue}
      */
-    changePointValue(point, value, oldValue) {
-        if (typeof oldValue === "undefined") {
-            oldValue = point.value;
-        }
+    changePointValue(point, value, oldValue = point.value) {
         this.command(
             () => {
                 point.value = value;
@@ -330,9 +327,9 @@ export default class Commander {
     /**
      * @see {Renderer.removeRenderBlock}
      * @param {RenderBlock} renderBlock - @see {Renderer.removeRenderBlock}
-     * @param {boolean} [removeBlock=false] - whether to remove the render block's block
+     * @param {boolean} removeBlock - whether to remove the render block's block
      */
-    removeRenderBlock(renderBlock, removeBlock) {
+    removeRenderBlock(renderBlock, removeBlock = false) {
         this.transaction();
         try {
             if (renderBlock.parent !== null) {
@@ -346,7 +343,7 @@ export default class Commander {
                 () => { this[_renderer].addRenderBlock(renderBlock); renderBlock.updateAll(); },
                 `removeRenderBlock ${renderBlock.fancyName}`
             );
-            if (removeBlock === true) {
+            if (removeBlock) {
                 this.removeBlock(renderBlock.block);
             }
             this.commit();
@@ -534,9 +531,9 @@ export default class Commander {
      * Changes the specified render node name to the specified name
      * @param {RenderNode} renderNode - specifies the render node
      * @param {string} name - specifies the name
-     * @param {string} [oldName=renderNode.name] - specifies the old name
+     * @param {string} oldName - specifies the old name
      */
-    changeRenderNodeName(renderNode, name, oldName) {
+    changeRenderNodeName(renderNode, name, oldName = renderNode.name) {
         if (typeof oldName === "undefined") {
             oldName = renderNode.name;
         }
@@ -569,12 +566,9 @@ export default class Commander {
      * Changes the specified render node position to the specified position from the specified oldPosition
      * @param {RenderNode} renderNode - specifies the render node
      * @param {Array<number>} position - specifies the position
-     * @param {Array<number>} [oldPosition=renderNode.position] - specifies the old position
+     * @param {Array<number>} oldPosition - specifies the old position
      */
-    changeRenderNodePosition(renderNode, position, oldPosition) {
-        if (typeof oldPosition === "undefined") {
-            oldPosition = renderNode.position.slice(0);
-        }
+    changeRenderNodePosition(renderNode, position, oldPosition = renderNode.position) {
         if (position[0] === oldPosition[0] && position[1] === oldPosition[1]) {
             return;
         }
