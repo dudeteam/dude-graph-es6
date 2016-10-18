@@ -411,12 +411,20 @@ export default class Commander {
                 for (const otherRenderPoint of renderBlock.renderPoints) {
                     otherRenderPoint.updatePosition();
                 }
+                if (renderBlock.parent !== null) {
+                    renderBlock.parent.updatePosition();
+                    renderBlock.parent.updateSize();
+                }
             },
             () => {
                 renderBlock.removeRenderPoint(renderPoint);
                 renderBlock.updateSize();
                 for (const otherRenderPoint of renderBlock.renderPoints) {
                     otherRenderPoint.updatePosition();
+                }
+                if (renderBlock.parent !== null) {
+                    renderBlock.parent.updatePosition();
+                    renderBlock.parent.updateSize();
                 }
             },
             `addRenderBlockRenderPoint ${renderBlock.fancyName} => ${renderPoint.fancyName}`
@@ -441,6 +449,10 @@ export default class Commander {
                     for (const otherRenderPoint of renderBlock.renderPoints) {
                         otherRenderPoint.updatePosition();
                     }
+                    if (renderBlock.parent !== null) {
+                        renderBlock.parent.updatePosition();
+                        renderBlock.parent.updateSize();
+                    }
                 },
                 () => {
                     renderBlock.addRenderPoint(renderPoint);
@@ -448,6 +460,10 @@ export default class Commander {
                     renderBlock.updateSize();
                     for (const otherRenderPoint of renderBlock.renderPoints) {
                         otherRenderPoint.updatePosition();
+                    }
+                    if (renderBlock.parent !== null) {
+                        renderBlock.parent.updatePosition();
+                        renderBlock.parent.updateSize();
                     }
                 },
                 `removeRenderBlockRenderPoint ${renderBlock.fancyName} => ${renderPoint.fancyName}`
