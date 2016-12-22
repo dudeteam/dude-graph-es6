@@ -134,6 +134,13 @@ export default class RenderBlock extends RenderNode {
     }
 
     /**
+     * Called when this render block should create the group for the render points
+     */
+    attached() {
+        this[_svgPoints] = this.element.append("svg:g").classed("dude-graph-block-points");
+    }
+
+    /**
      * Called when this render block is added
      * @override
      */
@@ -141,12 +148,19 @@ export default class RenderBlock extends RenderNode {
         this[_svgBackground] = this.element.append("svg:rect").classed("dude-graph-block-background");
         this[_svgContent] = this.element.append("svg:rect").classed("dude-graph-block-content");
         this[_svgName] = this.element.append("svg:text").classed("dude-graph-block-name");
-        this[_svgPoints] = this.element.append("svg:g").classed("dude-graph-block-points");
 
         this[_svgBackground].attr("rx", this.renderer.config.block.borderRadius);
         this[_svgBackground].attr("ry", this.renderer.config.block.borderRadius);
         this[_svgName].attr("text-anchor", "middle");
         this[_svgName].attr("dominant-baseline", "text-before-edge");
+    }
+
+    /**
+     * Called when this render block is removed
+     * @override
+     */
+    removed() {
+
     }
 
     /**
@@ -180,4 +194,5 @@ export default class RenderBlock extends RenderNode {
         this[_svgName].attr("x", this.size[0] / 2);
         this[_svgName].attr("y", this.renderer.config.block.padding);
     }
+
 }
