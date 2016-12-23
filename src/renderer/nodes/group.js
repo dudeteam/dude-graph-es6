@@ -100,7 +100,7 @@ export default class RenderGroup extends RenderNode {
      * @returns {Array<number>}
      */
     preferredPosition() {
-        const contentBoundingBox = renderNodesBoundingBox(this.renderBlocks, true);
+        const contentBoundingBox = renderNodesBoundingBox(this.renderBlocks);
         if (contentBoundingBox !== null) {
             return [
                 contentBoundingBox[0][0] - this.renderer.config.group.padding,
@@ -116,7 +116,7 @@ export default class RenderGroup extends RenderNode {
      */
     preferredSize() {
         const size = [0, 0];
-        const contentBoundingBox = renderNodesBoundingBox(this.renderBlocks, true);
+        const contentBoundingBox = renderNodesBoundingBox(this.renderBlocks);
         if (contentBoundingBox !== null) {
             size[0] = contentBoundingBox[1][0] - contentBoundingBox[0][0] + this.renderer.config.group.padding * 2;
             size[1] = contentBoundingBox[1][1] - contentBoundingBox[0][1] + this.renderer.config.group.padding * 2 + this.renderer.config.group.header;

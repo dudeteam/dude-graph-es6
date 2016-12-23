@@ -32,43 +32,65 @@ export default class RenderBlock extends RenderNode {
      * Returns this render block fancy name
      * @returns {string}
      */
-    get fancyName() { return this[_block].fancyName; }
+    get fancyName() {
+        return this[_block].fancyName;
+    }
 
     /**
      * Returns this render block id
      * @returns {string}
      */
-    get id() { return this[_block].id; }
+    get id() {
+        return this[_block].id;
+    }
+
     /**
      * Returns this render block block
      * @returns {Block}
      */
-    get block() { return this[_block]; }
+    get block() {
+        return this[_block];
+    }
+
     /**
      * Returns this render block render group parent
      * @returns {RenderGroup|null}
      */
-    get parent() { return this[_parent]; }
+    get parent() {
+        return this[_parent];
+    }
+
     /**
      * Sets this render block parent to the specified render group
      * @param {RenderGroup|null} parent - specifies the render group
      */
-    set parent(parent) { this[_parent] = parent; }
+    set parent(parent) {
+        this[_parent] = parent;
+    }
+
     /**
      * Returns this render block render points
      * @returns {Array<RenderPoint>}
      */
-    get renderPoints() { return this[_renderPoints]; }
+    get renderPoints() {
+        return this[_renderPoints];
+    }
+
     /**
      * Returns this render block input render points
      * @returns {Array<RenderPoint>}
      */
-    get renderInputPoints() { return this.renderPoints.filter(renderPoint => renderPoint.point.input); }
+    get renderInputPoints() {
+        return this.renderPoints.filter(renderPoint => renderPoint.point.input);
+    }
+
     /**
      * Returns this render block output render points
      * @returns {Array<RenderPoint>}
      */
-    get renderOutputPoints() { return this.renderPoints.filter(renderPoint => renderPoint.point.output); }
+    get renderOutputPoints() {
+        return this.renderPoints.filter(renderPoint => renderPoint.point.output);
+    }
 
     /**
      * Adds the specified render point to this render block
@@ -90,6 +112,7 @@ export default class RenderBlock extends RenderNode {
         renderPoint.added();
         this.renderer.emit("render-point-add", this, renderPoint);
     }
+
     /**
      * Removes the specified render point from this render block
      * @param {RenderPoint} renderPoint - specifies the render point
@@ -108,6 +131,7 @@ export default class RenderBlock extends RenderNode {
         renderPoint.renderBlock = null;
         this.renderer.emit("render-point-remove", this, renderPoint);
     }
+
     /**
      * Returns the render point corresponding to the specified point
      * @param {Point} point - specifies the point
@@ -116,6 +140,7 @@ export default class RenderBlock extends RenderNode {
     renderPointByPoint(point) {
         return this.renderPoints.find(rp => rp.point === point) || null;
     }
+
     /**
      * Returns the corresponding input point for the specified render point name
      * @param {string} pointName - specifies the render point name
@@ -124,6 +149,7 @@ export default class RenderBlock extends RenderNode {
     inputByName(pointName) {
         return this.renderPoints.find(rp => !rp.point.output && rp.point.name === pointName) || null;
     }
+
     /**
      * Returns the corresponding output point for the specified render point name
      * @param {string} pointName - specifies the render point name
@@ -170,6 +196,7 @@ export default class RenderBlock extends RenderNode {
     updateData() {
         this[_svgName].text(this.name);
     }
+
     /**
      * Called when this render block position changed and should update its element
      * @override
@@ -178,6 +205,7 @@ export default class RenderBlock extends RenderNode {
         this.element.attr("transform", "translate(" + this.position + ")");
         this.renderPoints.forEach(rp => rp.renderConnections.forEach(rc => rc.updatePosition()));
     }
+
     /**
      * Called when this render block size changed and should update its element
      * @override
@@ -200,39 +228,12 @@ export default class RenderBlock extends RenderNode {
      * @returns {Array<number>}
      */
     preferredSize() {
-        let widerInput = null;
-        let widerOutput = null;
-        let pointsHeight = 0;
-        for (const renderPoint of this.renderInputPoints) {
-            if (widerInput === null) {
-                widerInput = renderPoint;
-            } else {
-                if (renderPoint.size[0] >= widerInput.size[0]) {
-                    widerInput = renderPoint;
-                }
-            }
-        }
-        for (const renderPoint of this.renderOutputPoints) {
-            if (widerOutput === null) {
-                widerOutput = renderPoint;
-            } else {
-                if (renderPoint.size[0] >= widerOutput.size[0]) {
-                    widerOutput = renderPoint;
-                }
-            }
-        }
-        const nameWidth = textBoundingBox(this.name || "")[0];
-        const inputWidth = widerInput === null ? 0 : widerInput.size[0];
-        const outputWidth = widerOutput === null ? 0 : widerOutput.size[0];
-        const tallerRenderPoints = this.renderInputPoints.length >= this.renderOutputPoints.length ? this.renderInputPoints : this.renderOutputPoints;
-        for (const renderPoint of tallerRenderPoints) {
-            pointsHeight += renderPoint.size[1];
-        }
-        const maxWidth = Math.max(
-            nameWidth + this.renderer.config.block.padding * 2,
-            inputWidth + outputWidth + this.renderer.config.block.pointSpacing
-        );
-        return [maxWidth, pointsHeight + this.renderer.config.block.header];
+        const irp = this.renderInputPoints;
+        const orp = this.renderInputPoints;
+        const inputWidth = irp.reduce((a, rp) => a > rp.size[0] ? a : rp.size[0], 0);
+        const outputWidth = orp.reduce((a, rp) => a > rp.size[0] ? a : rp.size[0], 0);
+        const pointsHeight = (irp.length >= orp.length ? irp : orp).reduce((a, rp) => a + rp.size[0], 0);
+        return [Math.max(textBoundingBox(this.name || "")[0] + this.renderer.config.block.padding * 2, inputWidth + outputWidth + this.renderer.config.block.pointSpacing), pointsHeight + this.renderer.config.block.header];
     }
 
 }

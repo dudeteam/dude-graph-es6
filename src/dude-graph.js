@@ -27,3 +27,5 @@ export {RenderConnection};
 export {Measure};
 
 export {Commander};
+
+window.renderPointsBoundingBox = Measure.renderPointsBoundingBox;

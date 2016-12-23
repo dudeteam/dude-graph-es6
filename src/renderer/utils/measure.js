@@ -10,20 +10,25 @@ export const textBoundingBox = (text) => {
 /**
  * Returns the area covered by the specified render nodes
  * @param {Array<RenderNode>} renderNodes - specifies the render nodes
- * @param {boolean} nullable - specifies whether to return null or [[0, 0], [0, 0]]
- * @returns {Array<Array<number>>}
+ * @returns {Array<Array<number>>|null}
  */
-export const renderNodesBoundingBox = (renderNodes, nullable = false) => {
-    const topLeft = [Infinity, Infinity];
-    const bottomRight = [-Infinity, -Infinity];
-    for (const renderNode of renderNodes) {
-        topLeft[0] = Math.min(topLeft[0], renderNode.position[0]);
-        topLeft[1] = Math.min(topLeft[1], renderNode.position[1]);
-        bottomRight[0] = Math.max(bottomRight[0], renderNode.position[0] + renderNode.size[0]);
-        bottomRight[1] = Math.max(bottomRight[1], renderNode.position[1] + renderNode.size[1]);
+export const renderNodesBoundingBox = (renderNodes) => {
+    if (renderNodes.length === 0) {
+        return null;
     }
-    if (topLeft[0] === Infinity || bottomRight[0] === -Infinity) {
-        return nullable ? null : [[0, 0], [0, 0]];
+    return renderNodes.reduce((a, rn) => [
+        [Math.min(a[0][0], rn.position[0]), Math.min(a[0][1], rn.position[1])],
+        [Math.max(a[1][0], rn.position[0] + rn.size[0]), Math.max(a[1][1], rn.position[1] + rn.size[1])]
+    ], [[Infinity, Infinity], [-Infinity, -Infinity]]);
+};
+
+/**
+ * @param {Array<RenderPoint>} renderPoints - lol
+ * @returns {Array<number>|null}
+ */
+export const renderPointsBoundingBox = (renderPoints) => {
+    if (renderPoints.length === 0) {
+        return null;
     }
-    return [topLeft, bottomRight];
+    return renderPoints.reduce((a, rp) => [Math.max(a[0], rp.size[0]), Math.max(a[1], rp.size[1])], [0, 0]);
 };
