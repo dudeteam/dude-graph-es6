@@ -139,9 +139,13 @@
     document.body.onkeydown = function (event) {
         if (event.keyCode === 90 || event.which === 90) {
             if (event.ctrlKey && !event.shiftKey) {
-                commander.undo();
+                if (commander.canUndo()) {
+                    commander.undo();
+                }
             } else if (event.ctrlKey && event.shiftKey) {
-                commander.redo();
+                if (commander.canRedo()) {
+                    commander.redo();
+                }
             }
         }
     };
