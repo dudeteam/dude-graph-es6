@@ -39,10 +39,10 @@ export default class Connection extends EventClass {
      * @returns {Point}
      */
     other(point) {
-        if (point === this[_inputPoint]) {
-            return this[_outputPoint];
-        } else if (point === this[_outputPoint]) {
-            return this[_inputPoint];
+        if (point === this.inputPoint) {
+            return this.outputPoint;
+        } else if (point === this.outputPoint) {
+            return this.inputPoint;
         }
         throw new Error(this.fancyName + " has no point " + point.fancyName);
     }

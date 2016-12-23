@@ -147,10 +147,10 @@ export default class Block extends EventClass {
      * @param {boolean} ignoreEmit - whether to emit events
      */
     changeTemplate(templateName, valueType, ignoreEmit = false) {
-        if (this[_graph] === null) {
+        if (this.graph === null) {
             throw new Error(this.fancyName + " cannot manipulate templates when not bound to a graph");
         }
-        if (this[_graph].valueTypeByName(valueType) === null) {
+        if (this.graph.valueTypeByName(valueType) === null) {
             throw new Error(this.fancyName + " has no value type " + valueType);
         }
         const template = this.templateByName(templateName);
@@ -165,40 +165,40 @@ export default class Block extends EventClass {
             return; // Already the same type
         }
         const oldValueType = template.valueType;
-        const inputValueSaves = this[_inputs].map((point) => {
+        const inputValueSaves = this.inputs.map((point) => {
             if (point.template === templateName) {
                 return point.value;
             }
             return undefined;
         });
-        const outputValueSaves = this[_outputs].map((point) => {
+        const outputValueSaves = this.outputs.map((point) => {
             if (point.template === templateName) {
                 return point.value;
             }
             return undefined;
         });
         try {
-            for (const point of this[_inputs]) {
+            for (const point of this.inputs) {
                 if (point.template === templateName) {
                     point.changeValueType(valueType, ignoreEmit);
                 }
             }
-            for (const point of this[_outputs]) {
+            for (const point of this.outputs) {
                 if (point.template === templateName) {
                     point.changeValueType(valueType, ignoreEmit);
                 }
             }
         } catch (exception) {
-            for (let i = 0; i < this[_inputs].length; i++) {
-                const point = this[_inputs][i];
+            for (let i = 0; i < this.inputs.length; i++) {
+                const point = this.inputs[i];
                 if (point.template === templateName) {
                     point.changeValue(null);
                     point.changeValueType(oldValueType, true);
                     point.changeValue(inputValueSaves[i]);
                 }
             }
-            for (let i = 0; i < this[_outputs].length; i++) {
-                const point = this[_outputs][i];
+            for (let i = 0; i < this.outputs.length; i++) {
+                const point = this.outputs[i];
                 if (point.template === templateName) {
                     point.changeValue(null);
                     point.changeValueType(oldValueType, true);
@@ -209,7 +209,7 @@ export default class Block extends EventClass {
         }
         template.valueType = valueType;
         if (!ignoreEmit) {
-            this[_graph].emit("block-template-update", this, templateName, template.valueType, oldValueType);
+            this.graph.emit("block-template-update", this, templateName, template.valueType, oldValueType);
             this.emit("template-update", templateName, template.valueType, oldValueType);
         }
     }
@@ -219,10 +219,10 @@ export default class Block extends EventClass {
      * @returns {Graph.templateTypedef|null}
      */
     templateByName(templateName) {
-        if (this[_graph] === null) {
+        if (this.graph === null) {
             throw new Error(this.fancyName + " cannot manipulate templates when not bound to a graph");
         }
-        return this[_templates][templateName] || null;
+        return this.templates[templateName] || null;
     }
 
     /**
@@ -230,8 +230,8 @@ export default class Block extends EventClass {
      * @param {Point} point - specifies the point
      * @param {number} position - the position of the point in the block
      */
-    addPoint(point, position = point.input ? this[_inputs].length : this[_outputs].length) {
-        if (this[_graph] === null) {
+    addPoint(point, position = point.input ? this.inputs.length : this.outputs.length) {
+        if (this.graph === null) {
             throw new Error(this.fancyName + " cannot add point when not bound to a graph");
         }
         if (point.input && this.inputByName(point.name) !== null) {
@@ -260,12 +260,12 @@ export default class Block extends EventClass {
         this.pointAdded(point);
         point.added();
         if (point.input) {
-            this[_inputs].splice(position, 0, point);
+            this.inputs.splice(position, 0, point);
         } else {
-            this[_outputs].splice(position, 0, point);
+            this.outputs.splice(position, 0, point);
         }
         this.emit("point-add", point);
-        this[_graph].emit("block-point-add", this, point);
+        this.graph.emit("block-point-add", this, point);
     }
     /**
      * Removes the specified point from this block
@@ -283,23 +283,23 @@ export default class Block extends EventClass {
         point.removed();
         point.block = null;
         if (point.input) {
-            this[_inputs].splice(this[_inputs].indexOf(point), 1);
+            this.inputs.splice(this.inputs.indexOf(point), 1);
         } else {
-            this[_outputs].splice(this[_outputs].indexOf(point), 1);
+            this.outputs.splice(this.outputs.indexOf(point), 1);
         }
         this.emit("point-remove", point);
-        this[_graph].emit("block-point-remove", this, point);
+        this.graph.emit("block-point-remove", this, point);
     }
     /**
      * Removes all block points
      */
     removePoints() {
         const block = this;
-        for (let i = this[_inputs].length - 1; i >= 0; i--) {
-            block.removePoint(this[_inputs][i]);
+        for (let i = this.inputs.length - 1; i >= 0; i--) {
+            block.removePoint(this.inputs[i]);
         }
-        for (let i = this[_outputs].length - 1; i >= 0; i--) {
-            block.removePoint(this[_outputs][i]);
+        for (let i = this.outputs.length - 1; i >= 0; i--) {
+            block.removePoint(this.outputs[i]);
         }
     }
     /**
@@ -308,7 +308,7 @@ export default class Block extends EventClass {
      * @returns {Point|null}
      */
     inputByName(name) {
-        return this[_inputs].find(point => point.name === name) || null;
+        return this.inputs.find(point => point.name === name) || null;
     }
     /**
      * Returns the corresponding output point for the specified point name
@@ -316,7 +316,7 @@ export default class Block extends EventClass {
      * @returns {Point|null}
      */
     outputByName(name) {
-        return this[_outputs].find(point => point.name === name) || null;
+        return this.outputs.find(point => point.name === name) || null;
     }
 
     /**

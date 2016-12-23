@@ -61,7 +61,7 @@ export default class Graph extends EventClass {
                 block.changeTemplate(templateId, block.templates[templateId].valueType, true);
             }
         }
-        this[_blocks].push(block);
+        this.blocks.push(block);
         this[_blockIds][block.id] = block;
         this.emit("block-add", block);
         block.added();
@@ -71,12 +71,12 @@ export default class Graph extends EventClass {
      * @param {Block} block - the block to remove
      */
     removeBlock(block) {
-        if (block.graph !== this || !this[_blocks].includes(block)) {
+        if (block.graph !== this || !this.blocks.includes(block)) {
             throw new Error(this.fancyName + " has no block " + block.fancyName);
         }
         block.removePoints();
         block.graph = null;
-        this[_blocks].splice(this[_blocks].indexOf(block), 1);
+        this.blocks.splice(this.blocks.indexOf(block), 1);
         this[_blockIds][block.id] = undefined;
         this.emit("block-remove", block);
         block.removed();
@@ -104,7 +104,7 @@ export default class Graph extends EventClass {
      * @returns {Array<Block>}
      */
     blocksByName(name) {
-        return this[_blocks].filter(block => block.name === name);
+        return this.blocks.filter(block => block.name === name);
     }
     /**
      * Returns the blocks corresponding to the specified block type
@@ -112,7 +112,7 @@ export default class Graph extends EventClass {
      * @returns {Array<Block>}
      */
     blocksByType(type) {
-        return this[_blocks].filter(block => block.type === type || block instanceof type);
+        return this.blocks.filter(block => block.type === type || block instanceof type);
     }
 
     /**
@@ -322,7 +322,7 @@ export default class Graph extends EventClass {
      * @returns {Connection|null}
      */
     connectionForPoints(inputPoint, outputPoint) {
-        return this[_connections].find((connection) => {
+        return this.connections.find((connection) => {
                 return connection.inputPoint === inputPoint && connection.outputPoint === outputPoint;
             }) || null;
     }
@@ -342,7 +342,7 @@ export default class Graph extends EventClass {
         }
         inputPoint.connections.push(connection);
         outputPoint.connections.push(connection);
-        this[_connections].push(connection);
+        this.connections.push(connection);
     }
     /**
      * Removes the specified connection
@@ -360,7 +360,7 @@ export default class Graph extends EventClass {
         }
         connection.inputPoint.connections.splice(connection.inputPoint.connections.indexOf(connection), 1);
         connection.outputPoint.connections.splice(connection.outputPoint.connections.indexOf(connection), 1);
-        this[_connections].splice(this[_connections].indexOf(connection), 1);
+        this.connections.splice(this.connections.indexOf(connection), 1);
     }
 
     /**
