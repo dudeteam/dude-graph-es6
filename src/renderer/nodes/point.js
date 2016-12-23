@@ -1,5 +1,4 @@
-import {renderPointPreferredSize} from "../utils/measure";
-import {renderPointPreferredPosition} from "../utils/measure";
+import {textBoundingBox} from "../utils/measure";
 
 const _point = Symbol("point");
 const _renderBlock = Symbol("renderBlock");
@@ -94,21 +93,21 @@ export default class RenderPoint {
      * Returns whether this render point is empty
      * @returns {boolean}
      */
-    get empty() { return this[_renderConnections].length === 0 && this[_point].emptyValue(); }
+    get empty() { return this.renderConnections.length === 0 && this.point.emptyValue(); }
 
     /**
      * Adds the specified render connection to this render point
      * @param {RenderConnection} renderConnection - specifies the render connection
      */
     addRenderConnection(renderConnection) {
-        this[_renderConnections].push(renderConnection);
+        this.renderConnections.push(renderConnection);
     }
     /**
      * Removes the specified render connection from this render point
      * @param {RenderConnection} renderConnection - specifies the render connection
      */
     removeRenderConnection(renderConnection) {
-        this[_renderConnections].splice(this[_renderConnections].indexOf(renderConnection), 1);
+        this.renderConnections.splice(this.renderConnections.indexOf(renderConnection), 1);
     }
 
     /**
@@ -121,7 +120,7 @@ export default class RenderPoint {
         this[_svgName] = this.element.append("svg:text").classed("dude-graph-point-name");
 
         this[_svgCircle].attr("d", () => {
-            if (this[_point].valueType === "stream") {
+            if (this.point.valueType === "stream") {
                 return "M " + -r + " " + -r * 1.5 + " L " + -r + " " + r * 1.5 + " L " + r + " " + 0 + " Z";
             }
             return "M 0,0m " + -r + ", 0a " + [r, r] + " 0 1,0 " + r * 2 + ",0a " + [r, r] + " 0 1,0 " + -(r * 2) + ",0";
@@ -155,7 +154,7 @@ export default class RenderPoint {
      * Called when this render point position changed and should update its element
      */
     updatePosition() {
-        this.position = renderPointPreferredPosition(this);
+        this.position = this.preferredPosition();
 
         this.element.attr("transform", "translate(" + this.position + ")");
     }
@@ -163,7 +162,7 @@ export default class RenderPoint {
      * Called when this render point size changed and should update its element
      */
     updateSize() {
-        this.size = renderPointPreferredSize(this);
+        this.size = this.preferredSize();
     }
 
     /**
@@ -176,5 +175,37 @@ export default class RenderPoint {
      * @abstract
      */
     disconnected() {}
+
+    /**
+     * Returns the preferred size of this render point
+     * @returns {Array<number>}
+     */
+    preferredSize() {
+        const nameBoundingBox = textBoundingBox(this.point.name);
+        return [
+            nameBoundingBox[0] + this.renderBlock.renderer.config.point.padding * 2,
+            this.renderBlock.renderer.config.point.height
+        ];
+    }
+
+    /**
+     * Returns the preferred position of this render point
+     * @returns {Array<number>}
+     */
+    preferredPosition() {
+        if (this.point.input) {
+            const index = this.renderBlock.renderInputPoints.indexOf(this);
+            return [
+                this.renderBlock.renderer.config.point.padding,
+                this.renderBlock.renderer.config.block.header + this.renderBlock.renderer.config.point.height * index
+            ];
+        } else {
+            const index = this.renderBlock.renderOutputPoints.indexOf(this);
+            return [
+                this.renderBlock.size[0] - this.renderBlock.renderer.config.point.padding,
+                this.renderBlock.renderer.config.block.header + this.renderBlock.renderer.config.point.height * index
+            ];
+        }
+    }
 
 }

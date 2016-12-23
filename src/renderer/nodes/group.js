@@ -1,5 +1,5 @@
 import RenderNode from "./node";
-import {renderGroupPreferredSize, renderGroupPreferredPosition} from "../utils/measure";
+import {renderNodesBoundingBox, textBoundingBox} from "../utils/measure";
 
 const _renderBlocks = Symbol("renderBlocks");
 const _svgRect = Symbol("svgRect");
@@ -34,7 +34,7 @@ export default class RenderGroup extends RenderNode {
         if (renderBlock.parent !== null) {
             throw new Error(renderBlock.fancyName + " cannot redefine parent");
         }
-        this[_renderBlocks].push(renderBlock);
+        this.renderBlocks.push(renderBlock);
         renderBlock.parent = this;
     }
     /**
@@ -45,10 +45,10 @@ export default class RenderGroup extends RenderNode {
         if (this.renderer === null) {
             throw new Error(this.fancyName + " cannot remove renderBlock when not bound to a renderer");
         }
-        if (renderBlock.parent !== this || !this[_renderBlocks].includes(renderBlock)) {
+        if (renderBlock.parent !== this || !this.renderBlocks.includes(renderBlock)) {
             throw new Error(this.fancyName + " has no " + renderBlock.fancyName);
         }
-        this[_renderBlocks].splice(this[_renderBlocks].indexOf(renderBlock), 1);
+        this.renderBlocks.splice(this.renderBlocks.indexOf(renderBlock), 1);
         renderBlock.parent = null;
     }
 
@@ -77,7 +77,7 @@ export default class RenderGroup extends RenderNode {
      * @override
      */
     updateSize() {
-        this.size = renderGroupPreferredSize(this);
+        this.size = this.preferredSize();
 
         this[_svgRect].attr("width", this.size[0]);
         this[_svgRect].attr("height", this.size[1]);
@@ -90,9 +90,41 @@ export default class RenderGroup extends RenderNode {
      * @override
      */
     updatePosition() {
-        this.position = renderGroupPreferredPosition(this);
+        this.position = this.preferredPosition();
 
         this.element.attr("transform", "translate(" + this.position + ")");
+    }
+
+    /**
+     * Returns the preferred position of this render group
+     * @returns {Array<number>}
+     */
+    preferredPosition() {
+        const contentBoundingBox = renderNodesBoundingBox(this.renderBlocks, true);
+        if (contentBoundingBox !== null) {
+            return [
+                contentBoundingBox[0][0] - this.renderer.config.group.padding,
+                contentBoundingBox[0][1] - this.renderer.config.group.padding - this.renderer.config.group.header
+            ];
+        }
+        return this.position;
+    }
+
+    /**
+     * Returns the preferred size of this render group
+     * @returns {Array<number>}
+     */
+    preferredSize() {
+        const size = [0, 0];
+        const contentBoundingBox = renderNodesBoundingBox(this.renderBlocks, true);
+        if (contentBoundingBox !== null) {
+            size[0] = contentBoundingBox[1][0] - contentBoundingBox[0][0] + this.renderer.config.group.padding * 2;
+            size[1] = contentBoundingBox[1][1] - contentBoundingBox[0][1] + this.renderer.config.group.padding * 2 + this.renderer.config.group.header;
+        }
+        size[0] = Math.max(size[0], this.renderer.config.group.minSize[0] + this.renderer.config.group.padding * 2);
+        size[1] = Math.max(size[1], this.renderer.config.group.minSize[1] + this.renderer.config.group.padding * 2 + this.renderer.config.group.header);
+        size[0] = Math.max(size[0], textBoundingBox(this.name || "")[0] + this.renderer.config.group.padding * 2);
+        return size;
     }
 
 }

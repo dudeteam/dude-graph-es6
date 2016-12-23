@@ -1,5 +1,5 @@
 import RenderNode from "./node";
-import {renderBlockPreferredSize} from "../utils/measure";
+import {textBoundingBox} from "../utils/measure";
 
 const _block = Symbol("block");
 const _parent = Symbol("parent");
@@ -63,12 +63,12 @@ export default class RenderBlock extends RenderNode {
      * Returns this render block input render points
      * @returns {Array<RenderPoint>}
      */
-    get renderInputPoints() { return this[_renderPoints].filter(renderPoint => renderPoint.point.input); }
+    get renderInputPoints() { return this.renderPoints.filter(renderPoint => renderPoint.point.input); }
     /**
      * Returns this render block output render points
      * @returns {Array<RenderPoint>}
      */
-    get renderOutputPoints() { return this[_renderPoints].filter(renderPoint => renderPoint.point.output); }
+    get renderOutputPoints() { return this.renderPoints.filter(renderPoint => renderPoint.point.output); }
 
     /**
      * Adds the specified render point to this render block
@@ -78,13 +78,13 @@ export default class RenderBlock extends RenderNode {
         if (this.renderer === null) {
             throw new Error(this.fancyName + " cannot add renderPoint when not bound to a renderer");
         }
-        if (renderPoint.point.block !== this[_block]) {
+        if (renderPoint.point.block !== this.block) {
             throw new Error(this.fancyName + " has no point " + renderPoint.fancyName);
         }
-        if (renderPoint.element !== null || this[_renderPoints].some(rp => rp.point === renderPoint.point)) {
+        if (renderPoint.element !== null || this.renderPoints.some(rp => rp.point === renderPoint.point)) {
             throw new Error(this.fancyName + " cannot redefine render point " + renderPoint.fancyName);
         }
-        this[_renderPoints].push(renderPoint);
+        this.renderPoints.push(renderPoint);
         renderPoint.renderBlock = this;
         renderPoint.element = this[_svgPoints].append("svg:g").classed("dude-graph-point", true);
         renderPoint.added();
@@ -98,10 +98,10 @@ export default class RenderBlock extends RenderNode {
         if (this.renderer === null) {
             throw new Error(this.fancyName + " cannot remove renderPoint when not bound to a renderer");
         }
-        if (renderPoint.element === null || !this[_renderPoints].includes(renderPoint)) {
+        if (renderPoint.element === null || !this.renderPoints.includes(renderPoint)) {
             throw new Error(this.fancyName + " cannot redefine render point " + renderPoint.fancyName);
         }
-        this[_renderPoints].splice(this[_renderPoints].indexOf(renderPoint), 1);
+        this[_renderPoints].splice(this.renderPoints.indexOf(renderPoint), 1);
         renderPoint.removed();
         renderPoint.element.remove();
         renderPoint.element = null;
@@ -122,7 +122,7 @@ export default class RenderBlock extends RenderNode {
      * @returns {RenderPoint|null}
      */
     inputByName(pointName) {
-        return this[_renderPoints].find(rp => !rp.point.output && rp.point.name === pointName) || null;
+        return this.renderPoints.find(rp => !rp.point.output && rp.point.name === pointName) || null;
     }
     /**
      * Returns the corresponding output point for the specified render point name
@@ -130,7 +130,7 @@ export default class RenderBlock extends RenderNode {
      * @returns {RenderPoint|null}
      */
     outputByName(pointName) {
-        return this[_renderPoints].find(rp => rp.point.output && rp.point.name === pointName) || null;
+        return this.renderPoints.find(rp => rp.point.output && rp.point.name === pointName) || null;
     }
 
     /**
@@ -145,14 +145,14 @@ export default class RenderBlock extends RenderNode {
      * @override
      */
     added() {
-        this[_svgBackground] = this.element.append("svg:rect").classed("dude-graph-block-background");
-        this[_svgContent] = this.element.append("svg:rect").classed("dude-graph-block-content");
-        this[_svgName] = this.element.append("svg:text").classed("dude-graph-block-name");
+        this[_svgName] = this.element.prepend("svg:text").classed("dude-graph-block-name");
+        this[_svgContent] = this.element.prepend("svg:rect").classed("dude-graph-block-content");
+        this[_svgBackground] = this.element.prepend("svg:rect").classed("dude-graph-block-background");
 
-        this[_svgBackground].attr("rx", this.renderer.config.block.borderRadius);
-        this[_svgBackground].attr("ry", this.renderer.config.block.borderRadius);
         this[_svgName].attr("text-anchor", "middle");
         this[_svgName].attr("dominant-baseline", "text-before-edge");
+        this[_svgBackground].attr("rx", this.renderer.config.block.borderRadius);
+        this[_svgBackground].attr("ry", this.renderer.config.block.borderRadius);
     }
 
     /**
@@ -183,7 +183,7 @@ export default class RenderBlock extends RenderNode {
      * @override
      */
     updateSize() {
-        this.size = renderBlockPreferredSize(this);
+        this.size = this.preferredSize();
 
         this[_svgBackground].attr("x", -2);
         this[_svgBackground].attr("width", this.size[0] + 4);
@@ -193,6 +193,46 @@ export default class RenderBlock extends RenderNode {
         this[_svgContent].attr("height", this.size[1] - this.renderer.config.block.header + 16);
         this[_svgName].attr("x", this.size[0] / 2);
         this[_svgName].attr("y", this.renderer.config.block.padding);
+    }
+
+    /**
+     * Returns the preferred size of this render block
+     * @returns {Array<number>}
+     */
+    preferredSize() {
+        let widerInput = null;
+        let widerOutput = null;
+        let pointsHeight = 0;
+        for (const renderPoint of this.renderInputPoints) {
+            if (widerInput === null) {
+                widerInput = renderPoint;
+            } else {
+                if (renderPoint.size[0] >= widerInput.size[0]) {
+                    widerInput = renderPoint;
+                }
+            }
+        }
+        for (const renderPoint of this.renderOutputPoints) {
+            if (widerOutput === null) {
+                widerOutput = renderPoint;
+            } else {
+                if (renderPoint.size[0] >= widerOutput.size[0]) {
+                    widerOutput = renderPoint;
+                }
+            }
+        }
+        const nameWidth = textBoundingBox(this.name || "")[0];
+        const inputWidth = widerInput === null ? 0 : widerInput.size[0];
+        const outputWidth = widerOutput === null ? 0 : widerOutput.size[0];
+        const tallerRenderPoints = this.renderInputPoints.length >= this.renderOutputPoints.length ? this.renderInputPoints : this.renderOutputPoints;
+        for (const renderPoint of tallerRenderPoints) {
+            pointsHeight += renderPoint.size[1];
+        }
+        const maxWidth = Math.max(
+            nameWidth + this.renderer.config.block.padding * 2,
+            inputWidth + outputWidth + this.renderer.config.block.pointSpacing
+        );
+        return [maxWidth, pointsHeight + this.renderer.config.block.header];
     }
 
 }

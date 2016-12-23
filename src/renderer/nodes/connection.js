@@ -1,5 +1,3 @@
-import {renderConnectionPreferredPath} from "../utils/measure";
-
 const _renderer = Symbol("renderer");
 const _element = Symbol("element");
 const _connection = Symbol("connection");
@@ -97,7 +95,7 @@ export default class RenderConnection {
      * Called when this render connection position changed and should update its element
      */
     updatePosition() {
-        this.element.attr("d", renderConnectionPreferredPath(this[_renderer], this[_outputRenderPoint].absolutePosition, this[_inputRenderPoint].absolutePosition));
+        this.element.attr("d", RenderConnection.connectionPath(this[_renderer], this[_outputRenderPoint].absolutePosition, this[_inputRenderPoint].absolutePosition));
     }
 
     /**
@@ -106,10 +104,10 @@ export default class RenderConnection {
      * @returns {RenderPoint}
      */
     other(renderPoint) {
-        if (renderPoint === this[_inputRenderPoint]) {
-            return this[_outputRenderPoint];
-        } else if (renderPoint === this[_outputRenderPoint]) {
-            return this[_inputRenderPoint];
+        if (renderPoint === this.inputRenderPoint) {
+            return this.outputRenderPoint;
+        } else if (renderPoint === this.outputRenderPoint) {
+            return this.inputRenderPoint;
         }
         throw new Error(this.fancyName + " has no render point " + renderPoint.fancyName);
     }
@@ -122,7 +120,11 @@ export default class RenderConnection {
      * @returns {string}
      */
     static connectionPath(renderer, from, to) {
-        return renderConnectionPreferredPath(renderer, from, to);
+        let step = renderer.config.connection.step;
+        if (from[0] > to[0]) {
+            step += Math.max(-renderer.config.connection.step, Math.min(from[0] - to[0], renderer.config.connection.step));
+        }
+        return `M${from[0]},${from[1]}C${from[0] + step},${from[1]} ${to[0] - step},${to[1]} ${to[0]},${to[1]}`;
     }
 
 }

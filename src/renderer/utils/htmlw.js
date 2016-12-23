@@ -3,14 +3,14 @@ const _namespaces = {
     "svg": "http://www.w3.org/2000/svg",
     "math": "http://www.w3.org/1998/Math/MathML"
 };
-const _namespace = (qname) => {
-    const pair = qname.split(":");
+const _namespace = (name) => {
+    const pair = name.split(":");
     if (pair.length > 1 && typeof _namespaces[pair[0]] === "undefined") {
         throw new Error(pair[0] + " is not a valid namespace, valid namespaces are", _namespaces);
     }
     return {
         "URI": pair.length > 1 ? _namespaces[pair[0]] : null,
-        "localName": pair.length > 1 ? pair[1] : qname
+        "localName": pair.length > 1 ? pair[1] : name
     };
 };
 const _element = Symbol("element");
@@ -66,15 +66,29 @@ export default class HTMLWrapper {
 
     /**
      * Appends an html element of the specified qualified name into this element
-     * @param {string} qname - specifies the name
+     * @param {string} name - specifies the name
      * @returns {HTMLWrapper}
      */
-    append(qname) {
-        const namespace = _namespace(qname);
+    append(name) {
+        const namespace = _namespace(name);
         const element = namespace.URI !== null ?
             document.createElementNS(namespace.URI, namespace.localName) :
             document.createElement(namespace.localName);
         this[_element].appendChild(element);
+        return new HTMLWrapper(element);
+    }
+
+    /**
+     * Prepends an html element of the specified qualified name into this element
+     * @param {string} name - specifies the name
+     * @returns {HTMLWrapper}
+     */
+    prepend(name) {
+        const namespace = _namespace(name);
+        const element = namespace.URI !== null ?
+            document.createElementNS(namespace.URI, namespace.localName) :
+            document.createElement(namespace.localName);
+        this[_element].insertBefore(element, this[_element].firstChild);
         return new HTMLWrapper(element);
     }
 
@@ -97,12 +111,12 @@ export default class HTMLWrapper {
 
     /**
      * Sets this element specified attribute qualified name to the specified value
-     * @param {string} qname - specifies the qualified name
-     * @param {string|Function|null} value - specifies the value
+     * @param {string} name - specifies the qualified name
+     * @param {number|string|Function|null} value - specifies the value
      * @returns {HTMLWrapper} - returns this for chained method calls
      */
-    attr(qname, value) {
-        const namespace = _namespace(qname);
+    attr(name, value) {
+        const namespace = _namespace(name);
         const rvalue = typeof value === "function" ? value() : value;
         if (rvalue === null) {
             if (namespace.URI !== null) {
