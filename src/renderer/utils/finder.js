@@ -49,16 +49,17 @@ export default class RenderNodeFinder {
     }
 
     /**
-     * Returns the nearest render point of the specified position
+     * Returns the nearest render point of the specified position and for the specified radius
      * @param {Array<number>} position - specifies the position
+     * @param {number} radius - specifies the radius
      * @returns {RenderPoint|null}
      */
-    nearestRenderPoint(position) {
+    nearestRenderPoint(position, radius = this[_renderer].config.point.radius) {
         return this[_renderer].renderPoints.find((renderPoint) => {
-            if (renderPoint.absolutePosition[0] + this[_renderer].config.point.radius < position[0]) { return false; }
-            if (renderPoint.absolutePosition[0] > position[0] + this[_renderer].config.point.radius) { return false; }
-            if (renderPoint.absolutePosition[1] + this[_renderer].config.point.radius < position[1]) { return false; }
-            if (renderPoint.absolutePosition[1] > position[1] + this[_renderer].config.point.radius) { return false; }
+            if (renderPoint.absolutePosition[0] + radius < position[0]) { return false; }
+            if (renderPoint.absolutePosition[0] > position[0] + radius) { return false; }
+            if (renderPoint.absolutePosition[1] + radius < position[1]) { return false; }
+            if (renderPoint.absolutePosition[1] > position[1] + radius) { return false; }
             return true;
         }) || null;
     }
