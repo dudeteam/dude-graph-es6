@@ -11,6 +11,21 @@ export default class RenderNodeFinder {
     }
 
     /**
+     * Returns the nearest render nodes of the specified area
+     * @param {Array<Array<number>>} area - specifies the area
+     * @returns {Array<RenderNode>}
+     */
+    nearestRenderNodes(area) {
+        return this[_renderer].renderNodes.filter((renderNode) => {
+            if (renderNode.position[0] + renderNode.size[0] < area[0][0]) { return false; }
+            if (renderNode.position[0] > area[1][0]) { return false; }
+            if (renderNode.position[1] + renderNode.size[1] < area[0][1]) { return false; }
+            if (renderNode.position[1] > area[1][1]) { return false; }
+            return true;
+        });
+    }
+
+    /**
      * Returns the nearest render blocks of the specified area
      * @param {Array<Array<number>>} area - specifies the area
      * @returns {Array<RenderBlock>}
@@ -21,6 +36,21 @@ export default class RenderNodeFinder {
             if (renderBlock.position[0] > area[1][0]) { return false; }
             if (renderBlock.position[1] + renderBlock.size[1] < area[0][1]) { return false; }
             if (renderBlock.position[1] > area[1][1]) { return false; }
+            return true;
+        });
+    }
+
+    /**
+     * Returns the nearest render groups of the specified area
+     * @param {Array<Array<number>>} area - specifies the area
+     * @returns {Array<RenderGroup>}
+     */
+    nearestRenderGroups(area) {
+        return this[_renderer].renderGroups.filter((renderGroup) => {
+            if (renderGroup.position[0] + renderGroup.size[0] < area[0][0]) { return false; }
+            if (renderGroup.position[0] > area[1][0]) { return false; }
+            if (renderGroup.position[1] + renderGroup.size[1] < area[0][1]) { return false; }
+            if (renderGroup.position[1] > area[1][1]) { return false; }
             return true;
         });
     }
