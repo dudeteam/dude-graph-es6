@@ -120,9 +120,10 @@ export default class RenderGroup extends RenderNode {
         if (contentBoundingBox !== null) {
             size[0] = contentBoundingBox[1][0] - contentBoundingBox[0][0] + this.renderer.config.group.padding * 2;
             size[1] = contentBoundingBox[1][1] - contentBoundingBox[0][1] + this.renderer.config.group.padding * 2 + this.renderer.config.group.header;
+        } else {
+            size[0] = this.renderer.config.group.minSize[0] + this.renderer.config.group.padding * 2;
+            size[1] = this.renderer.config.group.minSize[1] + this.renderer.config.group.padding * 2 + this.renderer.config.group.header;
         }
-        size[0] = Math.max(size[0], this.renderer.config.group.minSize[0] + this.renderer.config.group.padding * 2);
-        size[1] = Math.max(size[1], this.renderer.config.group.minSize[1] + this.renderer.config.group.padding * 2 + this.renderer.config.group.header);
         size[0] = Math.max(size[0], textBoundingBox(this.name || "")[0] + this.renderer.config.group.padding * 2);
         return size;
     }
