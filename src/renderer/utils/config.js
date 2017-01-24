@@ -18,7 +18,7 @@ const rendererConfig = {
         "padding": 10,
         "header": 30,
         "borderRadius": 0,
-        "minSize": [200, 150]
+        "minSize": [320, 240]
     },
     "point": {
         "height": 20,
