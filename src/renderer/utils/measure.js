@@ -4,7 +4,7 @@
  * @returns {Array<number>}
  */
 export const textBoundingBox = (text) => {
-    return [text.length * 8, 17]; // Inconsolata font prediction
+    return [text.length * 9.6, 18]; // OxygenSans font prediction
 };
 
 /**
