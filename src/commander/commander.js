@@ -545,8 +545,16 @@ export default class Commander {
                 renderNode.name = name;
                 renderNode.updateAll();
                 if (renderNode instanceof RenderBlock) {
+                    if (renderNode.parent !== null) {
+                        renderNode.parent.updatePosition();
+                        renderNode.parent.updateSize();
+                    }
                     for (const renderPoint of renderNode.renderPoints) {
-                        renderPoint.updateAll();
+                        renderPoint.updatePosition();
+                        renderPoint.updateSize();
+                        for (const renderConnection of renderPoint.renderConnections) {
+                            renderConnection.updatePosition();
+                        }
                     }
                 }
             },
@@ -554,8 +562,16 @@ export default class Commander {
                 renderNode.name = oldName;
                 renderNode.updateAll();
                 if (renderNode instanceof RenderBlock) {
+                    if (renderNode.parent !== null) {
+                        renderNode.parent.updatePosition();
+                        renderNode.parent.updateSize();
+                    }
                     for (const renderPoint of renderNode.renderPoints) {
-                        renderPoint.updateAll();
+                        renderPoint.updatePosition();
+                        renderPoint.updateSize();
+                        for (const renderConnection of renderPoint.renderConnections) {
+                            renderConnection.updatePosition();
+                        }
                     }
                 }
             },
