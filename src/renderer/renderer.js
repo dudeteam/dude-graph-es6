@@ -40,6 +40,13 @@ export default class Renderer extends EventClass {
         this[_svgConnections] = this[_svgRoot].append("svg:g").classed("dude-graph-connections");
         this[_svgBlocks] = this[_svgRoot].append("svg:g").classed("dude-graph-blocks");
     }
+    /**
+     * Destroys the renderer and detaches from the svg
+     * All svg elements created by the renderer will be deleted
+     */
+    destroy() {
+        this[_svg].element.removeChild(this[_svgRoot].element);
+    }
 
     /**
      * Returns this renderer fancy name
@@ -82,9 +89,7 @@ export default class Renderer extends EventClass {
      * @returns {Array<RenderPoint>}
      */
     get renderPoints() {
-        const renderPoints = [];
-        this[_renderBlocks].forEach(rb => rb.renderPoints.forEach(rp => renderPoints.push(rp)));
-        return renderPoints;
+        return this[_renderBlocks].reduce((a, rb) => [...a, ...rb.renderPoints] , []);
     }
     /**
      * Returns this renderer render node finder

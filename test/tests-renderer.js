@@ -193,6 +193,7 @@ describe("dude-renderer API", () => {
         expect(renderBlock.inputByName("point")).to.be.equal(null);
         expect(renderBlock.renderPointByPoint(point)).to.be.equal(null);
         renderBlock.addRenderPoint(renderPoint);
+        expect(renderer.renderPoints).to.have.lengthOf(1);
         expect(renderBlock.renderPoints).to.have.lengthOf(1);
         expect(renderBlock.element.select(".dude-graph-block-points").element.childElementCount).to.be.equal(1);
         expect(renderBlock.inputByName("point")).to.be.equal(renderPoint);
@@ -228,6 +229,7 @@ describe("dude-renderer API", () => {
         }).to.throw();
         renderBlock1.addRenderPoint(outputRenderPoint);
         renderBlock2.addRenderPoint(inputRenderPoint);
+        expect(renderer.renderPoints).to.have.lengthOf(2);
         expect(() => {
             renderer.connect(inputRenderPoint, outputRenderPoint); // 1st parameter must be the output point
         }).to.throw();
@@ -246,7 +248,6 @@ describe("dude-renderer API", () => {
         expect(renderConnection.inputRenderPoint).to.be.equal(inputRenderPoint);
         expect(renderConnection.other(inputRenderPoint)).to.be.equal(outputRenderPoint);
         expect(renderConnection.other(outputRenderPoint)).to.be.equal(inputRenderPoint);
-
         expect(() => {
             renderer.connect(inputRenderPoint, outputRenderPoint); // already connected
         }).to.throw();
@@ -319,6 +320,19 @@ describe("dude-renderer API", () => {
         renderBlock.updateAll();
         renderGroup.name = null;
         renderGroup.updateAll();
+    });
+    it("should free the svg upon detach", () => {
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        expect(svg.childElementCount).to.be.equal(1);
+        const svgRoot = svg.firstElementChild;
+        expect(svgRoot.childElementCount).to.be.equal(3);
+        expect(svgRoot.children[0]).to.be.equal(svg.getElementsByClassName("dude-graph-groups")[0]);
+        expect(svgRoot.children[1]).to.be.equal(svg.getElementsByClassName("dude-graph-connections")[0]);
+        expect(svgRoot.children[2]).to.be.equal(svg.getElementsByClassName("dude-graph-blocks")[0]);
+        renderer.destroy();
+        expect(svg.childElementCount).to.be.equal(0);
     });
 });
 describe("dude-renderer Events", () => {
