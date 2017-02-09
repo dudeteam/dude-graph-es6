@@ -150,6 +150,7 @@ export default class Point extends EventClass {
         this.block.pointValueChanged(this, assignValue, oldValue);
         if (!ignoreEmit) {
             this.emit("value-change", assignValue, oldValue);
+            this.block.emit("point-value-change", this, assignValue, oldValue);
             this.block.graph.emit("point-value-change", this, assignValue, oldValue);
         }
     }
@@ -174,6 +175,7 @@ export default class Point extends EventClass {
             this.block.pointValueTypeChanged(this, valueType, oldValueType);
             if (!ignoreEmit) {
                 this.emit("value-type-change", valueType, oldValueType);
+                this.block.emit("point-value-type-change", this, valueType, oldValueType);
                 this.block.graph.emit("point-value-type-change", this, valueType, oldValueType);
             }
         }

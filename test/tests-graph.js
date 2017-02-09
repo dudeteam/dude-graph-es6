@@ -1429,6 +1429,7 @@ describe("dude-graph Events", () => {
     });
     it("should test point-value-type-change", () => {
         const graphSpy = sinon.spy();
+        const blockSpy = sinon.spy();
         const pointSpy = sinon.spy();
         const graph = new Graph();
         const block = new Block();
@@ -1436,35 +1437,44 @@ describe("dude-graph Events", () => {
         graph.addBlock(block);
         block.addPoint(point);
         graph.on("point-value-type-change", graphSpy);
+        point.block.on("point-value-type-change", blockSpy);
         point.on("value-type-change", pointSpy);
         point.valueType = "string";
         sinon.assert.calledWith(graphSpy, point, "string", "number");
+        sinon.assert.calledWith(blockSpy, point, "string", "number");
         sinon.assert.calledWith(pointSpy, "string", "number");
         point.valueType = "string";
         sinon.assert.calledOnce(graphSpy);
+        sinon.assert.calledOnce(blockSpy);
         sinon.assert.calledOnce(pointSpy);
     });
     it("should test point-value-change", () => {
         const graphSpy = sinon.spy();
+        const blockSpy = sinon.spy();
         const pointSpy = sinon.spy();
         const graph = new Graph();
         const block = new Block();
         const point = new Point(false, {"name": "out", "valueType": "number"});
-        graph.on("point-value-change", graphSpy);
-        point.on("value-change", pointSpy);
         graph.addBlock(block);
         block.addPoint(point);
+        graph.on("point-value-change", graphSpy);
+        point.block.on("point-value-change", blockSpy);
+        point.on("value-change", pointSpy);
         sinon.assert.notCalled(graphSpy);
+        sinon.assert.notCalled(blockSpy);
         sinon.assert.notCalled(pointSpy);
         point.value = 42;
         sinon.assert.calledWith(graphSpy, point, 42, null);
+        sinon.assert.calledWith(blockSpy, point, 42, null);
         sinon.assert.calledWith(pointSpy, 42, null);
         point.value = 42;
         sinon.assert.calledTwice(graphSpy);
+        sinon.assert.calledTwice(blockSpy);
         sinon.assert.calledTwice(pointSpy);
     });
     it("should test point-connect", () => {
         const graphSpy = sinon.spy();
+        const blockSpy = sinon.spy();
         const pointSpy = sinon.spy();
         const graph = new Graph();
         const block1 = new Block();
@@ -1476,13 +1486,16 @@ describe("dude-graph Events", () => {
         block1.addPoint(point1);
         block2.addPoint(point2);
         graph.on("point-connect", graphSpy);
+        point1.block.on("point-connect", blockSpy);
         point1.on("connect", pointSpy);
         const connection = point1.connect(point2);
         sinon.assert.calledWith(graphSpy, point1, connection);
+        sinon.assert.calledWith(blockSpy, point1, connection);
         sinon.assert.calledWith(pointSpy, connection);
     });
     it("should test point-disconnect", () => {
         const graphSpy = sinon.spy();
+        const blockSpy = sinon.spy();
         const pointSpy = sinon.spy();
         const graph = new Graph();
         const block1 = new Block();
@@ -1494,10 +1507,12 @@ describe("dude-graph Events", () => {
         block1.addPoint(point1);
         block2.addPoint(point2);
         graph.on("point-disconnect", graphSpy);
+        point1.block.on("point-connect", blockSpy);
         point1.on("disconnect", pointSpy);
         const connection = point1.connect(point2);
         point1.disconnect(point2);
         sinon.assert.calledWith(graphSpy, point1, connection);
+        sinon.assert.calledWith(blockSpy, point1, connection);
         sinon.assert.calledWith(pointSpy, connection);
     });
     it("should test block-template-update", () => {
