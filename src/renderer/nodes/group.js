@@ -1,6 +1,7 @@
 import RenderNode from "./node";
 import {renderNodesBoundingBox, textBoundingBox} from "../utils/measure";
 
+const _color = Symbol("color");
 const _renderBlocks = Symbol("renderBlocks");
 const _svgRect = Symbol("svgRect");
 const _svgName = Symbol("svgName");
@@ -10,9 +11,22 @@ export default class RenderGroup extends RenderNode {
     constructor() {
         super();
 
+        this[_color] = null;
         this[_renderBlocks] = [];
         this.name = "";
     }
+
+    /**
+     * Returns this group css color
+     * @returns {string|null}
+     */
+    get color() { return this[_color]; }
+
+    /**
+     * Sets this group css color to the specified color
+     * @param {string|null} color - specifies the render group color
+     */
+    set color(color) { this[_color] = color; }
 
     /**
      * Returns this group render blocks
@@ -71,7 +85,12 @@ export default class RenderGroup extends RenderNode {
      * Called when this render group data changed and should update the element
      * @override
      */
-    updateData() { this[_svgName].text(this.name); }
+    updateData() {
+        this[_svgName].text(this.name);
+        if (this[_color] !== null) {
+            this[_svgRect].attr("fill", this[_color]);
+        }
+    }
     /**
      * Called when this render group size changed and should update its element
      * @override

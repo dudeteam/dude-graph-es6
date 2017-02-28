@@ -321,6 +321,19 @@ describe("dude-renderer API", () => {
         renderGroup.name = null;
         renderGroup.updateAll();
     });
+    it("should set a color to a group", () => {
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const renderGroup = new RenderGroup();
+        expect(renderGroup.color).to.be.equal(null);
+        renderer.addRenderGroup(renderGroup);
+        expect(renderGroup.color).to.be.equal(null);
+        renderGroup.color = "#ff3322";
+        expect(renderGroup.color).to.be.equal("#ff3322");
+        renderer.removeRenderGroup(renderGroup);
+        expect(renderGroup.color).to.be.equal("#ff3322");
+    });
     it("should free the svg upon detach", () => {
         const svg = document.getElementById("svg");
         const graph = new Graph();
