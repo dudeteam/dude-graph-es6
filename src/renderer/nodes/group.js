@@ -87,9 +87,7 @@ export default class RenderGroup extends RenderNode {
      */
     updateData() {
         this[_svgName].text(this.name);
-        if (this[_color] !== null) {
-            this[_svgRect].attr("fill", this[_color]);
-        }
+        this[_svgRect].attr("fill", this[_color]);
     }
     /**
      * Called when this render group size changed and should update its element
