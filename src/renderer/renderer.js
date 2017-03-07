@@ -140,7 +140,7 @@ export default class Renderer extends EventClass {
         renderBlock.renderer = this;
         renderBlock.element = this[_svgBlocks].append("svg:g");
         renderBlock.element.attr("id", "bid-" + renderBlock.id);
-        renderBlock.element.attr("class", "dude-graph-block dude-graph-block-name-" + renderBlock.block.name);
+        renderBlock.element.attr("class", "dude-graph-block dude-graph-block-type-" + renderBlock.block.type);
         renderBlock.attached();
         renderBlock.added();
         this.emit("render-block-add", renderBlock);
