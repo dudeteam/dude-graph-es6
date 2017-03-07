@@ -25,72 +25,61 @@ export default class RenderBlock extends RenderNode {
         this[_block] = block;
         this[_parent] = null;
         this[_renderPoints] = [];
-        this.name = block.name;
     }
 
     /**
      * Returns this render block fancy name
      * @returns {string}
      */
-    get fancyName() {
-        return this[_block].fancyName;
-    }
+    get fancyName() { return this[_block].fancyName; }
 
     /**
      * Returns this render block id
      * @returns {string}
      */
-    get id() {
-        return this[_block].id;
-    }
-
+    get id() { return this[_block].id; }
+    /**
+     * Returns this render block name
+     * @returns {string|null}
+     * @override
+     */
+    get name() { return this[_block].name; }
+    /**
+     * Sets this render block name to the specified name
+     * @param {string|null} name - specifies the name
+     * @override
+     */
+    set name(name) { this[_block].name = name; }
     /**
      * Returns this render block block
      * @returns {Block}
      */
-    get block() {
-        return this[_block];
-    }
-
+    get block() { return this[_block]; }
     /**
      * Returns this render block render group parent
      * @returns {RenderGroup|null}
      */
-    get parent() {
-        return this[_parent];
-    }
-
+    get parent() { return this[_parent]; }
     /**
      * Sets this render block parent to the specified render group
      * @param {RenderGroup|null} parent - specifies the render group
      */
-    set parent(parent) {
-        this[_parent] = parent;
-    }
-
+    set parent(parent) { this[_parent] = parent; }
     /**
      * Returns this render block render points
      * @returns {Array<RenderPoint>}
      */
-    get renderPoints() {
-        return this[_renderPoints];
-    }
-
+    get renderPoints() { return this[_renderPoints]; }
     /**
      * Returns this render block input render points
      * @returns {Array<RenderPoint>}
      */
-    get renderInputPoints() {
-        return this.renderPoints.filter(renderPoint => renderPoint.point.input);
-    }
-
+    get renderInputPoints() { return this.renderPoints.filter(renderPoint => renderPoint.point.input); }
     /**
      * Returns this render block output render points
      * @returns {Array<RenderPoint>}
      */
-    get renderOutputPoints() {
-        return this.renderPoints.filter(renderPoint => renderPoint.point.output);
-    }
+    get renderOutputPoints() { return this.renderPoints.filter(renderPoint => renderPoint.point.output); }
 
     /**
      * Adds the specified render point to this render block
@@ -112,7 +101,6 @@ export default class RenderBlock extends RenderNode {
         renderPoint.added();
         this.renderer.emit("render-point-add", this, renderPoint);
     }
-
     /**
      * Removes the specified render point from this render block
      * @param {RenderPoint} renderPoint - specifies the render point
@@ -131,7 +119,6 @@ export default class RenderBlock extends RenderNode {
         renderPoint.renderBlock = null;
         this.renderer.emit("render-point-remove", this, renderPoint);
     }
-
     /**
      * Returns the render point corresponding to the specified point
      * @param {Point} point - specifies the point
@@ -140,7 +127,6 @@ export default class RenderBlock extends RenderNode {
     renderPointByPoint(point) {
         return this.renderPoints.find(rp => rp.point === point) || null;
     }
-
     /**
      * Returns the corresponding input point for the specified render point name
      * @param {string} pointName - specifies the render point name
@@ -149,7 +135,6 @@ export default class RenderBlock extends RenderNode {
     inputByName(pointName) {
         return this.renderPoints.find(rp => !rp.point.output && rp.point.name === pointName) || null;
     }
-
     /**
      * Returns the corresponding output point for the specified render point name
      * @param {string} pointName - specifies the render point name
@@ -196,7 +181,6 @@ export default class RenderBlock extends RenderNode {
     updateData() {
         this[_svgName].text(this.name);
     }
-
     /**
      * Called when this render block position changed and should update its element
      * @override
@@ -205,7 +189,6 @@ export default class RenderBlock extends RenderNode {
         this.element.attr("transform", "translate(" + this.position + ")");
         this.renderPoints.forEach(rp => rp.renderConnections.forEach(rc => rc.updatePosition()));
     }
-
     /**
      * Called when this render block size changed and should update its element
      * @override

@@ -3,6 +3,7 @@ import EventClass from "event-class-es6";
 import defaultValue from "./utils/default";
 
 const _id = Symbol("id");
+const _type = Symbol("type");
 const _name = Symbol("name");
 const _inputs = Symbol("inputs");
 const _outputs = Symbol("outputs");
@@ -19,7 +20,8 @@ export default class Block extends EventClass {
         super();
 
         this[_id] = defaultValue(blockData.id, null);
-        this[_name] = defaultValue(blockData.name, this.type);
+        this[_type] = defaultValue(blockData.type, this.constructor.name);
+        this[_name] = defaultValue(blockData.name,  this[_type]);
         this[_inputs] = [];
         this[_outputs] = [];
         this[_templates] = defaultValue(blockData.templates, {});
@@ -38,11 +40,6 @@ export default class Block extends EventClass {
      */
     get fancyName() { return this[_name]; }
     /**
-     * Returns this block type
-     * @returns {string}
-     */
-    get type() { return this.constructor.name; }
-    /**
      * Returns this block id
      * @returns {string|null}
      */
@@ -53,10 +50,20 @@ export default class Block extends EventClass {
      */
     set id(id) { this[_id] = id; }
     /**
+     * Returns this block type
+     * @returns {string}
+     */
+    get type() { return this[_type]; }
+    /**
      * Returns this block name
      * @returns {string}
      */
     get name() { return this[_name]; }
+    /**
+     * Sets this block name to the specified name
+     * @param {string} name - specifies the name
+     */
+    set name(name) { this[_name] = name; }
     /**
      * Returns this block input points
      * @returns {Array<Point>}
@@ -343,6 +350,7 @@ export default class Block extends EventClass {
 /**
  * @typedef {Object} Block.blockDataTypedef
  * @property {string|null} [id=null]
+ * @property {string} [type]
  * @property {string} [name]
  * @property {Object<string, Graph.templateTypedef>} [templates={}]
  */

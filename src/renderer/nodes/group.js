@@ -21,13 +21,11 @@ export default class RenderGroup extends RenderNode {
      * @returns {string|null}
      */
     get color() { return this[_color]; }
-
     /**
      * Sets this group css color to the specified color
      * @param {string|null} color - specifies the render group color
      */
     set color(color) { this[_color] = color; }
-
     /**
      * Returns this group render blocks
      * @returns {Array<RenderBlock>}

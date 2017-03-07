@@ -55,6 +55,9 @@ describe("dude-graph API", () => {
                 "ValueType": ["number", "string"]
             }
         });
+        new Block({
+            "type": "block"
+        });
     });
     it("should test graph blocksByName and blocksByType", () => {
         class AssignationBlock extends Block {}
@@ -64,7 +67,14 @@ describe("dude-graph API", () => {
         const block = new AssignationBlock();
         graph.addBlock(block);
         expect(graph.blocksByName("AssignationBlock")).to.have.lengthOf(1);
+        expect(graph.blocksByType("AssignationBlock")).to.have.lengthOf(1);
         expect(graph.blocksByType(AssignationBlock)).to.have.lengthOf(1);
+        block.name = "New name";
+        expect(graph.blocksByName("AssignationBlock")).to.have.lengthOf(0);
+        expect(graph.blocksByName("New name")).to.have.lengthOf(1);
+        expect(() => {
+            block.type = "New type"; // type is read-only
+        }).to.throw();
     });
     it("should create block with unique ids", () => {
         const graph = new Graph();
@@ -84,9 +94,8 @@ describe("dude-graph API", () => {
         graph.addBlock(block);
         expect(block.id).to.be.not.equal(null);
         expect(graph.blocks[0]).to.be.equal(block);
-        // Cannot add the same block again
         expect(() => {
-            graph.addBlock(block);
+            graph.addBlock(block); // Cannot add the same block again
         }).to.throw();
         const graph2 = new Graph();
         expect(() => {
