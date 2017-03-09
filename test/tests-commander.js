@@ -629,4 +629,25 @@ describe("dude-commander renderer API", () => {
         expect(graph.blocks).to.have.lengthOf(0);
         expect(renderer.renderBlocks).to.have.lengthOf(0);
     });
+    it("should change a group color", () => {
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const commander = new Commander(graph, renderer);
+        const renderGroup = new RenderGroup();
+        commander.addRenderGroup(renderGroup);
+        expect(renderGroup.color).to.be.equal(null);
+        commander.changeRenderGroupColor(renderGroup, "red");
+        expect(renderGroup.color).to.be.equal("red");
+        commander.undo();
+        expect(renderGroup.color).to.be.equal(null);
+        commander.redo();
+        expect(renderGroup.color).to.be.equal("red");
+        commander.changeRenderGroupColor(renderGroup, "blue", "green");
+        expect(renderGroup.color).to.be.equal("blue");
+        commander.undo();
+        expect(renderGroup.color).to.be.equal("green");
+        commander.undo();
+        expect(renderGroup.color).to.be.equal(null);
+    });
 });

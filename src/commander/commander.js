@@ -630,5 +630,18 @@ export default class Commander {
             `changeRenderNodePosition ${renderNode.fancyName} => ${position}, was ${oldPosition}`
         );
     }
+    /**
+     * Changes the specified render group color to the specified color from the specified oldColor
+     * @param {RenderGroup} renderGroup - specifies the render group
+     * @param {string} color - specifies the color
+     * @param {string} oldColor - specifies the old color
+     */
+    changeRenderGroupColor(renderGroup, color, oldColor = renderGroup.color) {
+        this.command(
+            () => { renderGroup.color = color; renderGroup.updateData(); },
+            () => { renderGroup.color = oldColor; renderGroup.updateData(); },
+            `changeRenderGroupColor ${renderGroup.fancyName} ${oldColor} => ${color}`
+        );
+    }
 
 }
