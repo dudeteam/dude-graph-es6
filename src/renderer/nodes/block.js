@@ -95,7 +95,8 @@ export default class RenderBlock extends RenderNode {
         if (renderPoint.element !== null || this.renderPoints.some(rp => rp.point === renderPoint.point)) {
             throw new Error(this.fancyName + " cannot redefine render point " + renderPoint.fancyName);
         }
-        this.renderPoints.push(renderPoint);
+        const offset = renderPoint.point.input ? 0 : this[_renderPoints].length;
+        this.renderPoints.splice(offset + renderPoint.point.position, 0, renderPoint);
         renderPoint.renderBlock = this;
         renderPoint.element = this[_svgPoints].append("svg:g").classed("dude-graph-point", true);
         renderPoint.added();

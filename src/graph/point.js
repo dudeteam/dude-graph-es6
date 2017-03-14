@@ -117,6 +117,16 @@ export default class Point extends EventClass {
      * @returns {Array<Connection>}
      */
     get connections() { return this[_connections]; }
+    /**
+     * Returns this point position in block
+     * @returns {number}
+     */
+    get position() {
+        if (this[_block] === null) {
+            throw new Error(this.fancyName + " cannot get position when not bound to a block");
+        }
+        return this[_input] ? this[_block].inputs.indexOf(this) : this[_block].outputs.indexOf(this);
+    }
 
     /**
      * Returns whether this point has the specified policy
