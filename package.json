@@ -1,6 +1,6 @@
 {
   "name": "dude-graph",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "dist/dude-graph.js",
   "jsnext:main": "src/dude-graph.js",
   "author": "Jonathan Picques <jonathan.picques@gmail.com>",
