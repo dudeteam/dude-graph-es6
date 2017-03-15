@@ -228,10 +228,11 @@ export default class Commander {
      * @see {Block.addPoint}
      * @param {Block} block - @see {Block.addPoint}
      * @param {Point} point - @see {Block.addPoint}
+     * @param {number|undefined} position - @see {Block.addPoint}
      */
-    addBlockPoint(block, point) {
+    addBlockPoint(block, point, position = undefined) {
         this.command(
-            () => { block.addPoint(point); },
+            () => { block.addPoint(point, position); },
             () => { block.removePoint(point); },
             `addBlockPoint ${block.name} ${point.name}`
         );
