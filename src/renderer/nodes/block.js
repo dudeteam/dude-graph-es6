@@ -222,10 +222,10 @@ export default class RenderBlock extends RenderNode {
      */
     preferredSize() {
         const irp = this.renderInputPoints;
-        const orp = this.renderInputPoints;
+        const orp = this.renderOutputPoints;
         const inputWidth = irp.reduce((a, rp) => a > rp.size[0] ? a : rp.size[0], 0);
         const outputWidth = orp.reduce((a, rp) => a > rp.size[0] ? a : rp.size[0], 0);
-        const pointsHeight = (irp.length >= orp.length ? irp : orp).reduce((a, rp) => a + rp.size[0], 0);
+        const pointsHeight = (irp.length >= orp.length ? irp : orp).reduce((a, rp) => a + rp.size[1], 0);
         return [Math.max(textBoundingBox(this.name || "")[0] + this.renderer.config.block.padding * 2, inputWidth + outputWidth + this.renderer.config.block.pointSpacing), pointsHeight + this.renderer.config.block.header];
     }
 

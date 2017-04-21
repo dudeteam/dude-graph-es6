@@ -278,6 +278,48 @@ describe("dude-graph API", () => {
         expect(block.outputs[3]).to.be.equal(outputPoint4);
         expect(block.outputs[4]).to.be.equal(outputPoint5);
     });
+    it("should change a point name", () => {
+        const graph = new Graph();
+        const block = new Block();
+        const inputPoint = new Point(true, {
+            "name": "in",
+            "valueType": "number"
+        });
+        expect(inputPoint.name).to.be.equal("in");
+        inputPoint.name = "in2";
+        expect(inputPoint.name).to.be.equal("in2");
+        inputPoint.changeName("in3");
+        expect(inputPoint.name).to.be.equal("in3");
+        graph.addBlock(block);
+        block.addPoint(inputPoint);
+        expect(inputPoint.name).to.be.equal("in3");
+        inputPoint.name = "in4";
+        expect(inputPoint.name).to.be.equal("in4");
+        expect(() => {
+            block.addPoint(new Point(true, {
+                "name": "in4", // in4 already exists
+                "valueType": "number"
+            }));
+        }).to.throw();
+        block.addPoint(new Point(true, {
+            "name": "in5",
+            "valueType": "number"
+        }));
+        expect(() => {
+            inputPoint.name = "in5"; // in5 is already in block
+        }).to.throw();
+        inputPoint.name = "in6";
+        expect(inputPoint.name).to.be.equal("in6");
+        const outputPoint = new Point(false, {
+            "name": "in6", // in6 is an output, name collision allowed
+            "valueType": "number"
+        });
+        expect(outputPoint.name).to.be.equal("in6");
+        block.addPoint(outputPoint);
+        expect(outputPoint.name).to.be.equal("in6");
+        outputPoint.name = "out";
+        expect(outputPoint.name).to.be.equal("out");
+    });
     it("should assign and test point value", () => {
         const graph = new Graph();
         const block = new Block();
@@ -1437,6 +1479,27 @@ describe("dude-graph Events", () => {
         block.removePoint(point);
         sinon.assert.calledWith(graphSpy, block, point);
         sinon.assert.calledWith(blockSpy, point);
+    });
+    it("should test point-name-change", () => {
+        const graphSpy = sinon.spy();
+        const blockSpy = sinon.spy();
+        const pointSpy = sinon.spy();
+        const graph = new Graph();
+        const block = new Block();
+        const point = new Point(false, {"name": "out", "valueType": "number"});
+        graph.addBlock(block);
+        block.addPoint(point);
+        graph.on("point-name-change", graphSpy);
+        point.block.on("point-name-change", blockSpy);
+        point.on("name-change", pointSpy);
+        point.name = "out1";
+        sinon.assert.calledWith(graphSpy, point, "out1");
+        sinon.assert.calledWith(blockSpy, point, "out1");
+        sinon.assert.calledWith(pointSpy, "out1");
+        point.name = "out2";
+        sinon.assert.calledTwice(graphSpy);
+        sinon.assert.calledTwice(blockSpy);
+        sinon.assert.calledTwice(pointSpy);
     });
     it("should test point-value-type-change", () => {
         const graphSpy = sinon.spy();

@@ -356,6 +356,23 @@ describe("dude-commander graph API", () => {
         commander.redo();
         expect(point.value).to.be.equal(42);
     });
+    it("should change a point name", () => {
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const commander = new Commander(graph, renderer);
+        const block = new Block();
+        const point = new Point(true, {"name": "in", "valueType": "number"});
+        commander.addBlock(block);
+        commander.addBlockPoint(block, point);
+        expect(point.name).to.be.equal("in");
+        commander.changePointName(point, "in2");
+        expect(point.name).to.be.equal("in2");
+        commander.undo();
+        expect(point.name).to.be.equal("in");
+        commander.redo();
+        expect(point.name).to.be.equal("in2");
+    });
     it("should remove a block with connected points", () => {
         const svg = document.getElementById("svg");
         const graph = new Graph();

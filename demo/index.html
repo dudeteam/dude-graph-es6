@@ -50,7 +50,9 @@
 </style>
 <body>
 <svg id="renderer"></svg>
-<button id="removeRenderBlock" style="position: absolute; top: 16px; right: 16px;">Remove render block</button>
+<button id="removeRenderBlock" style="position: absolute; top: 0; right: 16px;">Remove render block</button>
+<button id="removeRenderPoint" style="position: absolute; top: 64px; right: 16px;">Remove render point</button>
+<button id="changePointName" style="position: absolute; top: 128px; right: 16px;">Change point name</button>
 <script src="../dist/dude-graph.js"></script>
 <script>
     var graph = new dudeGraph.Graph();
@@ -59,18 +61,18 @@
 
     var block1 = new dudeGraph.Block({"name": "Start"});
     var block2 = new dudeGraph.Block({"name": "End"});
-    var input1 = new dudeGraph.Point(true, {"name": "in", "valueType": "string"});
-    var input2 = new dudeGraph.Point(true, {"name": "in", "valueType": "string"});
-    var output1 = new dudeGraph.Point(false, {"name": "out", "valueType": "string"});
-    var output2 = new dudeGraph.Point(false, {"name": "out", "valueType": "string"});
+    var inputPoint1 = new dudeGraph.Point(true, {"name": "in", "valueType": "string"});
+    var inputPoint2 = new dudeGraph.Point(true, {"name": "in", "valueType": "string"});
+    var outputPoint1 = new dudeGraph.Point(false, {"name": "out", "valueType": "string"});
+    var outputPoint2 = new dudeGraph.Point(false, {"name": "out", "valueType": "string"});
 
-    var renderBlock1 = new dudeGraph.RenderBlock(block1);
-    var outputRender1 = new dudeGraph.RenderPoint(output1);
-    var inputRender1 = new dudeGraph.RenderPoint(input1);
-    var renderBlock2 = new dudeGraph.RenderBlock(block2);
-    var outputRender2 = new dudeGraph.RenderPoint(output2);
-    var inputRender2 = new dudeGraph.RenderPoint(input2);
     var renderGroup = new dudeGraph.RenderGroup();
+    var renderBlock1 = new dudeGraph.RenderBlock(block1);
+    var inputRenderPoint1 = new dudeGraph.RenderPoint(inputPoint1);
+    var outputRenderPoint1 = new dudeGraph.RenderPoint(outputPoint1);
+    var renderBlock2 = new dudeGraph.RenderBlock(block2);
+    var inputPointRender2 = new dudeGraph.RenderPoint(inputPoint2);
+    var outputPointRender2 = new dudeGraph.RenderPoint(outputPoint2);
 
     renderBlock1.position = [32, 64];
     renderBlock2.position = [256, 128];
@@ -91,19 +93,19 @@
 
     commander.transaction();
     {
-        commander.addBlockPoint(block1, output1);
-        commander.addBlockPoint(block1, input1);
-        commander.addRenderBlockRenderPoint(renderBlock1, outputRender1);
-        commander.addRenderBlockRenderPoint(renderBlock1, inputRender1);
+        commander.addBlockPoint(block1, outputPoint1);
+        commander.addBlockPoint(block1, inputPoint1);
+        commander.addRenderBlockRenderPoint(renderBlock1, outputRenderPoint1);
+        commander.addRenderBlockRenderPoint(renderBlock1, inputRenderPoint1);
     }
     commander.commit();
 
     commander.transaction();
     {
-        commander.addBlockPoint(block2, output2);
-        commander.addBlockPoint(block2, input2);
-        commander.addRenderBlockRenderPoint(renderBlock2, outputRender2);
-        commander.addRenderBlockRenderPoint(renderBlock2, inputRender2);
+        commander.addBlockPoint(block2, outputPoint2);
+        commander.addBlockPoint(block2, inputPoint2);
+        commander.addRenderBlockRenderPoint(renderBlock2, outputPointRender2);
+        commander.addRenderBlockRenderPoint(renderBlock2, inputPointRender2);
     }
     commander.commit();
 
@@ -122,8 +124,8 @@
 
     commander.transaction();
     {
-        commander.connectPoints(input2, output1);
-        commander.connectRenderPoints(inputRender2, outputRender1);
+        commander.connectPoints(inputPoint2, outputPoint1);
+        commander.connectRenderPoints(inputPointRender2, outputRenderPoint1);
     }
     commander.commit();
 
@@ -150,6 +152,14 @@
 
     document.getElementById("removeRenderBlock").onclick = function () {
         commander.removeRenderBlock(renderBlock1);
+    };
+
+    document.getElementById("removeRenderPoint").onclick = function () {
+        commander.removeRenderBlockRenderPoint(renderBlock1, inputRenderPoint1);
+    };
+
+    document.getElementById("changePointName").onclick = function () {
+        commander.changePointName(outputPoint1, "help_lucky");
     };
 
 </script>

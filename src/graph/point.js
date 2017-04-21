@@ -63,6 +63,11 @@ export default class Point extends EventClass {
      */
     get name() { return this[_name]; }
     /**
+     * Sets this point name to the specified name
+     * @param {string} name - specifies the name
+     */
+    set name(name) { this.changeName(name); }
+    /**
      * Returns whether this point is an input
      * @returns {boolean}
      */
@@ -134,6 +139,34 @@ export default class Point extends EventClass {
      * @returns {boolean}
      */
     hasPolicy(policy) { return PointPolicy.has(this.policy, policy); }
+
+    /**
+     * Changes this point name to the specified name
+     * @param {string} name - specifies the name
+     * @param {boolean} ignoreEmit - whether to emit events
+     */
+    changeName(name, ignoreEmit = false) {
+        if (this.block !== null) {
+            if (this.input) {
+                if (this.block.inputByName(name) !== null) {
+                    throw new Error(this.fancyName + " cannot redefine block input " + name);
+                }
+            } else {
+                if (this.block.outputByName(name) !== null) {
+                    throw new Error(this.fancyName + " cannot redefine block output " + name);
+                }
+            }
+        }
+        const oldName = this[_name];
+        this[_name] = name;
+        if (!ignoreEmit) {
+            this.emit("name-change", name, oldName);
+            if (this.block !== null) {
+                this.block.emit("point-name-change", this, name, oldName);
+                this.block.graph.emit("point-name-change", this, name, oldName);
+            }
+        }
+    }
 
     /**
      * Changes this point value to the specified value

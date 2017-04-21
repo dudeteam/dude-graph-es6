@@ -289,6 +289,61 @@ export default class Commander {
         );
     }
     /**
+     * @see {Point.changeName}
+     * @param {Point} point - @see {Point.changeName}
+     * @param {*|null} name - @see {Point.changeName}
+     * @param {*|null} oldName - @see {Point.changeName}
+     */
+    changePointName(point, name, oldName = point.name) {
+        this.command(
+            () => {
+                point.name = name;
+                if (this[_renderer] !== null) {
+                    const renderBlock = this[_renderer].renderBlockByBlock(point.block);
+                    if (renderBlock !== null) {
+                        renderBlock.updateSize();
+                        renderBlock.renderPointByPoint(point).updateAll();
+                        renderBlock.updateSize();
+                        for (const renderPoint of renderBlock.renderPoints) {
+                            renderPoint.updateSize();
+                            renderPoint.updatePosition();
+                            for (const renderConnection of renderPoint.renderConnections) {
+                                renderConnection.updatePosition();
+                            }
+                        }
+                        if (renderBlock.parent !== null) {
+                            renderBlock.parent.updateSize();
+                            renderBlock.parent.updatePosition();
+                        }
+                    }
+                }
+            },
+            () => {
+                point.name = oldName;
+                if (this[_renderer] !== null) {
+                    const renderBlock = this[_renderer].renderBlockByBlock(point.block);
+                    if (renderBlock !== null) {
+                        renderBlock.updateSize();
+                        renderBlock.renderPointByPoint(point).updateAll();
+                        renderBlock.updateSize();
+                        for (const renderPoint of renderBlock.renderPoints) {
+                            renderPoint.updateSize();
+                            renderPoint.updatePosition();
+                            for (const renderConnection of renderPoint.renderConnections) {
+                                renderConnection.updatePosition();
+                            }
+                        }
+                        if (renderBlock.parent !== null) {
+                            renderBlock.parent.updateSize();
+                            renderBlock.parent.updatePosition();
+                        }
+                    }
+                }
+            },
+            `changePointName ${point.name} to ${name}, was ${oldName}`
+        );
+    }
+    /**
      * @see {Point.changeValue}
      * @param {Point} point - @see {Point.changeValue}
      * @param {*|null} value - @see {Point.changeValue}
@@ -408,6 +463,9 @@ export default class Commander {
                 renderBlock.updateSize();
                 for (const otherRenderPoint of renderBlock.renderPoints) {
                     otherRenderPoint.updatePosition();
+                    for (const renderConnection of otherRenderPoint.renderConnections) {
+                        renderConnection.updatePosition();
+                    }
                 }
                 if (renderBlock.parent !== null) {
                     renderBlock.parent.updatePosition();
@@ -419,6 +477,9 @@ export default class Commander {
                 renderBlock.updateSize();
                 for (const otherRenderPoint of renderBlock.renderPoints) {
                     otherRenderPoint.updatePosition();
+                    for (const renderConnection of otherRenderPoint.renderConnections) {
+                        renderConnection.updatePosition();
+                    }
                 }
                 if (renderBlock.parent !== null) {
                     renderBlock.parent.updatePosition();
@@ -446,6 +507,9 @@ export default class Commander {
                     renderBlock.updateSize();
                     for (const otherRenderPoint of renderBlock.renderPoints) {
                         otherRenderPoint.updatePosition();
+                        for (const renderConnection of otherRenderPoint.renderConnections) {
+                            renderConnection.updatePosition();
+                        }
                     }
                     if (renderBlock.parent !== null) {
                         renderBlock.parent.updatePosition();
@@ -458,6 +522,9 @@ export default class Commander {
                     renderBlock.updateSize();
                     for (const otherRenderPoint of renderBlock.renderPoints) {
                         otherRenderPoint.updatePosition();
+                        for (const renderConnection of otherRenderPoint.renderConnections) {
+                            renderConnection.updatePosition();
+                        }
                     }
                     if (renderBlock.parent !== null) {
                         renderBlock.parent.updatePosition();
