@@ -129,15 +129,24 @@ export default class RenderBlock extends RenderNode {
         return this.renderPoints.find(rp => rp.point === point) || null;
     }
     /**
-     * Returns the corresponding input point for the specified render point name
+     * Returns the corresponding render point for the specified input and render point name
+     * @param {boolean} input - specifies if the render point is an input
+     * @param {string} pointName - specifies the render point name
+     * @returns {RenderPoint|null}
+     */
+    pointBy(input, pointName) {
+        return input ? this.inputByName(pointName) : this.outputByName(pointName);
+    }
+    /**
+     * Returns the corresponding render input point for the specified render point name
      * @param {string} pointName - specifies the render point name
      * @returns {RenderPoint|null}
      */
     inputByName(pointName) {
-        return this.renderPoints.find(rp => !rp.point.output && rp.point.name === pointName) || null;
+        return this.renderPoints.find(rp => rp.point.input && rp.point.name === pointName) || null;
     }
     /**
-     * Returns the corresponding output point for the specified render point name
+     * Returns the corresponding render output point for the specified render point name
      * @param {string} pointName - specifies the render point name
      * @returns {RenderPoint|null}
      */

@@ -216,6 +216,7 @@ describe("dude-graph API", () => {
         block.addPoint(outputPoint);
         expect(block.outputs).to.have.lengthOf(1);
         expect(block.inputs).to.have.lengthOf(0);
+        expect(block.outputByName("output")).to.be.equal(block.pointBy(false, "output"));
         expect(() => {
             block.addPoint(new Point(false, {
                 "name": "output", // Cannot add 2 outputs with the same name
@@ -228,6 +229,7 @@ describe("dude-graph API", () => {
         }));
         expect(block.outputs).to.have.lengthOf(1);
         expect(block.inputs).to.have.lengthOf(1);
+        expect(block.inputByName("output")).to.be.equal(block.pointBy(true, "output"));
         expect(() => {
             block.addPoint(new Point(true, {
                 "name": "output", // But still cannot add 2 inputs with the same name

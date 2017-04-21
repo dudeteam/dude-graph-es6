@@ -190,12 +190,14 @@ describe("dude-renderer API", () => {
         renderer.addRenderBlock(renderBlock);
         expect(renderBlock.renderPoints).to.have.lengthOf(0);
         expect(renderBlock.element.select(".dude-graph-block-points").element.childElementCount).to.be.equal(0);
+        expect(renderBlock.pointBy(true, "point")).to.be.equal(null);
         expect(renderBlock.inputByName("point")).to.be.equal(null);
         expect(renderBlock.renderPointByPoint(point)).to.be.equal(null);
         renderBlock.addRenderPoint(renderPoint);
         expect(renderer.renderPoints).to.have.lengthOf(1);
         expect(renderBlock.renderPoints).to.have.lengthOf(1);
         expect(renderBlock.element.select(".dude-graph-block-points").element.childElementCount).to.be.equal(1);
+        expect(renderBlock.pointBy(true, "point")).to.be.equal(renderPoint);
         expect(renderBlock.inputByName("point")).to.be.equal(renderPoint);
         expect(renderBlock.renderPointByPoint(point)).to.be.equal(renderPoint);
         expect(() => {

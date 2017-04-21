@@ -310,20 +310,29 @@ export default class Block extends EventClass {
         }
     }
     /**
-     * Returns the corresponding input point for the specified point name
-     * @param {string} name - specifies the point name
+     * Returns the corresponding point for the specified input and point name
+     * @param {boolean} input - specifies if the point is an input or an output
+     * @param {string} pointName - specifies the point name
      * @returns {Point|null}
      */
-    inputByName(name) {
-        return this.inputs.find(point => point.name === name) || null;
+    pointBy(input, pointName) {
+        return input ? this.inputByName(pointName) : this.outputByName(pointName);
+    }
+    /**
+     * Returns the corresponding input point for the specified point name
+     * @param {string} pointName - specifies the point name
+     * @returns {Point|null}
+     */
+    inputByName(pointName) {
+        return this.inputs.find(point => point.name === pointName) || null;
     }
     /**
      * Returns the corresponding output point for the specified point name
-     * @param {string} name - specifies the point name
+     * @param {string} pointName - specifies the point name
      * @returns {Point|null}
      */
-    outputByName(name) {
-        return this.outputs.find(point => point.name === name) || null;
+    outputByName(pointName) {
+        return this.outputs.find(point => point.name === pointName) || null;
     }
 
     /**
