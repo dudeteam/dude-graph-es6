@@ -110,6 +110,7 @@ export default class Commander {
     }
     /**
      * Commits the latest transaction into a single command
+     * @param {boolean} reverseUndo - reverse undo for ordered commands
      */
     commit(reverseUndo = false) {
         const transaction = this[_transactions].pop();
