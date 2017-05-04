@@ -111,7 +111,7 @@ export default class Commander {
     /**
      * Commits the latest transaction into a single command
      */
-    commit() {
+    commit(reverseUndo = false) {
         const transaction = this[_transactions].pop();
         if (typeof transaction === "undefined") {
             throw new Error("No transaction to commit");
@@ -125,10 +125,9 @@ export default class Commander {
                     command.redo();
                 }
             },
-            "undo": () => {
-                for (let i = transaction.length - 1; i >= 0; i--) {
-                    transaction[i].undo();
-                }
+            "undo": !reverseUndo ?
+                () => { for (let i = transaction.length - 1; i >= 0; i--) { transaction[i].undo(); } } :
+                () => { for (const command of transaction) { command.undo(); }
             },
             "label": transaction.map(c => c.label),
         };

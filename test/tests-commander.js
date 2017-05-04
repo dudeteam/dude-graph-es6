@@ -260,6 +260,25 @@ describe("dude-commander API", () => {
         }
         expect(redoes).to.be.equal(times);
     });
+    it("should test a commit with reverseUndo", () => {
+        const svg = document.getElementById("svg");
+        const graph = new Graph();
+        const renderer = new Renderer(graph, svg);
+        const commander = new Commander(graph, renderer);
+        let value = 32;
+        commander.transaction();
+        commander.command(
+            () => value = 64,
+            () => value = 32
+        );
+        commander.command(
+            () => expect(value).to.be.equal(64),
+            () => expect(value).to.be.equal(32)
+        );
+        commander.commit(true);
+        commander.undo();
+        commander.redo();
+    });
 });
 describe("dude-commander graph API", () => {
     beforeEach(function () {
