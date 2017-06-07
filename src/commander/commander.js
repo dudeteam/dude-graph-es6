@@ -156,7 +156,7 @@ export default class Commander {
      */
     describe() {
         /*eslint-disable no-console */
-        const logger = (label) => {
+        const logger = label => {
             if (typeof label === "string") {
                 console.log(label);
             } else {
@@ -166,12 +166,12 @@ export default class Commander {
             }
         };
         console.group("Undo commands");
-        this[_undo].forEach((u) => {
+        this[_undo].forEach(u => {
             logger(u.label);
         });
         console.groupEnd();
         console.group("Redo commands");
-        this[_redo].forEach((r) => {
+        this[_redo].forEach(r => {
             logger(r.label);
         });
         console.groupEnd();

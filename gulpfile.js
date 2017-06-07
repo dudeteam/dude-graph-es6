@@ -24,7 +24,7 @@ gulp.task("lint", () => {
         .pipe(plumber())
         .pipe(eslint.format("node_modules/eslint-clang-formatter", process.stdout))
         .pipe(eslint.failAfterError())
-        .on("error", notify.onError((error) => {
+        .on("error", notify.onError(error => {
             return error.message;
         }));
 });

@@ -4,11 +4,11 @@
  */
 export default {
     "stream": {
-        "convert": () => undefined,
+        "typeConvert": () => undefined,
         "typeCompatibles": []
     },
     "string": {
-        "typeConvert": (value) => {
+        "typeConvert": value => {
             if (typeof value === "string") {
                 return value;
             } else if (typeof value === "number") {
@@ -21,7 +21,7 @@ export default {
         "typeCompatibles": ["text", "number", "boolean"]
     },
     "text": {
-        "typeConvert": (value) => {
+        "typeConvert": value => {
             if (typeof value === "string") {
                 return value;
             } else if (typeof value === "number") {
@@ -34,7 +34,7 @@ export default {
         "typeCompatibles": ["string", "number", "boolean"]
     },
     "number": {
-        "typeConvert": (value) => {
+        "typeConvert": value => {
             if (typeof value === "number") {
                 return value;
             }
@@ -52,7 +52,7 @@ export default {
         "typeCompatibles": ["boolean"]
     },
     "boolean": {
-        "typeConvert": (value) => {
+        "typeConvert": value => {
             if (typeof value === "boolean") {
                 return value;
             }
@@ -67,7 +67,7 @@ export default {
         "typeCompatibles": ["number"]
     },
     "object": {
-        "typeConvert": (value) => {
+        "typeConvert": value => {
             if (typeof value === "object") {
                 return value;
             }
@@ -76,7 +76,7 @@ export default {
         "typeCompatibles": []
     },
     "array": {
-        "typeConvert": (value) => {
+        "typeConvert": value => {
             if (Array.isArray(value)) {
                 return value;
             }
@@ -85,8 +85,17 @@ export default {
         "typeCompatibles": []
     },
     "resource": {
-        "typeConvert": (value) => {
+        "typeConvert": value => {
             if (typeof value === "object") {
+                return value;
+            }
+            return undefined;
+        },
+        "typeCompatibles": []
+    },
+    "color": {
+        "typeConvert": value => {
+            if (typeof value === "string") {
                 return value;
             }
             return undefined;

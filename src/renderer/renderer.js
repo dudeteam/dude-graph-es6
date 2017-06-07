@@ -317,7 +317,7 @@ export default class Renderer extends EventClass {
      * @returns {RenderConnection|null}
      */
     renderConnectionsForRenderPoints(inputRenderPoint, outputRenderPoint) {
-        return this[_renderConnections].find((rc) => {
+        return this[_renderConnections].find(rc => {
                 return rc.inputRenderPoint === inputRenderPoint && rc.outputRenderPoint === outputRenderPoint;
             }) || null;
     }

@@ -3,7 +3,7 @@
  * @param {string} text - specifies the text
  * @returns {Array<number>}
  */
-export const textBoundingBox = (text) => {
+export const textBoundingBox = text => {
     return [text.length * 9.6, 18]; // OxygenSans font prediction
 };
 
@@ -12,7 +12,7 @@ export const textBoundingBox = (text) => {
  * @param {Array<RenderNode>} renderNodes - specifies the render nodes
  * @returns {Array<Array<number>>|null}
  */
-export const renderNodesBoundingBox = (renderNodes) => {
+export const renderNodesBoundingBox = renderNodes => {
     if (renderNodes.length === 0) {
         return null;
     }
@@ -26,7 +26,7 @@ export const renderNodesBoundingBox = (renderNodes) => {
  * @param {Array<RenderPoint>} renderPoints - lol
  * @returns {Array<number>|null}
  */
-export const renderPointsBoundingBox = (renderPoints) => {
+export const renderPointsBoundingBox = renderPoints => {
     if (renderPoints.length === 0) {
         return null;
     }

@@ -172,13 +172,13 @@ export default class Block extends EventClass {
             return; // Already the same type
         }
         const oldValueType = template.valueType;
-        const inputValueSaves = this.inputs.map((point) => {
+        const inputValueSaves = this.inputs.map(point => {
             if (point.template === templateName) {
                 return point.value;
             }
             return undefined;
         });
-        const outputValueSaves = this.outputs.map((point) => {
+        const outputValueSaves = this.outputs.map(point => {
             if (point.template === templateName) {
                 return point.value;
             }

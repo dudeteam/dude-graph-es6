@@ -16,7 +16,7 @@ export default class RenderNodeFinder {
      * @returns {Array<RenderNode>}
      */
     nearestRenderNodes(area) {
-        return this[_renderer].renderNodes.filter((renderNode) => {
+        return this[_renderer].renderNodes.filter(renderNode => {
             if (renderNode.position[0] + renderNode.size[0] < area[0][0]) { return false; }
             if (renderNode.position[0] > area[1][0]) { return false; }
             if (renderNode.position[1] + renderNode.size[1] < area[0][1]) { return false; }
@@ -31,7 +31,7 @@ export default class RenderNodeFinder {
      * @returns {Array<RenderBlock>}
      */
     nearestRenderBlocks(area) {
-        return this[_renderer].renderBlocks.filter((renderBlock) => {
+        return this[_renderer].renderBlocks.filter(renderBlock => {
             if (renderBlock.position[0] + renderBlock.size[0] < area[0][0]) { return false; }
             if (renderBlock.position[0] > area[1][0]) { return false; }
             if (renderBlock.position[1] + renderBlock.size[1] < area[0][1]) { return false; }
@@ -46,7 +46,7 @@ export default class RenderNodeFinder {
      * @returns {Array<RenderGroup>}
      */
     nearestRenderGroups(area) {
-        return this[_renderer].renderGroups.filter((renderGroup) => {
+        return this[_renderer].renderGroups.filter(renderGroup => {
             if (renderGroup.position[0] + renderGroup.size[0] < area[0][0]) { return false; }
             if (renderGroup.position[0] > area[1][0]) { return false; }
             if (renderGroup.position[1] + renderGroup.size[1] < area[0][1]) { return false; }
@@ -61,7 +61,7 @@ export default class RenderNodeFinder {
      * @returns {RenderGroup|null}
      */
     nearestRenderGroup(renderBlock) {
-        const groups = this[_renderer].renderGroups.filter((renderGroup) => {
+        const groups = this[_renderer].renderGroups.filter(renderGroup => {
             if (renderGroup.position[0] > renderBlock.position[0]) { return false; }
             if (renderGroup.position[1] > renderBlock.position[1]) { return false; }
             if (renderGroup.position[0] + renderGroup.size[0] < renderBlock.position[0]) { return false; }
@@ -85,7 +85,7 @@ export default class RenderNodeFinder {
      * @returns {RenderPoint|null}
      */
     nearestRenderPoint(position, radius = this[_renderer].config.point.radius) {
-        return this[_renderer].renderPoints.find((renderPoint) => {
+        return this[_renderer].renderPoints.find(renderPoint => {
             if (renderPoint.absolutePosition[0] + radius < position[0]) { return false; }
             if (renderPoint.absolutePosition[0] > position[0] + radius) { return false; }
             if (renderPoint.absolutePosition[1] + radius < position[1]) { return false; }

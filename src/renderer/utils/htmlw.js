@@ -3,7 +3,7 @@ const _namespaces = {
     "svg": "http://www.w3.org/2000/svg",
     "math": "http://www.w3.org/1998/Math/MathML"
 };
-const _namespace = (name) => {
+const _namespace = name => {
     const pair = name.split(":");
     if (pair.length > 1 && typeof _namespaces[pair[0]] === "undefined") {
         throw new Error(pair[0] + " is not a valid namespace, valid namespaces are", _namespaces);

@@ -326,7 +326,7 @@ export default class Graph extends EventClass {
      * @returns {Connection|null}
      */
     connectionForPoints(inputPoint, outputPoint) {
-        return this.connections.find((connection) => {
+        return this.connections.find(connection => {
                 return connection.inputPoint === inputPoint && connection.outputPoint === outputPoint;
             }) || null;
     }
