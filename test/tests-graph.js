@@ -247,6 +247,7 @@ describe("dude-graph API", () => {
         const graph = new Graph();
         const block = new Block();
         graph.addBlock(block);
+
         const outputPoint1 = new Point(false, {
             "name": "out1",
             "valueType": "number"
@@ -267,6 +268,29 @@ describe("dude-graph API", () => {
             "name": "out5",
             "valueType": "number"
         });
+
+        const inputPoint1 = new Point(true, {"name": "in1", "valueType": "number"});
+        const inputPoint2 = new Point(true, {"name": "in2", "valueType": "number"});
+        const inputPoint3 = new Point(true, {"name": "in3", "valueType": "number"});
+        const inputPoint4 = new Point(true, {"name": "in4", "valueType": "number"});
+        const inputPoint5 = new Point(true, {"name": "in5", "valueType": "number"});
+
+        block.addPoint(inputPoint3); // Add to end [3]
+        block.addPoint(inputPoint2, 0); // Add to start [2, 3]
+        block.addPoint(inputPoint1, 0); // Add to start [1, 2, 3]
+        block.addPoint(inputPoint5); // Add to end [1, 2, 3, 5]
+        block.addPoint(inputPoint4, 3); // Add to 3rd position [1, 2, 3, 4, 5]
+        expect(block.inputs[0]).to.be.equal(inputPoint1);
+        expect(block.inputs[1]).to.be.equal(inputPoint2);
+        expect(block.inputs[2]).to.be.equal(inputPoint3);
+        expect(block.inputs[3]).to.be.equal(inputPoint4);
+        expect(block.inputs[4]).to.be.equal(inputPoint5);
+        expect(inputPoint1.position).to.be.equal(0);
+        expect(inputPoint2.position).to.be.equal(1);
+        expect(inputPoint3.position).to.be.equal(2);
+        expect(inputPoint4.position).to.be.equal(3);
+        expect(inputPoint5.position).to.be.equal(4);
+
         block.addPoint(outputPoint4); // Add to end [4]
         block.addPoint(outputPoint2, 0); // Add to start [2, 4]
         block.addPoint(outputPoint1, 0); // Add to start [1, 2, 4]
@@ -277,6 +301,11 @@ describe("dude-graph API", () => {
         expect(block.outputs[2]).to.be.equal(outputPoint3);
         expect(block.outputs[3]).to.be.equal(outputPoint4);
         expect(block.outputs[4]).to.be.equal(outputPoint5);
+        expect(outputPoint1.position).to.be.equal(0);
+        expect(outputPoint2.position).to.be.equal(1);
+        expect(outputPoint3.position).to.be.equal(2);
+        expect(outputPoint4.position).to.be.equal(3);
+        expect(outputPoint5.position).to.be.equal(4);
     });
     it("should change a point name", () => {
         const graph = new Graph();
