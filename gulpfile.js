@@ -31,10 +31,10 @@ gulp.task("lint", () => {
 
 gulp.task("build", ["lint"], () => {
     return rollup({
-        "entry": "./src/dude-graph.js",
-        "sourceMap": true,
+        "input": "./src/dude-graph.js",
+        "sourcemap": true,
         "format": "umd",
-        "moduleName": "dudeGraph",
+        "name": "dudeGraph",
         "plugins": [
             babel({
                 "babelrc": false,
