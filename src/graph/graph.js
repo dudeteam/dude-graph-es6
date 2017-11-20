@@ -112,7 +112,7 @@ export default class Graph extends EventClass {
      * @returns {Array<Block>}
      */
     blocksByType(type) {
-        return this.blocks.filter(block => block.type === type || block instanceof type);
+        return this.blocks.filter(block => block.type === type || (typeof type === "function" && block instanceof type));
     }
 
     /**
